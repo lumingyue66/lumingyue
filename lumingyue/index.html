@@ -1,0 +1,3972 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LuMingYue · AI Product Experience Designer</title>
+  <script src="./assets/tailwind-3.4.16.js"></script>
+  <script>
+    tailwind.config = {
+      mode: 'jit', // 启用即时编译（Tailwind v3 默认开启）
+      important: true, // 确保样式优先级
+    }
+  </script>
+  <style>
+    /* 画布在视口内水平居中，保持 1440px 原始设计宽度 1:1 还原 */
+    html { background: rgba(0, 0, 0, 1); }
+    body { margin: 0; background: linear-gradient(180deg, rgba(0,0,0,1) 0, rgba(0,0,0,1) 14218px, rgba(255,255,255,1) 14218px) no-repeat; }
+    #canvas-1-9648 { margin: 0 auto; }
+    /* Product Foundation 横向滑动 + 覆盖流(coverflow)透视 */
+    .pf-scroll { scrollbar-width: none; -ms-overflow-style: none; scroll-snap-type: x proximity; -webkit-overflow-scrolling: touch; }
+    .pf-scroll::-webkit-scrollbar { display: none; }
+    .pf-card { scroll-snap-align: center; will-change: transform, opacity; backface-visibility: hidden; transform-origin: center center; }
+
+    /* ===== 微动效样式（新增，纯附加，终态=设计稿原样）===== */
+    /* 入场：默认略下移+透明，进入视口后归位。transform 终态为 none，不影响绝对定位坐标 */
+    [data-reveal] {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity .7s cubic-bezier(.22,.61,.36,1),
+                  transform .7s cubic-bezier(.22,.61,.36,1);
+      will-change: opacity, transform;
+    }
+    [data-reveal].is-revealed { opacity: 1; transform: none; }
+    /* 子元素错峰延迟（stagger） */
+    [data-reveal][data-reveal-delay="1"] { transition-delay: .10s; }
+    [data-reveal][data-reveal-delay="2"] { transition-delay: .24s; }
+    [data-reveal][data-reveal-delay="3"] { transition-delay: .38s; }
+    [data-reveal][data-reveal-delay="4"] { transition-delay: .52s; }
+    /* Hero 大标题：柔和上浮显现（幅度略大） */
+    [data-reveal="hero"] { transform: translateY(40px); }
+    /* 卡片 hover 微反馈：轻微上浮，transform 复位=原样 */
+    [data-hover-lift] { transition: transform .35s cubic-bezier(.22,.61,.36,1); will-change: transform; }
+    [data-hover-lift]:hover { transform: translateY(-6px); }
+    /* coverflow 卡片过渡平滑（原脚本每帧写 transform，这里补一层过渡缓动） */
+    .pf-card { transition: transform .18s ease-out, opacity .18s ease-out; }
+    /* 修正 3D 透视变换下圆角裁切不干净：图片层与卡片同圆角，保证四角精致 */
+    .pf-card > img { border-radius: 8px; }
+    /* 粉丝趋势曲线：逐渐画出（stroke-dashoffset）+ 填充淡入 */
+    .chart-draw { stroke-dasharray: 1; stroke-dashoffset: 1; }
+    .chart-fill-cyan, .chart-fill-purple { opacity: 0; }
+    .chart-anim .chart-draw-cyan { animation: chartDraw 1.4s cubic-bezier(.4,0,.2,1) forwards; }
+    .chart-anim .chart-draw-purple { animation: chartDraw 1.4s cubic-bezier(.4,0,.2,1) .28s forwards; }
+    .chart-anim .chart-fill-cyan { animation: chartFade .9s ease-out .35s forwards; }
+    .chart-anim .chart-fill-purple { animation: chartFade .9s ease-out .6s forwards; }
+    @keyframes chartDraw { to { stroke-dashoffset: 0; } }
+    @keyframes chartFade { to { opacity: 1; } }
+    /* 打字机效果的光标 + 下方胶囊/按钮联动入场 */
+    [data-tw].tw-caret { border-right: 2px solid rgba(69,224,122,0.9); animation: twBlink .7s step-end infinite; }
+    @keyframes twBlink { 0%,100% { border-color: rgba(69,224,122,0.9); } 50% { border-color: transparent; } }
+    [data-tw-pop] { opacity: 0; transform: translateY(10px) scale(.96); transition: opacity .45s ease, transform .45s cubic-bezier(.22,.61,.36,1); }
+    [data-tw-pop].tw-in { opacity: 1; transform: none; }
+    /* 红框浮动元素：自下而上弹出 + 展开 */
+    [data-pop] { opacity: 0; will-change: transform, opacity; }
+    [data-pop].pop-go { animation: popExpand 1s cubic-bezier(.22,.61,.36,1) forwards; }
+    @keyframes popExpand {
+      0%   { opacity: 0; transform: translateY(72px) scale(.62); }
+      50%  { opacity: 1; transform: translateY(0) scale(.9); }
+      75%  { transform: translateY(0) scale(1.05); }
+      100% { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    /* Case 03：大图先入场，三个小模块随滚动逐个展现 */
+    [data-c3-img] { opacity: 0; transform: scale(.96); transition: opacity .8s ease, transform .8s cubic-bezier(.22,.61,.36,1); will-change: opacity, transform; }
+    [data-c3-img].c3-in { opacity: 1; transform: none; }
+    [data-c3-mod] { opacity: 0; transform: translateY(48px) scale(.9); transition: opacity .6s ease, transform .7s cubic-bezier(.34,1.3,.5,1); will-change: opacity, transform; }
+    [data-c3-mod].c3-in { opacity: 1; transform: none; }
+    /* 尊重系统「减少动态效果」：全部降级为无动画、直接显示终态 */
+    @media (prefers-reduced-motion: reduce) {
+      [data-reveal] { opacity: 1 !important; transform: none !important; transition: none !important; }
+      [data-hover-lift] { transition: none !important; }
+      .pf-card { transition: none !important; }
+      .chart-draw { stroke-dasharray: none !important; stroke-dashoffset: 0 !important; }
+      .chart-fill-cyan, .chart-fill-purple { opacity: 1 !important; }
+      [data-tw].tw-caret { animation: none !important; border-right: none !important; }
+      [data-tw-pop] { opacity: 1 !important; transform: none !important; transition: none !important; }
+      [data-pop] { opacity: 1 !important; animation: none !important; transform: none !important; }
+      [data-c3-img], [data-c3-mod] { opacity: 1 !important; transform: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+
+<main class="w-[1440px] h-[14915px] overflow-hidden bg-[rgba(0,0,0,1)] relative mx-auto" id="1:9648">
+  <div
+    class="absolute top-[225px] left-[50px] opacity-[0.06] font-[Inter] text-[220px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[287px] tracking-[normal] font-black"
+    id="1:9649"
+  >
+    <span class="tracking-[0%]">LUMINGYUE</span>
+  </div>
+  <div class="w-[683px] h-[567px] absolute top-[258px] left-0 flex flex-col justify-start items-start" id="1:9650" data-reveal="hero">
+    <div class="w-[581px] h-[11px] mt-[80px] flex justify-start items-center" id="1:9651">
+      <div
+        class="opacity-40 font-[Inter] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[11px] tracking-[normal] font-extrabold flex-shrink-0"
+        id="1:9652"
+      >
+        <span class="tracking-[0%]">HELLO,&nbsp;I’M&nbsp;LUMINGYUE.</span>
+      </div>
+    </div>
+    <div
+      class="mt-[10px] font-[Inter] text-[124px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[109px] tracking-[normal] font-bold flex-shrink-0"
+      id="1:9654"
+    >
+      <span class="tracking-[0%]">AI&nbsp;Product</span>
+    </div>
+    <div
+      class="font-[Inter] text-[124px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[109px] tracking-[normal] font-bold flex-shrink-0"
+      id="1:9653"
+    >
+      <span class="tracking-[0%]">Experience</span>
+    </div>
+    <div
+      class="font-[Inter] text-[124px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[109px] tracking-[normal] font-bold flex-shrink-0"
+      id="1:9655"
+    >
+      <span class="tracking-[0%]">Designer.</span>
+    </div>
+    <div class="w-[577px] min-h-[46px] mt-[93px]" id="1:9656"></div>
+  </div>
+  <div class="w-[1440px] h-[681px] absolute top-[751px] left-0 flex flex-col justify-start items-start" id="1:9657" data-reveal>
+    <div
+      class="w-[1312px] h-[223.25px] flex flex-col flex-nowrap justify-start items-center mt-[97px] ml-[64px]"
+      id="1:9658"
+    >
+      <div class="w-[1200px] h-[223.25px] flex max-w-[1200px] flex-nowrap justify-start items-start" id="1:9659">
+        <div class="w-[378.66px] h-[41px] flex flex-col flex-nowrap justify-start items-start" id="1:9660">
+          <div class="w-[378.66px] h-[24px] flex justify-start items-end" id="1:9661">
+            <div
+              class="mb-[2.50px] opacity-[0.35] font-[Menlo] text-[11px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[16.50px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:9662"
+            >
+              <span class="uppercase tracking-[0.88px]">About</span>
+            </div>
+          </div>
+          <div
+            class="w-[32px] h-[17px] flex flex-col flex-nowrap justify-start items-start pt-[16px] box-border"
+            id="1:9663"
+          >
+            <div class="w-[32px] bg-[rgba(69,224,122,1)] min-h-[1px]" id="1:9664"></div>
+          </div>
+        </div>
+        <div class="w-[757.34px] h-[223.25px] flex flex-col flex-nowrap justify-start items-start" id="1:9665">
+          <div class="w-[757.34px] h-[79px] flex flex-col flex-nowrap justify-start items-start" id="1:9666">
+            <div class="w-[69px] h-[23px] flex flex-col flex-nowrap justify-start items-end" id="1:9667">
+              <div
+                class="w-[69px] h-[23px] flex flex-col flex-nowrap justify-start items-start pb-[4px] box-border"
+                id="1:9668"
+              >
+                <div
+                  class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[19px] tracking-[normal] font-bold"
+                  id="1:9669"
+                >
+                  <span class="tracking-[1.44px]">2020-至今</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="w-[758px] font-['undefined'] text-[18px] leading-[27.63px] tracking-[normal] font-normal"
+              id="1:9670"
+            >
+              <span class="font-[PingFang_SC] text-[rgba(255,255,255,1)] tracking-[-0.43px]"
+                >现就职于百度。从百度&nbsp;APP&nbsp;创作中心、百家号，到&nbsp;Al&nbsp;Copilot、生成式创作与&nbsp;Al&nbsp;剧创作平台，我持续在做一件事：</span
+              ><span class="font-[PingFang_SC] font-semibold text-[rgba(255,255,255,1)] tracking-[-0.43px]"
+                >把复杂的技术与&nbsp;Al&nbsp;能力，设计成普通人真正能用的</span
+              ><span class="font-[PingFang_SC] font-semibold text-[rgba(69,224,122,1)] tracking-[-0.43px]">生产力</span
+              ><span class="font-[PingFang_SC] font-semibold text-[rgba(255,255,255,1)] tracking-[-0.43px]">。</span>
+            </div>
+          </div>
+          <div
+            class="w-[757.34px] h-[170px] flex flex-col flex-nowrap justify-start items-start pt-[24px] box-border"
+            id="1:9671"
+          >
+            <div
+              class="w-[757.34px] h-[146px] flex flex-col flex-nowrap justify-start items-start pl-[24px] box-border relative"
+              id="1:9672"
+            >
+              <!-- 左侧装饰竖线 -->
+              <div class="w-[2px] h-full bg-[linear-gradient(180deg,_rgba(255,255,255,0.6)_0%,rgba(255,255,255,0.15)_100%)] absolute top-0 left-0"></div>
+              <div class="w-[731.34px] h-[23px] opacity-40 flex flex-col flex-nowrap justify-start items-start" id="1:9673">
+                <div
+                  class="font-[PingFang_SC] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[22.75px] tracking-[normal] font-normal"
+                  id="1:9674"
+                >
+                  <span class="tracking-[-0.15px]">过去，我解决的是：</span>
+                </div>
+              </div>
+              <div
+                class="w-[731.34px] h-[42px] flex flex-col flex-nowrap justify-start items-start pt-[12px] box-border"
+                id="1:9675"
+              >
+                <div
+                  class="font-[PingFang_SC] text-[18px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[29.25px] tracking-[normal] font-light"
+                  id="1:9676"
+                >
+                  <span class="tracking-[-0.44px]">怎样让一个复杂产品更容易理解、更高效地完成任务。</span>
+                </div>
+              </div>
+              <div
+                class="w-[731.34px] h-[39px] opacity-40 flex flex-col flex-nowrap justify-start items-start pt-[16px] box-border"
+                id="1:9677"
+              >
+                <div
+                  class="font-[PingFang_SC] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[22.75px] tracking-[normal] font-normal"
+                  id="1:9678"
+                >
+                  <span class="tracking-[-0.15px]">现在，我更关注：</span>
+                </div>
+              </div>
+              <div
+                class="w-[731.34px] h-[42px] flex flex-col flex-nowrap justify-start items-start pt-[12px] box-border"
+                id="1:9679"
+              >
+                <div
+                  class="font-[PingFang_SC] text-[18px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[29.25px] tracking-[normal] font-light"
+                  id="1:9680"
+                >
+                  <span class="tracking-[-0.44px]"
+                    >当&nbsp;AI&nbsp;成为产品的一部分，人应该怎样理解它、控制它、与它协作，并最终完成任务。</span
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="w-[800px] h-[24px] mt-[35.75px] ml-[523px] flex justify-start items-center" id="1:9681">
+      <div class="w-[108px] h-[24px] flex flex-col justify-start items-start" id="1:9682">
+        <div
+          class="font-[Fira_Code] text-[12.80px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[20px] tracking-[normal] font-light flex-shrink-0"
+          id="1:9683"
+        >
+          <span class="text-[12.80px] tracking-[0%]">AI&nbsp;Interaction</span>
+        </div>
+      </div>
+      <div class="w-[100px] h-[24px] ml-[19px] flex flex-col justify-start items-center" id="1:9684">
+        <div
+          class="font-[Fira_Code] text-[12.80px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[20px] tracking-[normal] font-light flex-shrink-0"
+          id="1:9685"
+        >
+          <span class="text-[12.80px] tracking-[0%]">Generative&nbsp;UX</span>
+        </div>
+      </div>
+      <div class="w-[108px] h-[24px] ml-[19px] flex flex-col justify-start items-center" id="1:9686">
+        <div
+          class="font-[Fira_Code] text-[12.80px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[20px] tracking-[normal] font-light flex-shrink-0"
+          id="1:9687"
+        >
+          <span class="text-[12.80px] tracking-[0%]">Product&nbsp;System</span>
+        </div>
+      </div>
+      <div class="w-[85px] h-[24px] ml-[19px] flex flex-col justify-start items-center" id="1:9688">
+        <div
+          class="font-[Fira_Code] text-[12.80px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[20px] tracking-[normal] font-light flex-shrink-0"
+          id="1:9689"
+        >
+          <span class="text-[12.80px] tracking-[0%]">AI&nbsp;Workflow</span>
+        </div>
+      </div>
+      <div class="w-[85px] h-[24px] ml-[19px] flex flex-col justify-start items-center" id="1:9690">
+        <div
+          class="font-[Fira_Code] text-[12.80px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[20px] tracking-[normal] font-light flex-shrink-0"
+          id="1:9691"
+        >
+          <span class="text-[12.80px] tracking-[0%]">Vibe&nbsp;Coding</span>
+        </div>
+      </div>
+    </div>
+    <div class="w-[813px] h-[109px] mt-[92px] ml-[563px] flex justify-start items-start" id="1:9692">
+      <div class="w-[50px] h-[76px] mt-[33px] flex flex-col justify-start items-start" id="1:9693">
+        <div
+          class="font-[Inter] text-[51.19px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[51px] tracking-[normal] font-bold flex-shrink-0"
+          id="1:9694"
+        >
+          <span class="text-[51.19px] tracking-[-2.05px]" data-countup>5</span>
+        </div>
+        <div
+          class="mt-[4px] opacity-[0.35] font-[Inter] text-[12.80px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[20px] tracking-[normal] font-light flex-shrink-0"
+          id="1:9695"
+        >
+          <span class="text-[12.80px] tracking-[1.02px]">产品方向</span>
+        </div>
+      </div>
+      <div class="w-[98px] h-[76px] mt-[33px] ml-[64px] flex flex-col justify-start items-start" id="1:9696">
+        <div
+          class="font-[Inter] text-[51.19px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[51px] tracking-[normal] font-bold flex-shrink-0"
+          id="1:9697"
+        >
+          <span class="text-[51.19px] tracking-[-2.05px]" data-countup>30+</span>
+        </div>
+        <div
+          class="mt-[4px] opacity-[0.35] font-[Inter] text-[12.80px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[20px] tracking-[normal] font-light flex-shrink-0"
+          id="1:9698"
+        >
+          <span class="text-[12.80px] tracking-[1.02px]">项目实践</span>
+        </div>
+      </div>
+      <div class="w-[96px] h-[76px] mt-[33px] ml-[64px] flex flex-col justify-start items-start" id="1:9699">
+        <div
+          class="font-[Inter] text-[51.19px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[51px] tracking-[normal] font-bold flex-shrink-0"
+          id="1:9700"
+        >
+          <span class="text-[51.19px] tracking-[-2.05px]" data-countup>20+</span>
+        </div>
+        <div
+          class="mt-[4px] opacity-[0.35] font-[Inter] text-[12.80px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[20px] tracking-[normal] font-light flex-shrink-0"
+          id="1:9701"
+        >
+          <span class="text-[12.80px] tracking-[1.02px]">专利</span>
+        </div>
+      </div>
+      <div class="w-[83px] h-[76px] mt-[33px] ml-[64px] flex flex-col justify-start items-start" id="1:9702">
+        <div
+          class="font-[Inter] text-[51.19px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[51px] tracking-[normal] font-bold flex-shrink-0"
+          id="1:9703"
+        >
+          <span class="text-[51.19px] tracking-[-2.05px]" data-countup>2</span>
+        </div>
+        <div
+          class="mt-[4px] opacity-[0.35] font-[Inter] text-[12.80px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[20px] tracking-[normal] font-light flex-shrink-0"
+          id="1:9704"
+        >
+          <span class="text-[12.80px] tracking-[1.02px]">国际设计奖项</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="w-[1440px] h-[494px] overflow-hidden absolute top-[1432px] left-[0.50px]" id="1:9705">
+    <div
+      class="w-[38px] h-[224px] opacity-40 flex flex-col flex-nowrap justify-start items-center absolute top-[100px] left-[228px]"
+      id="1:9706"
+    >
+      <div
+        class="w-px bg-[linear-gradient(180deg,_rgba(255,255,255,0)_0%,rgba(255,255,255,0.6)_100%)] min-h-[200px] mb-[8px]"
+        id="1:9707"
+      ></div>
+      <div class="w-[38px] h-[14px] flex flex-col flex-nowrap justify-start items-start relative" id="1:9708">
+        <img src="./assets/image_1.svg" class="w-[14px] h-[38px] absolute top-[6px] left-[11.71px]" id="1:9709" />
+      </div>
+    </div>
+    <div
+      class="w-[520px] h-[58px] overflow-hidden absolute top-[100px] left-[273.50px] flex justify-start items-start"
+      id="1:9711"
+    >
+      <div
+        class="font-[Fira_Code] text-[18px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[22px] tracking-[normal] font-medium flex-shrink-0"
+        id="1:9714"
+      >
+        <span class="tracking-[0%]">01</span>
+      </div>
+      <div
+        class="ml-[8px] w-[114px] font-[Menlo] text-[18px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[22px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:9713"
+      >
+        <span class="uppercase tracking-[0.90px]">作为产品</span>
+      </div>
+      <div
+        class="ml-[21px] w-[355px] font-[PingFang_SC] text-[14px] text-[rgba(255,255,255,1)] leading-[18px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:9712"
+      >
+        <span class="uppercase tracking-[0.90px]"
+          >我做产品的第一步不是画界面，是判断&quot;这个问题值不值得解&quot;。把模糊的用户诉求，翻译成清晰、可验证的产品方案，并推动它落地。</span
+        >
+      </div>
+    </div>
+    <div
+      class="w-[520px] h-[58px] overflow-hidden absolute top-[218px] left-[273.50px] flex justify-start items-start"
+      id="1:9715"
+    >
+      <div
+        class="font-[Fira_Code] text-[18px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[22px] tracking-[normal] font-medium flex-shrink-0"
+        id="1:9718"
+      >
+        <span class="tracking-[0%]">02</span>
+      </div>
+      <div
+        class="ml-[8px] w-[114px] font-[Menlo] text-[18px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[22px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:9717"
+      >
+        <span class="uppercase tracking-[0.90px]">作为体验设计</span>
+      </div>
+      <div
+        class="ml-[21px] w-[355px] font-[PingFang_SC] text-[14px] text-[rgba(255,255,255,1)] leading-[18px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:9716"
+      >
+        <span class="uppercase tracking-[0.90px]"
+          >既定义&nbsp;0&nbsp;到&nbsp;1&nbsp;的交互范式——AI&nbsp;编辑器怎么用、AI&nbsp;助手在哪出现、剧本&nbsp;Agent&nbsp;能跑多远；也做体验治理：统一多端标准、沉淀可复用规范。</span
+        >
+      </div>
+    </div>
+    <div
+      class="w-[520px] h-[58px] overflow-hidden absolute top-[336px] left-[273.50px] flex justify-start items-start"
+      id="1:9719"
+    >
+      <div
+        class="font-[Fira_Code] text-[18px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[22px] tracking-[normal] font-medium flex-shrink-0"
+        id="1:9722"
+      >
+        <span class="tracking-[0%]">03</span>
+      </div>
+      <div
+        class="ml-[8px] w-[114px] font-[Menlo] text-[18px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[22px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:9721"
+      >
+        <span class="uppercase tracking-[0.90px]">作为工程师</span>
+      </div>
+      <div
+        class="ml-[21px] w-[355px] font-[PingFang_SC] text-[14px] text-[rgba(255,255,255,1)] leading-[18px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:9720"
+      >
+        <span class="uppercase tracking-[0.90px]"
+          >我懂实现边界，能和研发对话，也能自己用&nbsp;Vibe&nbsp;Coding&nbsp;跑通原型——把方案从图纸推到可运行。</span
+        >
+      </div>
+    </div>
+  </div>
+  <div
+    class="w-[1440px] h-[961px] overflow-hidden rounded-[60px] bg-[rgba(255,255,255,1)] absolute top-[2126px] left-0"
+    id="1:9723"
+    data-reveal
+  >
+    <div
+      class="w-[1300px] h-[256px] overflow-hidden bg-[rgba(255,255,255,0)] absolute top-[90px] left-[70px]"
+      id="1:9724"
+    >
+      <div
+        class="absolute top-0 left-0 font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[19px] tracking-[normal] font-bold"
+        id="1:9725"
+      >
+        <span class="tracking-[1.44px]">MY&nbsp;EVOLUTION</span>
+      </div>
+      <div
+        class="absolute top-[49px] left-0 font-[Inter] text-[60px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[40px] tracking-[normal] font-bold"
+        id="1:9726"
+      >
+        <span class="tracking-[-0.50px]">From&nbsp;Product&nbsp;Design</span>
+      </div>
+      <div
+        class="absolute top-[118px] left-0 font-[Inter] text-[60px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[40px] tracking-[normal] font-bold"
+        id="1:9727"
+      >
+        <span class="tracking-[-0.50px]">to</span>
+      </div>
+      <div
+        class="absolute top-[120px] left-[71px] font-[Inter] text-[60px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[40px] tracking-[normal] font-bold"
+        id="1:9728"
+      >
+        <span class="tracking-[-0.50px]">AI&nbsp;Product&nbsp;Design.</span>
+      </div>
+      <div
+        class="absolute top-[200px] left-0 w-[738px] opacity-60 font-[PingFang_SC] text-[16px] leading-[26px] tracking-[normal] font-normal"
+        id="1:9729"
+      >
+        <div class="">
+          <span class="text-[rgba(0,0,0,1)] tracking-[0%]"
+            >AI&nbsp;没有推翻我过去积累的产品经验。相反，它让我重新思考：
+          </span>
+        </div>
+        <div>
+          <span class="text-[rgba(0,0,0,1)] tracking-[0%]"
+            >当产品开始拥有理解、生成与行动能力，设计师究竟应该设计什么？</span
+          >
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-[1300px] h-[605px] overflow-hidden bg-[rgba(255,255,255,0)] absolute top-[346px] left-[70px]"
+      id="1:9730"
+    >
+      <div
+        class="w-[423px] h-[296px] rounded-[16px] border-[rgba(0,0,0,0.1)] border-solid border bg-[rgba(11,11,11,0)] absolute top-[90px] left-0"
+        id="1:9731"
+      >
+        <div
+          class="absolute top-[34px] left-[30px] font-[Fira_Code] text-[14px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[20px] tracking-[normal] font-bold"
+          id="1:9732"
+        >
+          <span class="tracking-[0.51px]">2020&nbsp;—&nbsp;2022</span>
+        </div>
+        <div
+          class="absolute top-[67px] left-[29px] font-[PingFang_SC] text-[22px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[33px] tracking-[normal] font-semibold"
+          id="1:9733"
+        >
+          <span class="tracking-[0%]">复杂产品体验</span>
+        </div>
+        <div
+          class="absolute top-[113px] left-[29px] w-[375px] font-[PingFang_SC] text-[14px] text-[rgba(0,0,0,1)] leading-[26px] tracking-[normal] font-light"
+          id="1:9734"
+        >
+          <span class="tracking-[0%]"
+            >处理复杂的信息、流程、角色和业务关系。怎样让复杂产品更容易理解、更顺畅地完成任务。</span
+          >
+        </div>
+        <div
+          class="w-[142px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[172px] left-[29px]"
+          id="1:9735"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9736"
+          >
+            <span class="tracking-[0%]">Content&nbsp;Platform</span>
+          </div>
+        </div>
+        <div
+          class="w-[142px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[172px] left-[183px]"
+          id="1:9737"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9738"
+          >
+            <span class="tracking-[0%]">Creator&nbsp;Platform</span>
+          </div>
+        </div>
+        <div
+          class="w-[106px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[204px] left-[29px]"
+          id="1:9739"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9740"
+          >
+            <span class="tracking-[0%]">Mobile&nbsp;/&nbsp;PC</span>
+          </div>
+        </div>
+        <div
+          class="w-[113px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[204px] left-[147px]"
+          id="1:9741"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9742"
+          >
+            <span class="tracking-[0%]">B-End&nbsp;System</span>
+          </div>
+        </div>
+        <div
+          class="w-[120px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[236px] left-[29px]"
+          id="1:9743"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9744"
+          >
+            <span class="tracking-[0%]">Design&nbsp;System</span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="w-[424px] h-[296px] rounded-[16px] border-[rgba(0,0,0,0.1)] border-solid border bg-[rgba(11,11,11,0)] absolute top-[90px] left-[438px]"
+        id="1:9745"
+      >
+        <div
+          class="absolute top-[34px] left-[30px] font-[Fira_Code] text-[14px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[20px] tracking-[normal] font-bold"
+          id="1:9746"
+        >
+          <span class="tracking-[0.51px]">2022&nbsp;—&nbsp;2024</span>
+        </div>
+        <div
+          class="absolute top-[67px] left-[29px] font-[PingFang_SC] text-[22px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[33px] tracking-[normal] font-semibold"
+          id="1:9747"
+        >
+          <span class="tracking-[0%]">从界面走向机制</span>
+        </div>
+        <div
+          class="absolute top-[113px] left-[29px] w-[375px] font-[PingFang_SC] text-[14px] text-[rgba(0,0,0,1)] leading-[23px] tracking-[normal] font-light"
+          id="1:9748"
+        >
+          <span class="tracking-[0%]"
+            >关注点从单个页面走向完整行为链路。不只是页面怎么设计，而是用户为什么来、为什么留下、为什么继续。</span
+          >
+        </div>
+        <div
+          class="w-[70px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[172px] left-[29px]"
+          id="1:9749"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9750"
+          >
+            <span class="tracking-[0%]">Growth</span>
+          </div>
+        </div>
+        <div
+          class="w-[91px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[172px] left-[111px]"
+          id="1:9751"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9752"
+          >
+            <span class="tracking-[0%]">Retention</span>
+          </div>
+        </div>
+        <div
+          class="w-[53px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[172px] left-[214px]"
+          id="1:9753"
+        >
+          <div
+            class="font-[Fira_Code] text-[11.20px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9754"
+          >
+            <span class="text-[11.20px] tracking-[0%]">Data</span>
+          </div>
+        </div>
+        <div
+          class="w-[107px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[172px] left-[279px]"
+          id="1:9755"
+        >
+          <div
+            class="font-[Fira_Code] text-[11.20px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9756"
+          >
+            <span class="text-[11.20px] tracking-[0%]">Monetization</span>
+          </div>
+        </div>
+        <div
+          class="w-[121px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[204px] left-[29px]"
+          id="1:9757"
+        >
+          <div
+            class="font-[Fira_Code] text-[11.20px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9758"
+          >
+            <span class="text-[11.20px] tracking-[0%]">Cross-platform</span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="w-[423px] h-[296px] rounded-[16px] border-[rgba(0,0,0,0.1)] border-solid border bg-[rgba(11,11,11,0)] absolute top-[90px] left-[877px]"
+        id="1:9759"
+      >
+        <div
+          class="absolute top-[34px] left-[30px] font-[Fira_Code] text-[14px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[20px] tracking-[normal] font-bold"
+          id="1:9760"
+        >
+          <span class="tracking-[0.51px]">2024&nbsp;—&nbsp;NOW</span>
+        </div>
+        <div
+          class="absolute top-[67px] left-[29px] font-[Inter] text-[22px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[33px] tracking-[normal] font-semibold"
+          id="1:9761"
+        >
+          <span class="tracking-[0%]">AI&nbsp;Product&nbsp;Experience</span>
+        </div>
+        <div
+          class="absolute top-[113px] left-[29px] w-[375px] font-[PingFang_SC] text-[14px] text-[rgba(0,0,0,1)] leading-[23px] tracking-[normal] font-light"
+          id="1:9762"
+        >
+          <span class="tracking-[0%]"
+            >当&nbsp;AI&nbsp;进入产品，设计对象从“界面”进一步变成“人与&nbsp;AI&nbsp;的协作关系”。</span
+          >
+        </div>
+        <div
+          class="w-[87px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[172px] left-[29px]"
+          id="1:9763"
+        >
+          <div
+            class="font-[Fira_Code] text-[11.20px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9764"
+          >
+            <span class="text-[11.20px] tracking-[0%]">AI&nbsp;Editor</span>
+          </div>
+        </div>
+        <div
+          class="w-[94px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[172px] left-[128px]"
+          id="1:9765"
+        >
+          <div
+            class="font-[Fira_Code] text-[11.20px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9766"
+          >
+            <span class="text-[11.20px] tracking-[0%]">AI&nbsp;Copilot</span>
+          </div>
+        </div>
+        <div
+          class="w-[114px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[172px] left-[233px]"
+          id="1:9767"
+        >
+          <div
+            class="font-[Fira_Code] text-[11.20px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9768"
+          >
+            <span class="text-[11.20px] tracking-[0%]">Generative&nbsp;UX</span>
+          </div>
+        </div>
+        <div
+          class="w-[100px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[204px] left-[29px]"
+          id="1:9769"
+        >
+          <div
+            class="font-[Fira_Code] text-[11.20px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9770"
+          >
+            <span class="text-[11.20px] tracking-[0%]">AI&nbsp;Workflow</span>
+          </div>
+        </div>
+        <div
+          class="w-[100px] h-[26px] rounded-[20px] border-[rgba(42,42,42,0.1)] border-solid border bg-[rgba(26,26,26,0.03)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[204px] left-[141px]"
+          id="1:9771"
+        >
+          <div
+            class="font-[Fira_Code] text-[11.20px] whitespace-nowrap text-[rgba(0,0,0,0.6)] leading-[18px] tracking-[normal] font-light"
+            id="1:9772"
+          >
+            <span class="text-[11.20px] tracking-[0%]">Vibe&nbsp;Coding</span>
+          </div>
+        </div>
+      </div>
+      <div class="w-[800px] h-[72px] absolute top-[466px] left-0 flex flex-col justify-start items-start" id="1:9773">
+        <div
+          class="mt-px font-[Inter] text-[24px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[36px] tracking-[normal] font-medium flex-shrink-0"
+          id="1:9774"
+        >
+          <span class="tracking-[0%]">过去，我设计用户如何使用产品。</span>
+        </div>
+        <div
+          class="font-[PingFang_SC] text-[24px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[36px] tracking-[normal] font-medium flex-shrink-0"
+          id="1:9775"
+        >
+          <span class="tracking-[0%]">现在，我也在设计用户如何与&nbsp;AI&nbsp;一起完成任务。</span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="absolute top-[104px] left-[350px] opacity-[0.02] font-[Inter] text-[220px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[287px] tracking-[normal] font-black"
+      id="1:9776"
+    >
+      <span class="tracking-[0%]">Curriculum&nbsp;Vitae</span>
+    </div>
+  </div>
+  <div class="w-[1440px] h-[1029px] overflow-hidden bg-[rgba(0,0,0,1)] absolute top-[3387px] left-0" id="1:9777" data-reveal>
+    <div
+      class="absolute top-[532px] left-0 font-[Inter] text-[17px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[20px] tracking-[normal] font-semibold"
+      id="1:9778"
+    >
+      <span class="tracking-[0%]">WHAT&nbsp;I&nbsp;DO</span>
+    </div>
+    <div
+      class="absolute top-[606px] left-0 opacity-[0.06] font-[PingFang_SC] text-[200px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[200px] tracking-[normal] font-extralight"
+      id="1:9781"
+      data-reveal
+      data-reveal-delay="1"
+    >
+      <span class="tracking-[0%]">01</span>
+    </div>
+    <div
+      class="absolute top-[606px] left-[368px] opacity-[0.06] font-[PingFang_SC] text-[200px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[200px] tracking-[normal] font-extralight"
+      id="1:9782"
+      data-reveal
+      data-reveal-delay="2"
+    >
+      <span class="tracking-[0%]">02</span>
+    </div>
+    <div
+      class="absolute top-[606px] left-[736px] opacity-[0.06] font-[PingFang_SC] text-[200px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[200px] tracking-[normal] font-extralight"
+      id="1:9783"
+      data-reveal
+      data-reveal-delay="3"
+    >
+      <span class="tracking-[0%]">03</span>
+    </div>
+    <div
+      class="absolute top-[606px] left-[1107px] opacity-[0.06] font-[PingFang_SC] text-[200px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[200px] tracking-[normal] font-extralight"
+      id="1:9784"
+      data-reveal
+      data-reveal-delay="4"
+    >
+      <span class="tracking-[0%]">04</span>
+    </div>
+    <div
+      class="w-[333px] h-[278px] border-[rgba(34,34,34,0)] border-solid border bg-[rgba(0,0,0,1)] absolute top-[751px] left-0 flex flex-col justify-start items-start"
+      id="1:9785"
+      data-reveal
+      data-reveal-delay="1"
+    >
+      <div class="w-[174px] h-[52px] flex justify-start items-center" id="1:9786">
+        <div
+          class="font-[Inter] text-[21px] text-[rgba(255,255,255,1)] leading-[25px] tracking-[normal] font-semibold flex-shrink-0"
+          id="1:9787"
+        >
+          <div class=""><span class="tracking-[0%]">AI&nbsp; </span></div>
+          <div><span class="tracking-[0%]">INTERACTION</span></div>
+        </div>
+      </div>
+      <div
+        class="mt-[23px] w-[270px] font-[Inter] text-[15px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[17px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:9788"
+      >
+        <span class="tracking-[0%]">定义人与&nbsp;AI&nbsp;的协作方式。</span>
+      </div>
+      <div
+        class="mt-[25px] w-[273px] font-[PingFang_SC] text-[14px] text-[rgba(107,107,107,1)] leading-[16px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:9789"
+      >
+        <div class="">
+          <span class="tracking-[0%]"
+            >从&nbsp;AI&nbsp;Editor&nbsp;到&nbsp;AI&nbsp;Copilot，探索对话、生成、编辑、诊断、推荐与主动服务等不同
+          </span>
+        </div>
+        <div><span class="tracking-[0%]">场景下的交互范式。</span></div>
+      </div>
+      <div class="w-[274px] h-[66px] mt-[47px] relative" id="1:9790">
+        <div
+          class="w-[98px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-0 left-0"
+          id="1:9791"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9792"
+          >
+            <span class="tracking-[0%]">AI&nbsp;Copilot</span>
+          </div>
+        </div>
+        <div
+          class="w-[120px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-0 left-[110px]"
+          id="1:9793"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9794"
+          >
+            <span class="tracking-[0%]">Generative&nbsp;UX</span>
+          </div>
+        </div>
+        <div
+          class="w-[91px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[36px] left-0"
+          id="1:9795"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9796"
+          >
+            <span class="tracking-[0%]">AI&nbsp;Editor</span>
+          </div>
+        </div>
+        <div
+          class="w-[170px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[36px] left-[103px]"
+          id="1:9797"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9798"
+          >
+            <span class="tracking-[0%]">Human-AI&nbsp;Interaction</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-[336px] h-[278px] border-[rgba(34,34,34,0)] border-solid border bg-[rgba(0,0,0,1)] absolute top-[751px] left-[368px] flex flex-col justify-start items-start"
+      id="1:9799"
+      data-reveal
+      data-reveal-delay="2"
+    >
+      <div class="w-[174px] h-[52px] flex justify-start items-center" id="1:9800">
+        <div
+          class="font-[Inter] text-[21px] text-[rgba(255,255,255,1)] leading-[25px] tracking-[normal] font-semibold flex-shrink-0"
+          id="1:9801"
+        >
+          <div class=""><span class="tracking-[0%]">AI&nbsp;PRODUCT&nbsp; </span></div>
+          <div><span class="tracking-[0%]">SYSTEM</span></div>
+        </div>
+      </div>
+      <div
+        class="mt-[23px] font-[Inter] text-[15px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[17px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:9802"
+      >
+        <span class="tracking-[0%]">把单点&nbsp;AI&nbsp;能力变成完整产品系统。</span>
+      </div>
+      <div
+        class="mt-[32px] w-[273px] font-[PingFang_SC] text-[14px] text-[rgba(107,107,107,1)] leading-[16px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:9803"
+      >
+        <div class="">
+          <span class="tracking-[0%]"
+            >我关注的不只是生成结果本身，还包括&nbsp;Context、任务状态、数据流转、结构化输出，以及生成结果如何进入下游流程。</span
+          >
+        </div>
+      </div>
+      <div class="w-[274px] h-[66px] mt-[40px] relative" id="1:9804">
+        <div
+          class="w-[77px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-0 left-0"
+          id="1:9805"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9806"
+          >
+            <span class="tracking-[0%]">Context</span>
+          </div>
+        </div>
+        <div
+          class="w-[62px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-0 left-[89px]"
+          id="1:9807"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9808"
+          >
+            <span class="tracking-[0%]">State</span>
+          </div>
+        </div>
+        <div
+          class="w-[120px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-0 left-[163px]"
+          id="1:9809"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9810"
+          >
+            <span class="tracking-[0%]">Feedback&nbsp;Loop</span>
+          </div>
+        </div>
+        <div
+          class="w-[149px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[36px] left-0"
+          id="1:9811"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9812"
+          >
+            <span class="tracking-[0%]">Structured&nbsp;Output</span>
+          </div>
+        </div>
+        <div
+          class="w-[84px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[36px] left-[160px]"
+          id="1:9813"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9814"
+          >
+            <span class="tracking-[0%]">Workflow</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-[336px] h-[278px] border-[rgba(34,34,34,0)] border-solid border bg-[rgba(0,0,0,1)] absolute top-[751px] left-[736px] flex flex-col justify-start items-start"
+      id="1:9815"
+      data-reveal
+      data-reveal-delay="3"
+    >
+      <div class="w-[174px] h-[52px] flex justify-start items-center" id="1:9816">
+        <div
+          class="font-[Inter] text-[21px] text-[rgba(255,255,255,1)] leading-[25px] tracking-[normal] font-semibold flex-shrink-0"
+          id="1:9817"
+        >
+          <div class=""><span class="tracking-[0%]">PRODUCT&nbsp; </span></div>
+          <div><span class="tracking-[0%]">JUDGMENT</span></div>
+        </div>
+      </div>
+      <div
+        class="mt-[23px] font-[Inter] text-[15px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[17px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:9818"
+      >
+        <span class="tracking-[0%]">判断什么问题值得解决。</span>
+      </div>
+      <div
+        class="mt-[25px] w-[273px] font-[PingFang_SC] text-[14px] text-[rgba(107,107,107,1)] leading-[16px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:9819"
+      >
+        <span class="tracking-[0%]"
+          >从用户问题、业务目标与数据出发，判断&nbsp;AI&nbsp;应该在哪一步介入，以及什么地方其实不应该使用&nbsp;AI。</span
+        >
+      </div>
+      <div class="w-[274px] h-[66px] mt-[47px] ml-px relative" id="1:9820">
+        <div
+          class="w-[113px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-0 left-0"
+          id="1:9821"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9822"
+          >
+            <span class="tracking-[0%]">User&nbsp;Problem</span>
+          </div>
+        </div>
+        <div
+          class="w-[120px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-0 left-[125px]"
+          id="1:9823"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9824"
+          >
+            <span class="tracking-[0%]">Business&nbsp;Goal</span>
+          </div>
+        </div>
+        <div
+          class="w-[156px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[36px] left-0"
+          id="1:9825"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9826"
+          >
+            <span class="tracking-[0%]">Intervention&nbsp;Point</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-[333px] h-[278px] border-[rgba(34,34,34,0)] border-solid border bg-[rgba(0,0,0,1)] absolute top-[751px] left-[1107px]"
+      id="1:9827"
+      data-reveal
+      data-reveal-delay="4"
+    >
+      <div class="w-[174px] h-[52px] absolute top-0 left-0 flex justify-start items-center" id="1:9828">
+        <div
+          class="font-[Inter] text-[21px] text-[rgba(255,255,255,1)] leading-[25px] tracking-[normal] font-semibold flex-shrink-0"
+          id="1:9829"
+        >
+          <div class=""><span class="tracking-[0%]">AI&nbsp;NATIVE&nbsp; </span></div>
+          <div><span class="tracking-[0%]">BUILD</span></div>
+        </div>
+      </div>
+      <div class="w-[174px] h-[49px] absolute top-[68px] left-0 flex justify-start items-start" id="1:9830">
+        <div
+          class="mt-[7px] font-[Inter] text-[15px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[17px] tracking-[normal] font-normal flex-shrink-0"
+          id="1:9831"
+        >
+          <span class="tracking-[0%]">我也在用&nbsp;AI&nbsp;重构自己的工作方式。</span>
+        </div>
+      </div>
+      <div class="w-[174px] min-h-[115px] absolute top-[124px] left-[29px]" id="1:9832"></div>
+      <div
+        class="absolute top-[117px] left-0 w-[273px] font-[PingFang_SC] text-[14px] text-[rgba(107,107,107,1)] leading-[16px] tracking-[normal] font-normal"
+        id="1:9833"
+      >
+        <div class="">
+          <span class="tracking-[0%]"
+            >通过&nbsp;Vibe&nbsp;Coding、Skill&nbsp;与&nbsp;AI&nbsp;Workflow，把调研、需求分析、方案生成、交互验
+          </span>
+        </div>
+        <div><span class="tracking-[0%]">证和表达交付中的重复工作逐渐工具化。</span></div>
+      </div>
+      <div class="w-[274px] h-[66px] absolute top-[212px] left-px" id="1:9834">
+        <div
+          class="w-[106px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-0 left-0"
+          id="1:9835"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9836"
+          >
+            <span class="tracking-[0%]">Vibe&nbsp;Coding</span>
+          </div>
+        </div>
+        <div
+          class="w-[62px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-0 left-[125px]"
+          id="1:9837"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9838"
+          >
+            <span class="tracking-[0%]">Skill</span>
+          </div>
+        </div>
+        <div
+          class="w-[106px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[36px] left-0"
+          id="1:9839"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9840"
+          >
+            <span class="tracking-[0%]">AI&nbsp;Workflow</span>
+          </div>
+        </div>
+        <div
+          class="w-[55px] h-[30px] rounded-[24px] border-[rgba(42,42,42,1)] border-solid border bg-[rgba(26,26,26,1)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-0 left-[199px]"
+          id="1:9841"
+        >
+          <div
+            class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(204,204,204,1)] leading-[16px] tracking-[normal] font-normal"
+            id="1:9842"
+          >
+            <span class="tracking-[0%]">Tool</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="absolute top-[-35px] left-[120px] opacity-[0.06] font-[Inter] text-[220px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[287px] tracking-[normal] font-black"
+      id="1:9843"
+    >
+      <span class="tracking-[0%]">WHAT&nbsp;I&nbsp;DO&nbsp;</span>
+    </div>
+    <div
+      class="w-[1440px] h-[246px] overflow-hidden bg-[rgba(0,0,0,1)] absolute top-[154px] left-0 flex flex-col justify-start items-start"
+      id="1:9844"
+    >
+      <div
+        class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[19px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:9845"
+      >
+        <span class="tracking-[1.44px]">MY&nbsp;FOCUS</span>
+      </div>
+      <div
+        class="mt-[30px] font-[Inter] text-[60px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[60px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:9846"
+      >
+        <span class="tracking-[-0.50px]">把&nbsp;AI&nbsp;能力，翻译成真正可用的生产力。</span>
+      </div>
+      <div
+        class="mt-[40px] w-[996px] opacity-60 font-[PingFang_SC] text-[16px] text-[rgba(255,255,255,1)] leading-[26px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:9847"
+      >
+        <div class="">
+          <span class="tracking-[0%]">我不把&nbsp;AI&nbsp;当成一个新增入口、一颗按钮或一次生成能力。 </span>
+        </div>
+        <div>
+          <span class="tracking-[0%]"
+            >我更关心&nbsp;AI&nbsp;如何真正进入用户的工作流：从用户意图理解，到生成与编辑，到结果诊断与反馈，再到结构化资产进入下一步业务流程。&nbsp;</span
+          >
+        </div>
+      </div>
+      <div
+        class="mt-[20px] font-[Inter] text-[18px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[21px] tracking-[normal] font-semibold flex-shrink-0"
+        id="1:9848"
+      >
+        <span class="tracking-[0%]">&nbsp;最终让&nbsp;AI&nbsp;从「能生成」，变成「能完成任务」。&nbsp;</span>
+      </div>
+    </div>
+  </div>
+  <div class="w-[1440px] h-[378px] absolute top-[4716px] left-0 flex justify-start items-center" id="1:9849" data-reveal>
+    <div class="w-[441.59px] h-[49px] flex flex-col flex-nowrap justify-start items-start ml-[120px]" id="1:9850">
+      <div class="w-[441.59px] h-[24px] flex justify-start items-end" id="1:9851">
+        <div
+          class="mb-[2.50px] opacity-[0.35] font-[Menlo] text-[11px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[16.50px] tracking-[normal] font-normal flex-shrink-0"
+          id="1:9852"
+        >
+          <span class="uppercase tracking-[0.88px]">project</span>
+        </div>
+      </div>
+      <div
+        class="w-[48px] h-[25px] flex flex-col flex-nowrap justify-start items-start pt-[24px] box-border"
+        id="1:9853"
+      >
+        <div class="w-[48px] bg-[rgba(69,224,122,1)] min-h-[1px]" id="1:9854"></div>
+      </div>
+    </div>
+    <div class="w-[662.41px] h-[378px] flex flex-col flex-nowrap justify-start items-start ml-[96px]" id="1:9855">
+      <div
+        class="w-[662.41px] h-[99px] flex flex-col flex-nowrap justify-start items-start pl-[32px] box-border"
+        id="1:9856"
+      >
+        <div
+          class="w-[629px] font-[Helvetica_Neue] text-[36px] text-[rgba(255,255,255,1)] leading-[49.50px] tracking-[normal] font-bold"
+          id="1:9857"
+        >
+          <div class=""><span class="tracking-[-0.35px]">三个项目， </span></div>
+          <div><span class="tracking-[-0.35px]">三次对&nbsp;AI&nbsp;产品的重新理解。</span></div>
+        </div>
+      </div>
+      <div
+        class="w-[662px] h-[86px] flex flex-col flex-nowrap justify-start items-start pt-[40px] box-border pl-[32px]"
+        id="1:9858"
+      >
+        <div
+          class="opacity-60 font-[PingFang_SC] text-[14px] text-[rgba(255,255,255,1)] leading-[22.75px] tracking-[normal] font-normal"
+          id="1:9859"
+        >
+          <div class="">
+            <span class="tracking-[-0.15px]">好的&nbsp;AI&nbsp;产品，不是让用户感受到模型有多强， </span>
+          </div>
+          <div>
+            <span class="tracking-[-0.15px]">而是让复杂能力在正确的时机出现，不同的场景不同的AI产品策略。</span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="w-[662px] h-[193px] flex flex-col flex-nowrap justify-start items-start pt-[32px] box-border pl-[32px]"
+        id="1:9860"
+      >
+        <div class="w-[630px] h-[24px] flex flex-row flex-nowrap justify-start items-center" id="1:9861">
+          <div class="w-[13px] h-[15px] flex flex-col flex-nowrap justify-start items-start mr-[12px]" id="1:9862">
+            <div
+              class="font-[Menlo] text-[10px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[15px] tracking-[normal] font-normal"
+              id="1:9863"
+            >
+              <span class="tracking-[0px]">01</span>
+            </div>
+          </div>
+          <div class="w-[50px] h-[24px] flex flex-col flex-nowrap justify-start items-start" id="1:9864">
+            <div
+              class="font-[Helvetica_Neue] text-[16px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[24px] tracking-[normal] font-normal"
+              id="1:9865"
+            >
+              <span class="tracking-[-0.31px]">AI&nbsp;助手</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="w-[630.41px] h-[32px] flex flex-row flex-nowrap justify-start items-center pt-[8px] box-border"
+          id="1:9866"
+        >
+          <div
+            class="w-[13px] h-[15px] opacity-[0.85] flex flex-col flex-nowrap justify-start items-start mr-[12px]"
+            id="1:9867"
+          >
+            <div
+              class="font-[Menlo] text-[10px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[15px] tracking-[normal] font-normal"
+              id="1:9868"
+            >
+              <span class="tracking-[0px]">02</span>
+            </div>
+          </div>
+          <div class="w-[66px] h-[24px] flex flex-col flex-nowrap justify-start items-start" id="1:9869">
+            <div
+              class="font-[Helvetica_Neue] text-[16px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[24px] tracking-[normal] font-normal"
+              id="1:9870"
+            >
+              <span class="tracking-[-0.31px]">AI&nbsp;编辑器</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="w-[630.41px] h-[32px] flex flex-row flex-nowrap justify-start items-center pt-[8px] box-border"
+          id="1:9871"
+        >
+          <div
+            class="w-[13px] h-[15px] opacity-70 flex flex-col flex-nowrap justify-start items-start mr-[12px]"
+            id="1:9872"
+          >
+            <div
+              class="font-[Menlo] text-[10px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[15px] tracking-[normal] font-normal"
+              id="1:9873"
+            >
+              <span class="tracking-[0px]">03</span>
+            </div>
+          </div>
+          <div class="w-[108px] h-[24px] flex flex-col flex-nowrap justify-start items-start" id="1:9874">
+            <div
+              class="font-[Helvetica_Neue] text-[16px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[24px] tracking-[normal] font-normal"
+              id="1:9875"
+            >
+              <span class="tracking-[-0.31px]">漫剧剧本&nbsp;Agent</span>
+            </div>
+          </div>
+        </div>
+        <div
+          class="w-[630.41px] h-[32px] flex flex-row flex-nowrap justify-start items-center pt-[8px] box-border"
+          id="1:9876"
+        >
+          <div
+            class="w-[13px] h-[15px] opacity-[0.55] flex flex-col flex-nowrap justify-start items-start mr-[12px]"
+            id="1:9877"
+          >
+            <div
+              class="font-[Menlo] text-[10px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[15px] tracking-[normal] font-normal"
+              id="1:9878"
+            >
+              <span class="tracking-[0px]">04</span>
+            </div>
+          </div>
+          <div class="w-[82px] h-[24px] flex flex-col flex-nowrap justify-start items-start" id="1:9879">
+            <div
+              class="font-[Helvetica_Neue] text-[16px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[24px] tracking-[normal] font-normal"
+              id="1:9880"
+            >
+              <span class="tracking-[-0.31px]">Vibe&nbsp;coding&nbsp;</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="w-[1440px] h-[1158px] overflow-hidden bg-[rgba(255,255,255,0)] absolute top-[5222px] left-0 flex flex-col justify-start items-start"
+    id="1:9881"
+    data-reveal
+  >
+    <div
+      class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[19px] tracking-[normal] font-bold flex-shrink-0"
+      id="1:9882"
+    >
+      <span class="tracking-[1.44px]">Case&nbsp;01&nbsp;·&nbsp;Product</span>
+    </div>
+    <div
+      class="mt-[30px] font-[Inter] text-[60px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[60px] tracking-[normal] font-bold flex-shrink-0"
+      id="1:9883"
+    >
+      <span class="tracking-[-0.50px]">AI助手</span>
+    </div>
+    <div
+      class="mt-[20px] opacity-60 font-[Inter] text-[16px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[17px] tracking-[normal] font-semibold flex-shrink-0"
+      id="1:9884"
+    >
+      <span class="tracking-[0%]">定义&nbsp;AI&nbsp;应该以什么角色存在于产品里。</span>
+    </div>
+    <div
+        class="w-[1440px] h-[942px] overflow-hidden rounded-[12px] border-[rgba(255,255,255,0.2)] border-solid border bg-[rgba(0,0,0,1)] mt-[70px] relative"
+        id="1:9885"
+        data-tw-group
+      >
+      <div
+        class="w-[948px] h-[799px] rounded-[12px] border-[rgba(255,255,255,0.5)] border-dashed border absolute top-[71px] left-[24px] flex justify-start items-end"
+        id="1:9886"
+      >
+        <div class="w-[111px] h-[34px] ml-[52px] mb-[209px] flex justify-start items-center" id="1:9887" data-tw-pop>
+          <div
+            class="font-[Inter] text-[12px] whitespace-nowrap text-[rgba(247,248,245,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:9890"
+          >
+            <span class="tracking-[0%]">VIEW&nbsp;CASE&nbsp;</span>
+          </div>
+          <div
+            class="w-[34px] h-[34px] shrink-0 rounded-[17px] bg-[rgba(69,224,122,1)] ml-[12px] flex justify-center items-center"
+            id="1:9888"
+          >
+            <div
+              class="font-[Inter] text-[12px] whitespace-nowrap text-[rgba(4,16,8,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:9889"
+            >
+              <span class="tracking-[0%]">→</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="absolute top-0 left-0 w-[1440px] h-[60px]" id="1:9891">
+        <div undefined id="1:9892"></div>
+        <div
+          class="w-[104px] h-[34px] flex flex-col flex-nowrap justify-start items-start pb-[2px] box-border absolute top-[14px] left-[24px]"
+          id="1:9893"
+        >
+          <img src="./assets/image_2.svg" class="w-[104px] h-[32px]" id="1:9894" />
+        </div>
+        <div class="absolute top-[14px] left-[144px] flex justify-start items-start w-[1272px] h-[32px]" id="1:9895">
+          <div class="mt-[9px] flex justify-center items-center w-[63px] h-[16px]" id="1:9896">
+            <div class="flex justify-start items-start w-[63px] h-[16px]" id="1:9897">
+              <img src="./assets/image_3.svg" class="w-px h-[9px] mix-blend-normal mt-[3.50px]" id="1:9901" />
+              <div
+                class="mt-px ml-[16px] font-[PingFang_HK] text-[14px] whitespace-nowrap text-[rgba(36,37,41,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+                id="1:9898"
+              >
+                <span class="tracking-[0px]">切换</span>
+              </div>
+              <img src="./assets/image_4.svg" class="w-[16px] h-[16px] ml-[2px]" id="1:9899" />
+            </div>
+          </div>
+          <div class="ml-[1049px] flex justify-start items-center w-[160px] h-[32px]" id="1:9902">
+            <div class="relative w-[92px] h-[32px]" id="1:9907">
+              <img src="./assets/image_5.svg" class="w-[92px] h-[32px] absolute top-0 left-0" id="1:9908" />
+              <div
+                class="absolute top-[7px] left-[12px] flex justify-start items-start w-[68px] h-[18.38px]"
+                id="1:9909"
+              >
+                <div class="flex justify-center items-center w-[18.38px] h-[18.38px]" id="1:9910">
+                  <img src="./assets/image_6.svg" class="w-[18.38px] h-[18.38px]" id="1:9915" />
+                </div>
+                <img src="./assets/image_7.svg" class="w-[44px] h-[14.96px] mt-[1.54px] ml-[5.62px]" id="1:9916" />
+              </div>
+            </div>
+            <div class="ml-[16px] flex justify-start items-start w-[52px] h-[32px]" id="1:9903">
+              <img src="./assets/image_8.svg" class="w-[32px] h-[32px]" id="1:9904" /><img
+                src="./assets/image_9.svg"
+                class="w-[16px] h-[16px] mt-[9px] ml-[4px]"
+                id="1:9905"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="w-[360px] h-[800px] overflow-hidden rounded-[30px] bg-[rgba(255,255,255,1)] absolute top-[71px] left-[1020px] flex justify-center items-center"
+        id="1:9917"
+      >
+        <div class="relative w-[360px] h-[800px]" id="1:9918">
+          <img src="./assets/image_10.svg" class="w-[360px] h-[800px] absolute top-0 left-0" id="1:9919" />
+          <div class="absolute top-[664px] left-[16px] w-[343px] h-[32px]" id="1:9920">
+            <div class="absolute top-0 left-0 flex justify-center items-center w-[100px] h-[32px]" id="1:9922">
+              <div class="relative w-[100px] h-[32px]" id="1:9923">
+                <img src="./assets/image_11.svg" class="w-[100px] h-[32px] absolute top-0 left-0" id="1:9924" />
+                <div
+                  class="absolute top-[8px] left-[36px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[16px] tracking-[normal] font-normal"
+                  id="1:9925"
+                >
+                  <span class="tracking-[0%]">新建对话</span>
+                </div>
+                <div
+                  class="w-[16px] h-[16px] overflow-hidden absolute top-[8px] left-[16px] flex justify-center items-center"
+                  id="1:9926"
+                >
+                  <img src="./assets/image_12.svg" class="w-[16px] h-[16px]" id="1:9927" />
+                </div>
+              </div>
+            </div>
+            <div class="absolute top-0 left-[108px] flex justify-center items-center w-[100px] h-[32px]" id="1:9930">
+              <div class="relative w-[100px] h-[32px]" id="1:9931">
+                <img src="./assets/image_13.svg" class="w-[100px] h-[32px] absolute top-0 left-0" id="1:9932" />
+                <div
+                  class="absolute top-[8px] left-[36px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(56,85,213,1)] leading-[16px] tracking-[normal] font-normal"
+                  id="1:9933"
+                >
+                  <span class="tracking-[0%]">对话灵感</span>
+                </div>
+                <div
+                  class="w-[16px] h-[16px] overflow-hidden absolute top-[8px] left-[16px] flex justify-center items-center"
+                  id="1:9934"
+                >
+                  <img src="./assets/image_14.svg" class="w-[16px] h-[16px]" id="1:9935" />
+                </div>
+              </div>
+            </div>
+            <div class="absolute top-0 left-[216px] flex justify-center items-center w-[68px] h-[32px]" id="1:9938">
+              <div class="relative w-[68px] h-[32px]" id="1:9939">
+                <img src="./assets/image_15.svg" class="w-[68px] h-[32px] absolute top-0 left-0" id="1:9940" />
+                <div
+                  class="absolute top-[8px] left-[16px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[16px] tracking-[normal] font-normal"
+                  id="1:9941"
+                >
+                  <span class="tracking-[0%]">查数据</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="absolute top-0 left-[270px] flex justify-end items-center w-[73px] h-[32px] overflow-hidden"
+              id="1:9942"
+            >
+              <div class="flex justify-center items-center w-[68px] h-[32px]" id="1:9944">
+                <div class="relative w-[68px] h-[32px]" id="1:9945">
+                  <img src="./assets/image_16.svg" class="w-[68px] h-[32px] absolute top-0 left-0" id="1:9946" />
+                  <div
+                    class="absolute top-[8px] left-[16px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[16px] tracking-[normal] font-normal"
+                    id="1:9947"
+                  >
+                    <span class="tracking-[0%]">查热点</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="w-[32px] bg-[linear-gradient(270deg,_rgba(233,240,252,1)_13.65%,rgba(235,244,255,0.94)_67.23%,rgba(235,244,254,0)_100%)] min-h-[32px] absolute top-0 left-[311px]"
+              id="1:9948"
+            ></div>
+          </div>
+          <div class="absolute top-[64px] left-[16px] w-[328px] h-[720px]" id="1:9949">
+            <!-- [START: Group 1312315454] 请优先使用【Group 1312315454】组件，完整替换截止到[END: Group 1312315454]的全部HTML，不要保留这部分的任何HTML结构与样式。-->
+            <div class="w-[355px] h-[80px] absolute top-[640px] left-0" id="1:9950">
+              <img
+                src="./assets/image_17.svg"
+                class="w-[360px] h-[99px] absolute -top-[3px] -left-[16px]"
+                id="I1:9950;333:272493"
+              />
+              <div
+                class="absolute top-[14px] left-[12px] font-[PingFang_SC] text-[14px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[14px] tracking-[normal] font-normal"
+                id="I1:9950;545:7003"
+              >
+                <span class="tracking-[0%]">请描述问题或“/”使用快捷功能</span>
+              </div>
+              <div class="absolute top-[40px] left-[12px] w-[331px] h-[28px]" id="I1:9950;545:6680">
+                <div class="w-[20px] min-h-[20px] absolute top-[4px] left-[305px]" id="I1:9950;545:6681"></div>
+                <img
+                  src="./assets/image_18.svg"
+                  class="w-[56px] h-[56px] absolute top-[-7px] left-[254px]"
+                  id="I1:9950;624:3429"
+                />
+                <div class="absolute top-[3px] left-0 w-[22px] h-[22px]" id="I1:9950;1201:28116">
+                  <div class="w-[22px] min-h-[22px] absolute top-0 left-0" id="I1:9950;1201:28117"></div>
+                  <img
+                    src="./assets/image_19.svg"
+                    class="w-[16.49px] h-[16.48px] absolute top-[3px] left-[3px]"
+                    id="I1:9950;1201:28118"
+                  />
+                </div>
+              </div>
+            </div>
+            <!-- [END: Group 1312315454] -->
+            <!-- [START: Group 1312315482] 请优先使用【Group 1312315482】组件，完整替换截止到[END: Group 1312315482]的全部HTML，不要保留这部分的任何HTML结构与样式。-->
+            <div class="w-[268px] h-[62px] absolute top-0 left-0" id="1:9951">
+              <div
+                class="absolute top-[48px] left-0 w-[224.46px] opacity-80 font-[PingFang_SC] text-[14px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[14px] tracking-[normal] font-medium"
+                id="I1:9951;444:30680"
+              >
+                <span class="tracking-[0%]">专属助理，有什么可以帮助你的吗？</span>
+              </div>
+              <img
+                src="./assets/image_20.svg"
+                class="w-[226.31px] h-[26.07px] absolute top-[3px] left-[41.69px]"
+                id="I1:9951;1329:30921"
+              /><img
+                src="./assets/image_21.svg"
+                class="w-[32px] h-[32px] absolute top-0 left-0"
+                id="I1:9951;1329:30922"
+              />
+            </div>
+            <!-- [END: Group 1312315482] -->
+            <img src="./assets/hotspot_card.png" class="absolute top-[102px] left-1/2 -translate-x-1/2 w-[360px] h-[307px]" id="1:9956" />
+          </div>
+        </div>
+      </div>
+      <div class="absolute top-[413px] left-[956px] flex justify-center items-center w-[328px] h-[380px]" id="1:10006">
+        <div class="relative w-[328px] h-[380px] overflow-hidden rounded-[20px]" id="1:10007">
+          <div class="absolute top-0 left-0 flex justify-center items-center w-[328px] h-[380px]" id="1:10008">
+            <div class="relative w-[328px] h-[380px]" id="1:10010">
+              <div class="absolute top-[48px] left-0 w-[328px] h-[332px]" id="1:10021">
+                <img src="./assets/image_28.svg" class="w-[328px] h-[332px] absolute top-0 left-0" id="1:10022" />
+                <div
+                  class="absolute top-[224px] left-[16px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[12px] tracking-[normal] font-normal"
+                  id="1:10023"
+                >
+                  <span class="tracking-[0%]">你还可以询问以下问题</span>
+                </div>
+                <div
+                  class="w-[72px] h-[28px] rounded-[44px] bg-[rgba(240,245,255,0.8)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[252px] left-[16px]"
+                  id="1:10024"
+                >
+                  <div
+                    class="font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[16px] tracking-[normal] font-normal"
+                    id="1:10025"
+                  >
+                    <span class="tracking-[0%]">粉丝数据</span>
+                  </div>
+                </div>
+                <div
+                  class="w-[72px] h-[28px] rounded-[44px] bg-[rgba(240,245,255,0.8)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[288px] left-[16px]"
+                  id="1:10026"
+                >
+                  <div
+                    class="font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[16px] tracking-[normal] font-normal"
+                    id="1:10027"
+                  >
+                    <span class="tracking-[0%]">账号安全</span>
+                  </div>
+                </div>
+                <div
+                  class="w-[72px] h-[28px] rounded-[44px] bg-[rgba(240,245,255,0.8)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[288px] left-[96px]"
+                  id="1:10028"
+                >
+                  <div
+                    class="font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[16px] tracking-[normal] font-normal"
+                    id="1:10029"
+                  >
+                    <span class="tracking-[0%]">绑定账号</span>
+                  </div>
+                </div>
+                <div
+                  class="w-[72px] h-[28px] rounded-[44px] bg-[rgba(240,245,255,0.8)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[252px] left-[96px]"
+                  id="1:10030"
+                >
+                  <div
+                    class="font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[16px] tracking-[normal] font-normal"
+                    id="1:10031"
+                  >
+                    <span class="tracking-[0%]">账号数据</span>
+                  </div>
+                </div>
+                <div
+                  class="w-[72px] h-[28px] rounded-[44px] bg-[rgba(240,245,255,0.8)] flex flex-row flex-nowrap justify-center items-center box-border absolute top-[252px] left-[176px]"
+                  id="1:10032"
+                >
+                  <div
+                    class="font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[16px] tracking-[normal] font-normal"
+                    id="1:10033"
+                  >
+                    <span class="tracking-[0%]">收益数据</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="absolute top-[64px] left-[16px] flex flex-col justify-start items-start w-[296px] h-[180px]"
+            id="1:10034"
+          >
+            <div
+              class="font-['undefined'] text-[14px] whitespace-nowrap text-[rgba(51,51,51,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10035"
+            >
+              <span class="text-[14.00px] font-[PingFang_SC] tracking-[0%]">新增粉丝&nbsp;</span
+              ><span class="text-[14.00px] font-[PingFang_SC] font-medium tracking-[0%]">15</span
+              ><span class="text-[14.00px] font-[PingFang_SC] tracking-[0%]">&nbsp;人，粉丝收益&nbsp;</span
+              ><span class="text-[14.00px] font-[PingFang_SC] font-medium tracking-[0%]">42</span
+              ><span class="text-[14.00px] font-[PingFang_SC] tracking-[0%]">&nbsp;元</span>
+            </div>
+            <div class="mt-[16px] relative w-[296px] h-[150px]" id="1:10036">
+              <div
+                class="absolute top-[136px] left-0 font-[PingFang_SC] text-[10px] whitespace-nowrap text-[rgba(153,153,153,1)] leading-[14px] tracking-[normal] font-normal"
+                id="1:10037"
+              >
+                <span class="tracking-[0%]">11-31</span>
+              </div>
+              <div
+                class="absolute top-[24px] left-0 font-[PingFang_SC] text-[10px] whitespace-nowrap text-[rgba(153,153,153,1)] leading-[10px] tracking-[normal] font-normal"
+                id="1:10038"
+              >
+                <span class="tracking-[0%]">10</span>
+              </div>
+              <div
+                class="absolute top-0 left-0 font-[PingFang_SC] text-[10px] whitespace-nowrap text-[rgba(153,153,153,1)] leading-[14px] tracking-[normal] font-normal"
+                id="1:10039"
+              >
+                <span class="tracking-[0%]">粉丝趋势</span>
+              </div>
+              <div
+                class="absolute top-[136px] left-[269px] font-[PingFang_SC] text-[10px] whitespace-nowrap text-[rgba(153,153,153,1)] leading-[14px] tracking-[normal] font-normal"
+                id="1:10040"
+              >
+                <span class="tracking-[0%]">12-31</span>
+              </div>
+              <div class="absolute top-[6px] left-0 w-[296px] h-[135px] js-fans-chart" id="1:10041">
+                <img src="./assets/image_29.svg" class="w-[296px] absolute top-[32px] left-0" id="1:10042" /><img
+                  src="./assets/image_29.svg"
+                  class="w-[296px] absolute top-[79px] left-0"
+                  id="1:10043"
+                /><img
+                  src="./assets/image_30.svg"
+                  class="chart-fill-cyan w-[296px] h-[126px] absolute top-[9px] left-0"
+                  id="1:10044"
+                /><svg
+                  class="w-[295.43px] h-[71.49px] absolute top-[9px] left-[0.54px]"
+                  viewBox="0 0 297 63"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  id="1:10045"
+                ><path pathLength="1" class="chart-draw chart-draw-cyan" d="M0.5 31.921C9.21716 32.4105 29.7569 28.471 42.1785 8.79798C48.286 -0.73879 61.6385 -2.24043 70.1284 5.25459C87.6711 20.7418 110.278 38.1232 121.698 38.3538C122.572 38.421 123.409 38.4731 124.205 38.5122C130.352 38.8144 136.453 37.4366 141.757 34.3156C144.633 32.6239 147.827 30.4478 150.851 27.801C159.553 20.9613 171.463 14.2803 185.66 36.9858C189.358 42.3273 201.629 51.9551 221.122 47.734C228.084 46.8872 244.357 46.9132 253.756 53.792C269.452 65.2803 286.215 61.1544 295.933 60.5681" stroke="#3FE7FE" stroke-linecap="round"/></svg><svg
+                  class="w-[296px] h-[126px] absolute top-0 left-0"
+                  viewBox="0 0 297 126"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  id="1:10046"
+                ><path class="chart-fill-purple" d="M4.08194 92.5075L0.382811 95.298C0.141737 95.4798 0 95.7643 0 96.0663V126H296V97.9731C296 96.1709 295.702 94.3811 295.119 92.676L273.5 29.5L271.568 24.8896C267.479 15.1334 253.821 14.6877 249.105 24.1567L232.464 57.5667C231.539 59.4247 230.2 61.0456 228.549 62.3045C226.186 64.1072 223.295 65.0837 220.323 65.0837H217.186C213.341 65.0837 209.619 63.7293 206.672 61.2583L197.146 53.2678C190.48 47.6772 180.605 48.2807 174.67 54.6412L155.371 75.3228C153.286 77.5578 150.366 78.8267 147.309 78.8267C144.668 78.8267 142.114 77.8784 140.113 76.1545L129.642 67.1346C123.065 61.4698 113.21 61.9264 107.185 68.1751L102.847 72.6747C101.072 74.5156 98.8908 75.9149 96.4773 76.7603L95.3047 77.171C92.2362 78.2457 88.9019 78.2966 85.802 77.3159C82.0698 76.1352 78.9454 73.5451 77.0933 70.0965L66.4485 50.2755C60.7194 39.6078 45.3927 39.6891 39.7772 50.417C31.1407 66.9162 18.949 81.2922 4.08194 92.5075Z" fill="url(#paint0_linear_1_10046)"/><path pathLength="1" class="chart-draw chart-draw-purple" d="M0.99939 95.5029L4.37318 92.9141C19.054 81.6491 31.094 67.3101 39.6494 50.9018C45.3076 40.0501 60.8069 39.968 66.5796 50.7591L77.1054 70.4351C78.9498 73.8828 82.0672 76.4744 85.7938 77.6579C88.8985 78.644 92.2397 78.5929 95.3128 77.5123L96.4731 77.1043C98.8893 76.2547 101.072 74.8497 102.846 73.0023L107.166 68.5048C113.195 62.2267 123.084 61.7684 129.668 67.4619L140.118 76.4986C142.116 78.2264 144.669 79.1773 147.31 79.1773C150.366 79.1773 153.284 77.9057 155.364 75.6675L174.651 54.9175C180.591 48.5274 190.499 47.9218 197.173 53.541L206.666 61.5348C209.616 64.0185 213.348 65.3805 217.204 65.3805H220.305C223.289 65.3805 226.189 64.3974 228.558 62.5833C230.203 61.3241 231.538 59.7052 232.46 57.8507L249.792 23.0067C253.633 15.2867 264.419 14.6881 269.09 21.9359C271.686 25.9654 273.78 30.2979 275.322 34.8366L296 95.6661" stroke="#3855D5" stroke-linecap="round"/><defs><linearGradient id="paint0_linear_1_10046" x1="150.5" y1="-0.500001" x2="155.143" y2="123.326" gradientUnits="userSpaceOnUse"><stop stop-color="#314CFF"/><stop offset="1" stop-color="#D9D9D9" stop-opacity="0"/></linearGradient></defs></svg><img
+                  src="./assets/image_33.svg"
+                  class="w-[296px] absolute top-[126px] left-0"
+                  id="1:10049"
+                />
+              </div>
+              <div
+                class="absolute top-[71px] left-0 font-[PingFang_SC] text-[10px] whitespace-nowrap text-[rgba(153,153,153,1)] leading-[10px] tracking-[normal] font-normal"
+                id="1:10051"
+              >
+                <span class="tracking-[0%]">5</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="w-[843px] h-[459px] overflow-hidden bg-[rgba(255,255,255,0)] absolute top-[128px] left-[76px] flex flex-col justify-start items-start"
+        id="1:10052"
+      >
+        <div
+          class="mt-[47px] w-[843px] opacity-60 font-[PingFang_SC] text-[16px] text-[rgba(255,255,255,1)] leading-[26px] tracking-[normal] font-normal flex-shrink-0"
+          id="1:10053"
+        >
+          <div class="">
+            <span class="tracking-[0%]" data-tw
+              >从创作者完整工作流程出发，将&nbsp;AI&nbsp;助手定位由“编辑器功能”升级为“全平台能力”
+            </span>
+          </div>
+          <div class="">
+            <span class="tracking-[0%]" data-tw
+              >选择热点成文、对话成文、数据诊断三个代表性场景作为首阶段验证，分别覆盖&nbsp;AI&nbsp;主动推荐、响应需求、主动诊断三类能力；明确&nbsp;Human&nbsp;/&nbsp;AI&nbsp;任务边界：AI&nbsp;负责信息整理、生成及诊断，用户保留观点表达、结果判断及最终决策
+            </span>
+          </div>
+          <div class="">
+            <span class="tracking-[0%]" data-tw
+              >沉淀统一的&nbsp;AI&nbsp;助手入口、对话流程、内容承载及效果评估机制，降低后续场景重复建设成本
+            </span>
+          </div>
+          <div><span class="tracking-[0%]" data-tw>协同产品、算法、研发、数据及商业团队推动方案落地</span></div>
+        </div>
+        <div
+          class="mt-[50px] font-[PingFang_SC] text-[18px] text-[rgba(69,224,122,1)] leading-[21px] tracking-[normal] font-semibold flex-shrink-0"
+          id="1:10054"
+        >
+          <div class="">
+            <span class="tracking-[0%]" data-tw>由&nbsp;3&nbsp;个代表场景沉淀统一&nbsp;AI&nbsp;Assistant&nbsp;Model </span>
+          </div>
+          <div><span class="tracking-[0%]" data-tw>支撑&nbsp;33&nbsp;种业务场景复用统一交互框架</span></div>
+        </div>
+        <div class="w-[438px] h-[67px] mt-[120px] opacity-60 relative" id="1:10055">
+          <div
+            class="w-[98px] h-[29px] rounded-[999px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(255,255,255,0.02)] absolute top-0 left-0 flex flex-col justify-center items-end"
+            id="1:10056"
+            data-tw-pop
+          >
+            <div
+              class="mr-[5px] font-[Inter] text-[10px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[11px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10057"
+            >
+              <span class="tracking-[0%]">Product&nbsp;Strategy</span>
+            </div>
+          </div>
+          <div
+            class="w-[180px] h-[29px] rounded-[999px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(255,255,255,0.02)] absolute top-0 left-[107px] flex flex-col justify-center items-end"
+            id="1:10058"
+            data-tw-pop
+          >
+            <div
+              class="mr-[4px] font-[Inter] text-[10px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[11px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10059"
+            >
+              <span class="tracking-[0%]">Recommend&nbsp;/&nbsp;Respond&nbsp;/&nbsp;Diagnose</span>
+            </div>
+          </div>
+          <div
+            class="w-[106px] h-[29px] rounded-[999px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(255,255,255,0.02)] absolute top-0 left-[296px] flex justify-end items-center"
+            id="1:10060"
+            data-tw-pop
+          >
+            <div
+              class="mr-[6px] font-[Inter] text-[10px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[11px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10061"
+            >
+              <span class="tracking-[0%]">AI&nbsp;Assistant&nbsp;Model</span>
+            </div>
+          </div>
+          <div
+            class="w-[77px] h-[29px] rounded-[999px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(255,255,255,0.02)] absolute top-[38px] left-0 flex justify-end items-center"
+            id="1:10062"
+            data-tw-pop
+          >
+            <div
+              class="mr-[10px] font-[Inter] text-[10px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[11px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10063"
+            >
+              <span class="tracking-[0%]">3&nbsp;→&nbsp;1&nbsp;→&nbsp;33</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="w-[1440px] h-[1357px] overflow-hidden bg-[rgba(255,255,255,0)] absolute top-[6640px] left-0 flex flex-col justify-start items-center"
+    id="1:10064"
+    data-reveal
+  >
+    <div class="w-[1440px] h-[449px] overflow-hidden bg-[rgba(255,255,255,0)] relative" id="1:10065">
+      <div
+        class="absolute top-0 left-0 font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[19px] tracking-[normal] font-bold"
+        id="1:10066"
+      >
+        <span class="tracking-[1.44px]">Case&nbsp;02&nbsp;·&nbsp;Interaction</span>
+      </div>
+      <div
+        class="absolute top-[49px] left-0 font-[Inter] text-[60px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[60px] tracking-[normal] font-bold"
+        id="1:10067"
+      >
+        <span class="tracking-[-0.50px]">AI&nbsp;编辑器</span>
+      </div>
+      <div
+        class="absolute top-[129px] left-0 opacity-60 font-[PingFang_SC] text-[16px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[17px] tracking-[normal] font-semibold"
+        id="1:10068"
+      >
+        <span class="tracking-[0%]">设计人与生成式&nbsp;AI&nbsp;如何真正一起创作。</span>
+      </div>
+      <div
+        class="absolute top-[225px] left-[254px] opacity-60 font-[Inter] text-[15px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[17px] tracking-[normal] font-normal"
+        id="1:10069"
+      >
+        <span class="tracking-[0%]">生成式体验真正难的，不是“怎么让&nbsp;AI&nbsp;生成”，而是&nbsp;</span>
+      </div>
+      <div
+        class="absolute top-[313px] left-[254px] opacity-60 font-[Inter] text-[15px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[17px] tracking-[normal] font-normal"
+        id="1:10070"
+      >
+        <span class="tracking-[0%]"
+          >围绕多模态响应式入口、AI&nbsp;Editor、生成状态和可逆操作，定义&nbsp;Generative&nbsp;Interaction&nbsp;Principles。&nbsp;</span
+        >
+      </div>
+      <div
+        class="absolute top-[344px] left-[254px] font-[PingFang_SC] text-[15px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[17px] tracking-[normal] font-semibold"
+        id="1:10071"
+      >
+        <span class="tracking-[0%]"
+          >降低创作者从“产生创作意愿”到“完成并发布内容”的使用门槛，提升内容生产效率及创作活跃度。</span
+        >
+      </div>
+      <div
+        class="absolute top-[256px] left-[254px] w-[415px] font-[PingFang_SC] text-[15px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[17px] tracking-[normal] font-semibold"
+        id="1:10072"
+      >
+        <span class="tracking-[0%]">用户如何开始、等待、理解、修改、回退并继续下一步创作。</span>
+      </div>
+      <div
+        class="w-px bg-[linear-gradient(180deg,_rgba(255,255,255,0)_0%,rgba(255,255,255,0.6)_100%)] min-h-[129px] absolute top-[229px] left-[239px]"
+        id="1:10073"
+      ></div>
+    </div>
+    <div class="w-[1440px] h-[828px] overflow-hidden bg-[rgba(255,255,255,0)] mt-[80px] relative" id="1:10074" data-pop-group>
+      <div
+        class="w-[375px] h-[732px] absolute top-[10px] left-[563px] flex flex-col justify-start items-center"
+        id="1:10075"
+      >
+        <div class="w-[375px] h-[818px] flex flex-col justify-start items-center" id="1:10076">
+          <div
+            class="w-[307.50px] h-[665.84px] rounded-[41px] bg-[linear-gradient(166deg,_rgba(46,46,48,1)_2.39%,rgba(46,46,48,1)_5.25%,rgba(34,34,36,1)_7.1499999999999995%,rgba(26,26,28,1)_40.489999999999995%,rgba(46,46,48,1)_44.3%,rgba(46,46,48,1)_55.730000000000004%,rgba(26,26,28,1)_59.540000000000006%,rgba(34,34,36,1)_92.88%,rgba(46,46,48,1)_94.78999999999999%,rgba(46,46,48,1)_97.65%)] relative"
+            id="1:10077"
+          >
+            <div
+              class="w-[291.10px] h-[649.44px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start absolute top-[8.20px] left-[8.20px]"
+              id="1:10078"
+            >
+              <img src="./assets/image_34.svg" class="w-[291px] h-[650px]" id="1:10079" />
+            </div>
+            <div
+              class="w-[3.28px] bg-[linear-gradient(180deg,_rgba(46,46,48,1)_0%,rgba(28,28,30,1)_99.09%)] min-h-[26.24px] absolute top-[141.04px] -left-[2.05px]"
+              id="1:10080"
+            ></div>
+            <div
+              class="w-[3.28px] bg-[linear-gradient(180deg,_rgba(46,46,48,1)_0%,rgba(28,28,30,1)_99.09%)] min-h-[52.48px] absolute top-[186.96px] -left-[2.05px]"
+              id="1:10081"
+            ></div>
+            <div
+              class="w-[3.28px] bg-[linear-gradient(180deg,_rgba(46,46,48,1)_0%,rgba(28,28,30,1)_99.09%)] min-h-[52.48px] absolute top-[250.92px] -left-[2.05px]"
+              id="1:10082"
+            ></div>
+            <div
+              class="w-[3.28px] bg-[linear-gradient(180deg,_rgba(46,46,48,1)_0%,rgba(28,28,30,1)_100.17%)] min-h-[68.88px] absolute top-[203.36px] left-[306.27px]"
+              id="1:10083"
+            ></div>
+          </div>
+        </div>
+      </div>
+      <div class="w-[445px] h-[429px] overflow-hidden bg-[rgba(0,0,0,0)] absolute top-[98px] left-[89px]" id="1:10084" data-pop>
+        <img
+          src="./assets/image_35.svg"
+          class="w-[433.96px] h-[125.32px] absolute top-[11px] left-[4px]"
+          id="1:10085"
+        /><img
+          src="./assets/image_36.svg"
+          class="w-[102.66px] h-[75.04px] absolute top-[146.66px] left-[73.48px]"
+          id="1:10088"
+        /><img
+          src="./assets/image_37.svg"
+          class="w-[147.45px] h-[154.11px] absolute top-[148.66px] left-[92.48px]"
+          id="1:10090"
+        /><img
+          src="./assets/image_38.svg"
+          class="w-[148.56px] h-[154.94px] absolute top-[230.66px] left-[178.48px]"
+          id="1:10100"
+        />
+        <div
+          class="w-[431px] rounded-[14px] bg-[rgba(15,15,15,1)] min-h-[54px] absolute top-[91.66px] left-[6.48px]"
+          id="1:10110"
+        ></div>
+        <img
+          src="./assets/image_39.svg"
+          class="w-[431.20px] h-[55.60px] absolute top-[90.66px] left-[6.38px]"
+          id="1:10111"
+        />
+      </div>
+      <div class="w-[358px] h-[400px] absolute top-[197px] left-[993px]" id="1:10118" data-pop>
+        <img
+          src="./assets/image_40.svg"
+          class="w-[203.30px] h-[203.30px] absolute top-[66.35px] -left-[11.65px]"
+          id="1:10119"
+        /><img
+          src="./assets/image_41.svg"
+          class="w-[198.52px] h-[198.52px] absolute top-[51.74px] left-[19.74px]"
+          id="1:10120"
+        /><img
+          src="./assets/image_42.svg"
+          class="w-[343px] h-[343px] absolute top-[31px] left-[-19px]"
+          id="1:10121"
+        />
+        <div class="w-[180px] h-[44px] absolute top-[4px] left-[109px] flex justify-end items-end" id="1:10125">
+          <div class="w-[10px] border-[rgba(102,102,102,1)] border-solid border-[5px] min-h-[10px]" id="1:10126"></div>
+        </div>
+        <div
+          class="absolute top-[22px] left-[177px] font-[PingFang_SC] text-[14px] whitespace-nowrap text-[rgba(207,214,222,1)] leading-[19.60px] tracking-[normal] font-semibold"
+          id="1:10127"
+        >
+          <span class="tracking-[0.84px]">说图解话</span>
+        </div>
+        <div
+          class="w-[132px] h-[158px] rounded-[18px] bg-[rgba(242,242,242,1)] flex flex-col flex-nowrap justify-start items-start pt-[10px] box-border pr-[10px] pb-[10px] pl-[10px] absolute top-[56px] left-[220px]"
+          id="1:10128"
+        >
+          <div
+            class="w-[112px] h-[64px] rounded-[12px] border-[rgba(226,226,226,1)] border-solid border bg-[rgba(255,255,255,1)] flex flex-col flex-nowrap justify-center items-center mb-[10px]"
+            id="1:10129"
+          >
+            <div class="flex justify-center items-center w-[101.33px] h-[33.33px]" id="1:10130">
+              <div class="relative w-[101.33px] h-[33.33px]" id="1:10132">
+                <div
+                  class="w-[101.33px] rounded-[33.33px] border bg-[rgba(255,255,255,1)] min-h-[33.33px] absolute top-0 left-0"
+                  id="1:10133"
+                ></div>
+                <img
+                  src="./assets/image_43.svg"
+                  class="w-[15.33px] h-[15.33px] absolute top-[9px] left-[13px]"
+                  id="1:10134"
+                />
+                <div
+                  class="absolute top-[9.67px] left-[32.33px] font-['undefined'] text-[14px] whitespace-nowrap text-[rgba(51,51,51,1)] leading-[14px] tracking-[normal] font-normal"
+                  id="1:10139"
+                >
+                  <span class="font-[PingFang_SC] tracking-[0px]">日常动态</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="w-[112px] h-[64px] rounded-[12px] border-[rgba(226,226,226,1)] border-solid border bg-[rgba(255,255,255,1)] flex flex-col flex-nowrap justify-center items-center"
+            id="1:10140"
+          >
+            <div class="relative w-[89.67px] h-[33.33px]" id="1:10141">
+              <div class="absolute top-0 left-0 w-[89.67px] h-[33.33px]" id="1:10142">
+                <div
+                  class="w-[89.67px] rounded-[33.33px] border bg-[rgba(255,255,255,1)] min-h-[33.33px] absolute top-0 left-0"
+                  id="1:10143"
+                ></div>
+                <div
+                  class="absolute top-[9.67px] left-[31.33px] font-['undefined'] text-[14px] whitespace-nowrap text-[rgba(51,51,51,1)] leading-[14px] tracking-[normal] font-normal"
+                  id="1:10144"
+                >
+                  <span class="font-[PingFang_SC] tracking-[0px]">AI&nbsp;写诗</span>
+                </div>
+              </div>
+              <img
+                src="./assets/image_44.svg"
+                class="w-[15.33px] h-[15.33px] absolute top-[9px] left-[12px]"
+                id="1:10145"
+              />
+            </div>
+          </div>
+        </div>
+        <div
+          class="w-[72px] h-[31px] rounded-[20px] bg-[rgba(169,211,255,1)] flex flex-col flex-nowrap justify-start items-start pt-[7px] box-border pr-[16px] pb-[7px] pl-[16px] absolute top-[224px] left-[255px]"
+          id="1:10148"
+        >
+          <div
+            class="font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(13,27,42,1)] leading-[16.80px] tracking-[normal] font-semibold"
+            id="1:10149"
+          >
+            <span class="tracking-[0%]">AI&nbsp;创辅</span>
+          </div>
+        </div>
+        <img
+          src="./assets/image_45.svg"
+          class="w-[191px] h-[165px] absolute top-[256px] left-[91px]"
+          id="1:10150"
+        />
+      </div>
+      <img
+        src="./assets/image_46.svg"
+        class="w-[255px] h-[218px] absolute top-[397px] left-[120px]"
+        id="1:10154"
+        data-pop
+      />
+      <div class="w-[111px] h-[34px] absolute top-[776px] left-[694px] flex justify-start items-center" id="1:10158">
+        <div
+          class="font-[Inter] text-[12px] whitespace-nowrap text-[rgba(247,248,245,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+          id="1:10161"
+        >
+          <span class="tracking-[0%]">VIEW&nbsp;CASE&nbsp;</span>
+        </div>
+        <div
+          class="w-[34px] h-[34px] shrink-0 rounded-[17px] bg-[rgba(69,224,122,1)] ml-[12px] flex justify-center items-center"
+          id="1:10159"
+        >
+          <div
+            class="font-[Inter] text-[12px] whitespace-nowrap text-[rgba(4,16,8,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10160"
+          >
+            <span class="tracking-[0%]">→</span>
+          </div>
+        </div>
+      </div>
+      <img
+        src="./assets/image_47.svg"
+        class="w-[151px] h-[153px] absolute top-[86px] left-[938px]"
+        id="1:10162"
+        data-pop
+      />
+    </div>
+  </div>
+  <div
+    class="w-[1440px] h-[1288px] overflow-hidden bg-[rgba(255,255,255,0)] absolute top-[8297px] left-0 flex flex-col justify-start items-center"
+    id="1:10166"
+    data-reveal
+  >
+    <div class="w-[1440px] h-[449px] bg-[rgba(255,255,255,0)] relative" id="1:10298">
+      <div
+        class="absolute top-0 left-[652px] font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[19px] tracking-[normal] font-bold"
+        id="1:10299"
+      >
+        <span class="tracking-[1.44px]">Case&nbsp;03&nbsp;·&nbsp;System</span>
+      </div>
+      <div
+        class="absolute top-[49px] left-[468px] font-[Inter] text-[60px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[60px] tracking-[normal] font-bold"
+        id="1:10300"
+      >
+        <span class="tracking-[-0.50px]">度加&nbsp;AI&nbsp;剧创作平台</span>
+      </div>
+      <div
+        class="absolute top-[129px] left-[539px] opacity-60 font-[PingFang_SC] text-[16px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[17px] tracking-[normal] font-semibold"
+        id="1:10301"
+      >
+        <span class="tracking-[0%]">让&nbsp;AI&nbsp;不只是生成内容，而是重构一条专业生产链。</span>
+      </div>
+      <div
+        class="absolute top-[225px] left-[188px] opacity-60 font-[PingFang_SC] text-[15px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[17px] tracking-[normal] font-normal"
+        id="1:10302"
+      >
+        <span class="tracking-[0%]">核心不是“AI&nbsp;帮用户写剧本”，而是把剧本从一篇阅读文本，重新定义成&nbsp;</span>
+      </div>
+      <div
+        class="absolute top-[313px] left-[188px] opacity-60 font-[PingFang_SC] text-[15px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[17px] tracking-[normal] font-normal"
+        id="1:10303"
+      >
+        <span class="tracking-[0%]"
+          >这些资产继续进入分镜、美术、动画，并通过诊断和制作费用预估把生产判断前移。&nbsp;</span
+        >
+      </div>
+      <div
+        class="absolute top-[256px] left-[188px] w-[415px] font-[PingFang_SC] text-[15px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[17px] tracking-[normal] font-semibold"
+        id="1:10304"
+      >
+        <span class="tracking-[0%]"
+          >角色&nbsp;/&nbsp;场景&nbsp;/&nbsp;分集&nbsp;/&nbsp;人物关系等可执行的结构化生产资产。</span
+        >
+      </div>
+      <div class="w-[504px] h-[67px] opacity-60 absolute top-[344px] left-[188px]" id="1:10305">
+        <div
+          class="h-[29px] rounded-[999px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(255,255,255,0.02)] absolute top-0 left-0 flex flex-row justify-center items-center px-[12px] box-border"
+          id="1:10306"
+        >
+          <div
+            class="font-[Inter] text-[10px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[11px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10307"
+          >
+            <span class="tracking-[0%]">Document&nbsp;→&nbsp;Production&nbsp;Asset</span>
+          </div>
+        </div>
+        <div
+          class="h-[29px] rounded-[999px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(255,255,255,0.02)] absolute top-0 left-[169px] flex flex-row justify-center items-center px-[12px] box-border"
+          id="1:10308"
+        >
+          <div
+            class="font-[Inter] text-[10px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[11px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10309"
+          >
+            <span class="tracking-[0%]">Structured&nbsp;Data</span>
+          </div>
+        </div>
+        <div
+          class="h-[29px] rounded-[999px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(255,255,255,0.02)] absolute top-0 left-[272px] flex flex-row justify-center items-center px-[12px] box-border"
+          id="1:10310"
+        >
+          <div
+            class="font-[Inter] text-[10px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[11px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10311"
+          >
+            <span class="tracking-[0%]">Asset&nbsp;Reuse</span>
+          </div>
+        </div>
+        <div
+          class="h-[29px] rounded-[999px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(255,255,255,0.02)] absolute top-[38px] left-0 flex flex-row justify-center items-center px-[12px] box-border"
+          id="1:10312"
+        >
+          <div
+            class="font-[Inter] text-[10px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[11px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10313"
+          >
+            <span class="tracking-[0%]">Generate&nbsp;→&nbsp;Diagnose&nbsp;→&nbsp;Decide</span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="w-px bg-[linear-gradient(180deg,_rgba(255,255,255,0)_0%,rgba(255,255,255,0.6)_100%)] min-h-[129px] absolute top-[282px] left-[173px]"
+        id="1:10314"
+      ></div>
+      <div class="w-[111px] h-[34px] absolute top-[415px] left-[1156px] flex justify-start items-center" id="1:10315">
+        <div
+          class="font-[Inter] text-[12px] whitespace-nowrap text-[rgba(247,248,245,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+          id="1:10318"
+        >
+          <span class="tracking-[0%]">VIEW&nbsp;CASE&nbsp;</span>
+        </div>
+        <div
+          class="w-[34px] h-[34px] shrink-0 rounded-[17px] bg-[rgba(69,224,122,1)] ml-[12px] flex justify-center items-center"
+          id="1:10316"
+        >
+          <div
+            class="font-[Inter] text-[12px] whitespace-nowrap text-[rgba(4,16,8,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10317"
+          >
+            <span class="tracking-[0%]">→</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-[1440px] h-[900px] overflow-hidden rounded-[60px] border-[rgba(255,255,255,0)] border-solid border bg-[rgba(0,0,0,0)] relative"
+      id="1:10167"
+      data-c3
+    >
+      <div
+        class="w-[993px] h-[622px] overflow-hidden rounded-[30px] border-[rgba(255,255,255,0.2)] border-solid border bg-[rgba(0,0,0,1)] absolute top-[96px] left-[177px] flex flex-col justify-center items-center"
+        id="1:10168"
+        data-c3-img
+      >
+        <img src="./assets/image_48.svg" class="w-[993px] h-[621px]" id="1:10169" />
+      </div>
+      <div
+        class="w-[287.93px] h-[157.19px] overflow-hidden rounded-[12.45px] border-[1.03px] border-solid border-[rgba(255,255,255,0.06)] [box-shadow:0px_8.23px_32.91px_0px_rgba(0,0,0,0.6),_inset_0px_-1.03px_0px_0px_rgba(0,0,0,0.4),_inset_0px_1.03px_0px_0px_rgba(255,255,255,0.08)] bg-[linear-gradient(128deg,_rgba(42,43,48,0.9)_10.489999999999998%,rgba(28,29,33,0.9)_57.89%)] flex flex-col flex-nowrap justify-center items-center absolute top-[298px] left-[1030px]"
+        id="1:10170"
+        data-c3-mod="2"
+      >
+        <div class="w-[185px] h-[108.98px] flex flex-col flex-nowrap justify-start items-center" id="1:10171">
+          <img src="./assets/image_49.svg" class="w-[49.36px] h-[49.36px] overflow-hidden mb-[16.45px]" id="1:10173" />
+          <div class="w-[185px] h-[43.17px] flex flex-col flex-nowrap justify-start items-center" id="1:10176">
+            <div
+              class="mb-[6.17px] font-[PingFang_SC] text-[14.40px] whitespace-nowrap text-[rgba(245,250,255,1)] leading-[20.20px] tracking-[normal] font-medium"
+              id="1:10177"
+            >
+              <span class="text-[14.40px] tracking-[0%]">《我的书包会说话》上传中...&nbsp;</span>
+            </div>
+            <div
+              class="font-[PingFang_SC] text-[12.34px] whitespace-nowrap text-[rgba(103,107,112,1)] leading-[17.30px] tracking-[normal] font-normal"
+              id="1:10178"
+            >
+              <span class="text-[12.34px] tracking-[0%]">上传完成后将为你自动改写剧本</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="w-[370px] h-[215.39px] overflow-hidden rounded-[26.43px] border-[1.32px] border-solid border-[rgba(255,255,255,0.06)] [box-shadow:0px_10.57px_42.29px_0px_rgba(0,0,0,0.6),_inset_0px_-1.32px_0px_0px_rgba(0,0,0,0.4),_inset_0px_1.32px_0px_0px_rgba(255,255,255,0.08)] bg-[linear-gradient(130deg,_rgba(42,43,48,0.9)_10.03%,rgba(28,29,33,0.9)_57.96%)] flex flex-col flex-nowrap justify-center items-center absolute top-[396px] left-[40px]"
+        id="1:10179"
+        data-c3-mod="1"
+      >
+        <div class="flex flex-col justify-start items-start w-[349.92px] h-[185.89px]" id="1:10180">
+          <div class="flex justify-start items-center w-[193.18px] h-[29.16px]" id="1:10181">
+            <div class="relative w-[98.41px] h-[29.16px]" id="1:10182">
+              <img src="./assets/image_50.svg" class="w-[98.41px] h-[29.16px] absolute top-0 left-0" id="1:10183" />
+              <div
+                class="absolute top-[9.11px] left-[10.93px] flex justify-center items-center w-[77px] h-[11px]"
+                id="1:10184"
+              >
+                <div
+                  class="font-[PingFang_SC] text-[10.93px] whitespace-nowrap text-[rgba(245,250,255,1)] leading-[10.93px] tracking-[normal] font-normal flex-shrink-0"
+                  id="1:10185"
+                >
+                  <span class="text-[10.93px] tracking-[0%]">生成分镜故事板</span>
+                </div>
+              </div>
+            </div>
+            <div class="ml-[7.29px] relative w-[87.48px] h-[29.16px]" id="1:10186">
+              <img src="./assets/image_51.svg" class="w-[87.48px] h-[29.16px] absolute top-0 left-0" id="1:10187" />
+              <div
+                class="absolute top-[9.11px] left-[10.93px] flex justify-center items-center w-[66px] h-[11px]"
+                id="1:10188"
+              >
+                <div
+                  class="font-[PingFang_SC] text-[10.93px] whitespace-nowrap text-[rgba(245,250,255,1)] leading-[10.93px] tracking-[normal] font-normal flex-shrink-0"
+                  id="1:10189"
+                >
+                  <span class="text-[10.93px] tracking-[0%]">批量图转视频</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="mt-[10.94px] relative w-[349.91px] h-[145.80px]" id="1:10190">
+            <img src="./assets/image_52.svg" class="w-[349.91px] h-[145.80px] absolute top-0 left-0" id="1:10191" />
+            <div
+              class="absolute top-[14.58px] left-[14.58px] flex flex-col justify-start items-start w-[320.76px] h-[116.64px]"
+              id="1:10192"
+            >
+              <div class="flex justify-center items-center w-[90px] h-[17px]" id="1:10230">
+                <div
+                  class="font-[PingFang_SC] text-[12.76px] whitespace-nowrap text-[rgba(103,107,112,1)] leading-[16.40px] tracking-[normal] font-normal flex-shrink-0"
+                  id="1:10231"
+                >
+                  <span class="text-[12.76px] tracking-[0px]">请输入你的想法</span>
+                </div>
+              </div>
+              <div class="mt-[70.48px] flex justify-center items-center w-[320.75px] h-[29.16px]" id="1:10193">
+                <div class="flex justify-start items-center w-[320.75px] h-[29.16px]" id="1:10194">
+                  <div class="flex justify-start items-center w-[284.31px] h-[29.16px]" id="1:10202">
+                    <div class="flex justify-start items-center w-[161.29px] h-[29.16px]" id="1:10203">
+                      <div class="relative w-[62.88px] h-[29.16px]" id="1:10204">
+                        <img
+                          src="./assets/image_53.svg"
+                          class="w-[62.88px] h-[29.16px] absolute top-0 left-0"
+                          id="1:10205"
+                        />
+                        <div
+                          class="absolute top-[9.11px] left-[25.51px] font-[PingFang_SC] text-[10.93px] whitespace-nowrap text-[rgba(245,250,255,1)] leading-[10.93px] tracking-[normal] font-normal"
+                          id="1:10206"
+                        >
+                          <span class="text-[10.93px] tracking-[0%]">Agent</span>
+                        </div>
+                        <div
+                          class="w-[14.58px] h-[14.58px] overflow-hidden absolute top-[7.29px] left-[7.29px] flex justify-center items-center"
+                          id="1:10207"
+                        >
+                          <img src="./assets/image_54.svg" class="w-[14.58px] h-[14.58px]" id="I1:10207;1080:11592" />
+                        </div>
+                      </div>
+                      <div class="ml-[3.65px] relative w-[29.16px] h-[29.16px]" id="1:10208">
+                        <img
+                          src="./assets/image_55.svg"
+                          class="w-[29.16px] h-[29.16px] absolute top-0 left-0"
+                          id="1:10209"
+                        />
+                        <div
+                          class="w-[14.58px] h-[14.58px] overflow-hidden absolute top-[7.29px] left-[7.29px] flex justify-center items-center"
+                          id="1:10210"
+                        >
+                          <img src="./assets/image_56.svg" class="w-[14.58px] h-[14.58px]" id="I1:10210;426:54497" />
+                        </div>
+                      </div>
+                      <div class="ml-[3.64px] relative w-[29.16px] h-[29.16px]" id="1:10211">
+                        <img
+                          src="./assets/image_55.svg"
+                          class="w-[29.16px] h-[29.16px] absolute top-0 left-0"
+                          id="1:10212"
+                        />
+                        <div
+                          class="w-[14.58px] h-[14.58px] overflow-hidden absolute top-[7.29px] left-[7.29px] flex justify-center items-center"
+                          id="1:10213"
+                        >
+                          <img src="./assets/image_57.svg" class="w-[14.58px] h-[14.58px]" id="I1:10213;426:52201" />
+                        </div>
+                      </div>
+                      <div class="ml-[3.65px] relative w-[29.16px] h-[29.16px]" id="1:10214">
+                        <img
+                          src="./assets/image_55.svg"
+                          class="w-[29.16px] h-[29.16px] absolute top-0 left-0"
+                          id="1:10215"
+                        /><img
+                          src="./assets/image_58.svg"
+                          class="w-[14.58px] h-[14.58px] absolute top-[7.29px] left-[7.29px]"
+                          id="1:10216"
+                        />
+                      </div>
+                    </div>
+                    <div class="ml-[66.52px] flex justify-center items-center w-[56.50px] h-[29.16px]" id="1:10221">
+                      <div class="relative w-[56.50px] h-[29.16px]" id="1:10222">
+                        <img
+                          src="./assets/image_59.svg"
+                          class="w-[56.50px] h-[29.16px] absolute top-0 left-0"
+                          id="1:10223"
+                        />
+                        <div class="absolute top-[2.73px] left-[28.25px] w-[25.51px] h-[23.69px]" id="1:10224">
+                          <img
+                            src="./assets/image_60.svg"
+                            class="w-[25.51px] h-[23.69px] absolute top-0 left-0"
+                            id="1:10225"
+                          />
+                          <div
+                            class="w-[14.58px] h-[14.58px] overflow-hidden absolute top-[4.56px] left-[5.47px] flex justify-center items-center"
+                            id="1:10226"
+                          >
+                            <img src="./assets/image_61.svg" class="w-[14.58px] h-[14.58px]" id="I1:10226;426:53561" />
+                          </div>
+                        </div>
+                        <div class="absolute top-[2.73px] left-[2.73px] w-[25.51px] h-[23.69px]" id="1:10227">
+                          <img
+                            src="./assets/image_24.svg" onerror="this.style.visibility='hidden'"
+                            class="w-[25.51px] h-[23.69px] absolute top-0 left-0"
+                            id="1:10228"
+                          />
+                          <div
+                            class="w-[14.58px] h-[14.58px] overflow-hidden absolute top-[4.56px] left-[5.47px] flex justify-center items-center"
+                            id="1:10229"
+                          >
+                            <img src="./assets/image_62.svg" class="w-[14.58px] h-[14.58px]" id="I1:10229;426:55485" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ml-[7.29px] flex justify-center items-center w-[29.16px] h-[29.16px]" id="1:10195">
+                    <div class="relative w-[29.16px] h-[29.16px]" id="1:10198">
+                      <img
+                        src="./assets/image_63.svg"
+                        class="w-[29.16px] h-[29.16px] absolute top-0 left-0"
+                        id="1:10199"
+                      />
+                      <div
+                        class="absolute top-[6.38px] left-[6.38px] flex justify-center items-start w-[16.40px] h-[16.40px]"
+                        id="1:10200"
+                      >
+                        <img src="./assets/image_64.svg" class="w-[16.40px] h-[16.40px]" id="1:10201" />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="w-[288px] h-[204.76px] flex flex-col flex-nowrap justify-start items-start pt-[12.45px] box-border absolute top-[466.09px] left-[1030px]"
+        id="1:10232"
+        data-c3-mod="3"
+      >
+        <div
+          class="w-[288px] h-[192.31px] rounded-[12.45px] border-[0.78px] border-solid border-[rgba(255,255,255,0.06)] bg-[rgba(28,29,33,1)] flex flex-col flex-nowrap justify-start items-start pt-[15.56px] box-border pr-[15.56px] pb-[15.56px] pl-[15.56px]"
+          id="1:10233"
+        >
+          <div class="w-[256.03px] h-[18px] flex flex-row flex-nowrap justify-start items-center" id="1:10234">
+            <div
+              class="w-[3.11px] rounded-[14382464px] bg-[rgba(97,95,255,1)] min-h-[15.56px] mr-[6.23px]"
+              id="1:10235"
+            ></div>
+            <div class="w-[113px] h-[18px] flex flex-col flex-nowrap justify-start items-start" id="1:10236">
+              <div
+                class="font-[PingFang_SC] text-[14.01px] whitespace-nowrap text-[rgba(226,229,233,1)] leading-[17.12px] tracking-[normal] font-medium"
+                id="1:10237"
+              >
+                <span class="text-[14.01px] tracking-[0px]">剧本情绪节奏图谱</span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="w-[256.03px] h-[116.73px] flex flex-col flex-nowrap justify-start items-start pt-[9.34px] box-border"
+            id="1:10238"
+          >
+            <div
+              class="w-[256.03px] h-[107.39px] rounded-[9.34px] border-[rgba(255,255,255,0.07)] border-solid border-[0.43px] bg-[rgba(255,255,255,0.04)] flex flex-col flex-nowrap justify-start items-start pt-[9.34px] box-border pr-[9.34px] pb-[9.34px] pl-[9.34px]"
+              id="1:10239"
+            >
+              <div class="w-[236.50px] h-[124.50px] flex flex-col flex-nowrap justify-start items-start" id="1:10240">
+                <div class="w-[236.50px] h-[124.50px] overflow-hidden relative" id="1:10241">
+                  <img
+                    src="./assets/image_65.svg"
+                    class="w-[220.28px] absolute top-[50.22px] left-[12.16px]"
+                    id="1:10242"
+                  /><img
+                    src="./assets/image_65.svg"
+                    class="w-[220.28px] absolute top-[61.58px] left-[12.16px]"
+                    id="1:10243"
+                  /><img
+                    src="./assets/image_65.svg"
+                    class="w-[220.28px] absolute top-[72.93px] left-[12.16px]"
+                    id="1:10244"
+                  /><img
+                    src="./assets/image_66.svg"
+                    class="w-[220.28px] absolute top-[77.79px] left-[12.16px]"
+                    id="1:10245"
+                  />
+                  <div
+                    class="absolute top-[48.54px] left-[6.32px] font-[Inter] text-[3.04px] whitespace-nowrap text-right text-[rgba(103,107,112,1)] leading-[normal] tracking-[normal] font-normal"
+                    id="1:10246"
+                  >
+                    <span class="text-[3.04px] tracking-[0%]">高</span>
+                  </div>
+                  <div
+                    class="absolute top-[59.89px] left-[6.32px] font-[Inter] text-[3.04px] whitespace-nowrap text-right text-[rgba(103,107,112,1)] leading-[normal] tracking-[normal] font-normal"
+                    id="1:10247"
+                  >
+                    <span class="text-[3.04px] tracking-[0%]">中</span>
+                  </div>
+                  <div
+                    class="absolute top-[71.24px] left-[6.32px] font-[Inter] text-[3.04px] whitespace-nowrap text-right text-[rgba(103,107,112,1)] leading-[normal] tracking-[normal] font-normal"
+                    id="1:10248"
+                  >
+                    <span class="text-[3.04px] tracking-[0%]">低</span>
+                  </div>
+                  <div
+                    class="absolute top-[81.85px] left-[8.78px] font-[Inter] text-[2.70px] whitespace-nowrap text-center text-[rgba(103,107,112,1)] leading-[normal] tracking-[normal] font-normal"
+                    id="1:10249"
+                  >
+                    <span class="text-[2.70px] tracking-[0%]">第1集</span>
+                  </div>
+                  <div
+                    class="absolute top-[81.85px] left-[70.77px] font-[Inter] text-[2.70px] whitespace-nowrap text-center text-[rgba(103,107,112,1)] leading-[normal] tracking-[normal] font-normal"
+                    id="1:10250"
+                  >
+                    <span class="text-[2.70px] tracking-[0%]">第5集</span>
+                  </div>
+                  <div
+                    class="absolute top-[81.85px] left-[149.55px] font-[Inter] text-[2.70px] whitespace-nowrap text-center text-[rgba(103,107,112,1)] leading-[normal] tracking-[normal] font-normal"
+                    id="1:10251"
+                  >
+                    <span class="text-[2.70px] tracking-[0%]">第10集</span>
+                  </div>
+                  <div
+                    class="absolute top-[81.85px] left-[228.22px] font-[Inter] text-[2.70px] whitespace-nowrap text-center text-[rgba(103,107,112,1)] leading-[normal] tracking-[normal] font-normal"
+                    id="1:10252"
+                  >
+                    <span class="text-[2.70px] tracking-[0%]">第15集</span>
+                  </div>
+                  <img
+                    src="./assets/image_67.svg"
+                    class="w-[220.28px] h-[29.84px] absolute top-[47.95px] left-[12.16px]"
+                    id="1:10253"
+                  /><img
+                    src="./assets/image_68.svg"
+                    class="w-[220.28px] h-[24px] absolute top-[47.95px] left-[12.16px]"
+                    id="1:10254"
+                  />
+                  <div
+                    class="absolute top-[67.87px] left-[11.32px] flex justify-center items-center w-[1.69px] h-[1.69px]"
+                    id="1:10255"
+                  >
+                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10256" />
+                  </div>
+                  <div
+                    class="absolute top-[63.33px] left-[27.05px] flex justify-center items-center w-[1.69px] h-[1.69px]"
+                    id="1:10257"
+                  >
+                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10258" />
+                  </div>
+                  <div
+                    class="absolute top-[54.05px] left-[41.94px] flex justify-center items-center w-[3.38px] h-[3.38px]"
+                    id="1:10259"
+                  >
+                    <img src="./assets/image_70.svg" class="w-[3.38px] h-[3.38px]" id="1:10260" />
+                  </div>
+                  <div
+                    class="absolute top-[46.26px] left-[57.68px] flex justify-center items-center w-[3.38px] h-[3.38px]"
+                    id="1:10261"
+                  >
+                    <img src="./assets/image_71.svg" class="w-[3.38px] h-[3.38px]" id="1:10262" />
+                  </div>
+                  <div
+                    class="absolute top-[51.65px] left-[74.26px] flex justify-center items-center w-[1.69px] h-[1.69px]"
+                    id="1:10263"
+                  >
+                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10264" />
+                  </div>
+                  <div
+                    class="absolute top-[60.08px] left-[89.99px] flex justify-center items-center w-[1.69px] h-[1.69px]"
+                    id="1:10265"
+                  >
+                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10266" />
+                  </div>
+                  <div
+                    class="absolute top-[64.62px] left-[105.72px] flex justify-center items-center w-[1.69px] h-[1.69px]"
+                    id="1:10267"
+                  >
+                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10268" />
+                  </div>
+                  <div
+                    class="absolute top-[62.35px] left-[121.45px] flex justify-center items-center w-[1.69px] h-[1.69px]"
+                    id="1:10269"
+                  >
+                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10270" />
+                  </div>
+                  <div
+                    class="absolute top-[66.25px] left-[137.19px] flex justify-center items-center w-[1.69px] h-[1.69px]"
+                    id="1:10271"
+                  >
+                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10272" />
+                  </div>
+                  <div
+                    class="absolute top-[69.81px] left-[152.93px] flex justify-center items-center w-[1.69px] h-[1.69px]"
+                    id="1:10273"
+                  >
+                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10274" />
+                  </div>
+                  <div
+                    class="absolute top-[71.11px] left-[168.66px] flex justify-center items-center w-[1.69px] h-[1.69px]"
+                    id="1:10275"
+                  >
+                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10276" />
+                  </div>
+                  <div
+                    class="absolute top-[67.22px] left-[184.39px] flex justify-center items-center w-[1.69px] h-[1.69px]"
+                    id="1:10277"
+                  >
+                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10278" />
+                  </div>
+                  <div
+                    class="absolute top-[70.46px] left-[200.13px] flex justify-center items-center w-[1.69px] h-[1.69px]"
+                    id="1:10279"
+                  >
+                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10280" />
+                  </div>
+                  <div
+                    class="absolute top-[68.84px] left-[215.86px] flex justify-center items-center w-[1.69px] h-[1.69px]"
+                    id="1:10281"
+                  >
+                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10282" />
+                  </div>
+                  <div
+                    class="absolute top-[71.11px] left-[231.60px] flex justify-center items-center w-[1.69px] h-[1.69px]"
+                    id="1:10283"
+                  >
+                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10284" />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="w-[256.03px] h-[26.46px] flex flex-row flex-nowrap justify-start items-start pt-[12.45px] box-border"
+            id="1:10285"
+          >
+            <div
+              class="w-[50.44px] h-[14px] flex flex-row flex-nowrap justify-start items-center mr-[12.45px]"
+              id="1:10286"
+            >
+              <div
+                class="w-[7.78px] rounded-[14382464px] bg-[rgba(239,68,68,1)] min-h-[7.78px] mr-[4.67px]"
+                id="1:10287"
+              ></div>
+              <div class="w-[38px] h-[14px] flex flex-col flex-nowrap justify-start items-start" id="1:10288">
+                <div
+                  class="font-[PingFang_SC] text-[9.34px] whitespace-nowrap text-[rgba(103,107,112,1)] leading-[14.01px] tracking-[normal] font-normal"
+                  id="1:10289"
+                >
+                  <span class="text-[9.34px] tracking-[0px]">情绪高峰</span>
+                </div>
+              </div>
+            </div>
+            <div
+              class="w-[50.44px] h-[14px] flex flex-row flex-nowrap justify-start items-center mr-[12.45px]"
+              id="1:10290"
+            >
+              <div
+                class="w-[7.78px] rounded-[14382464px] bg-[rgba(245,158,11,1)] min-h-[7.78px] mr-[4.67px]"
+                id="1:10291"
+              ></div>
+              <div class="w-[38px] h-[14px] flex flex-col flex-nowrap justify-start items-start" id="1:10292">
+                <div
+                  class="font-[PingFang_SC] text-[9.34px] whitespace-nowrap text-[rgba(103,107,112,1)] leading-[14.01px] tracking-[normal] font-normal"
+                  id="1:10293"
+                >
+                  <span class="text-[9.34px] tracking-[0px]">次强情绪</span>
+                </div>
+              </div>
+            </div>
+            <div class="w-[58.23px] h-[14px] flex flex-row flex-nowrap justify-start items-center" id="1:10294">
+              <div
+                class="w-[15.56px] rounded-[3.11px] bg-[rgba(99,102,241,1)] min-h-[1.55px] mr-[4.67px]"
+                id="1:10295"
+              ></div>
+              <div class="w-[38px] h-[14px] flex flex-col flex-nowrap justify-start items-start" id="1:10296">
+                <div
+                  class="font-[PingFang_SC] text-[9.34px] whitespace-nowrap text-[rgba(103,107,112,1)] leading-[14.01px] tracking-[normal] font-normal"
+                  id="1:10297"
+                >
+                  <span class="text-[9.34px] tracking-[0px]">情绪曲线</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="w-[1440px] h-[1062px] overflow-hidden bg-[rgba(255,255,255,0)] absolute top-[9885px] left-0" id="1:10319" data-reveal>
+    <div
+      class="w-[464px] h-[394px] overflow-hidden rounded-[24px] bg-[rgba(0,0,0,1)] absolute top-[225px] left-0"
+      data-hover-lift
+      id="1:10320"
+    >
+      <img src="./assets/bg-bong.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10321" />
+      <div
+        class="w-[464px] h-[394px] rounded-[24px] border-[rgba(255,255,255,0.08)] border-solid border bg-[linear-gradient(180deg,_rgba(255,255,255,0.03)_0%,rgba(255,255,255,0.01)_100%)] absolute top-0 left-0 flex flex-col justify-start items-center"
+        id="1:10322"
+      >
+        <div class="w-[406px] h-[34px] mt-[29px] flex justify-start items-start" id="1:10323">
+          <div
+            class="font-[Inter] text-[30px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[33px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10324"
+          >
+            <span class="tracking-[0%]">BONG</span>
+          </div>
+        </div>
+        <div class="w-[406px] h-[15px] mt-[8px] flex justify-start items-center" id="1:10325">
+          <div
+            class="font-[Inter] text-[13px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[15px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10326"
+          >
+            <span class="tracking-[0%]">Multi-Agent&nbsp;Brainstorming</span>
+          </div>
+        </div>
+        <div class="w-[406px] h-[72px] mt-[18px] flex justify-center items-center" id="1:10327">
+          <div
+            class="w-[406px] opacity-70 font-[PingFang_SC] text-[16px] text-[rgba(255,255,255,1)] leading-[24px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10328"
+          >
+            <span class="tracking-[0%]"
+              >多角色需求探索工具。从“我还能想到什么？”变成“不同角色还会看到什么？”让单一脑暴升级为多角色协同洞察。&nbsp;</span
+            >
+          </div>
+        </div>
+        <div class="w-[406px] h-[152px] mt-[37px] flex flex-col justify-start items-center" id="1:10329">
+          <div
+            class="w-[406px] h-[44px] rounded-[14px] border-[rgba(255,255,255,0.06)] border-solid border bg-[rgba(255,255,255,0.03)] flex justify-start items-start"
+            id="1:10330"
+          >
+            <div
+              class="mt-[13px] ml-[15px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[16px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10331"
+            >
+              <span class="tracking-[0%]">单一视角&nbsp;→&nbsp;多角色视角</span>
+            </div>
+          </div>
+          <div
+            class="w-[406px] h-[44px] rounded-[14px] border-[rgba(255,255,255,0.06)] border-solid border bg-[rgba(255,255,255,0.03)] mt-[10px] flex justify-start items-start"
+            id="1:10332"
+          >
+            <div
+              class="mt-[13px] ml-[15px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[16px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10333"
+            >
+              <span class="tracking-[0%]">问题发散&nbsp;→&nbsp;结构化挖掘</span>
+            </div>
+          </div>
+          <div
+            class="w-[406px] h-[44px] rounded-[14px] border-[rgba(255,255,255,0.06)] border-solid border bg-[rgba(255,255,255,0.03)] mt-[10px] flex justify-start items-start"
+            id="1:10334"
+          >
+            <div
+              class="mt-[13px] ml-[15px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[16px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10335"
+            >
+              <span class="tracking-[0%]">临时想法&nbsp;→&nbsp;可持续方法</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-[464px] h-[394px] overflow-hidden rounded-[24px] bg-[rgba(0,0,0,1)] absolute top-[225px] left-[488px]"
+      data-hover-lift
+      id="1:10336"
+    >
+      <img src="./assets/bg-research.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10337" />
+      <div
+        class="w-[464px] h-[394px] rounded-[24px] border-[rgba(255,255,255,0.08)] border-solid border bg-[linear-gradient(180deg,_rgba(255,255,255,0.03)_0%,rgba(255,255,255,0.01)_100%)] absolute top-0 left-0 flex flex-col justify-start items-center"
+        id="1:10338"
+      >
+        <div class="w-[406px] h-[34px] mt-[29px] flex flex-col justify-center items-center" id="1:10339">
+          <div
+            class="w-[406px] font-[Inter] text-[30px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[33px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10340"
+          >
+            <span class="tracking-[0%]">PRODUCT&nbsp;RESEARCH&nbsp;&nbsp;PRO</span>
+          </div>
+        </div>
+        <div class="w-[406px] h-[15px] mt-[8px] flex justify-start items-center" id="1:10341">
+          <div
+            class="font-[Inter] text-[13px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[15px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10342"
+          >
+            <span class="tracking-[0%]">Reusable&nbsp;AI&nbsp;Skill</span>
+          </div>
+        </div>
+        <div class="w-[406px] h-[72px] mt-[18px] flex flex-col justify-start items-center" id="1:10343">
+          <div
+            class="w-[406px] opacity-70 font-[PingFang_SC] text-[16px] text-[rgba(255,255,255,1)] leading-[24px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10344"
+          >
+            <span class="tracking-[0%]"
+              >将搜索、分类、比较、洞察与总结等重复性步骤沉淀为可重复调用的&nbsp;Skill：从一次调研，变成一种能力。&nbsp;</span
+            >
+          </div>
+        </div>
+        <div class="w-[406px] h-[152px] mt-[37px] flex flex-col justify-start items-center" id="1:10345">
+          <div
+            class="w-[406px] h-[44px] rounded-[14px] border-[rgba(255,255,255,0.06)] border-solid border bg-[rgba(255,255,255,0.03)] flex justify-start items-start"
+            id="1:10346"
+          >
+            <div
+              class="mt-[13px] ml-[15px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[16px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10347"
+            >
+              <span class="tracking-[0%]">Search</span>
+            </div>
+          </div>
+          <div
+            class="w-[406px] h-[44px] rounded-[14px] border-[rgba(255,255,255,0.06)] border-solid border bg-[rgba(255,255,255,0.03)] mt-[10px] flex justify-start items-start"
+            id="1:10348"
+          >
+            <div
+              class="mt-[13px] ml-[15px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[16px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10349"
+            >
+              <span class="tracking-[0%]">Compare</span>
+            </div>
+          </div>
+          <div
+            class="w-[406px] h-[44px] rounded-[14px] border-[rgba(255,255,255,0.06)] border-solid border bg-[rgba(255,255,255,0.03)] mt-[10px] flex justify-start items-start"
+            id="1:10350"
+          >
+            <div
+              class="mt-[13px] ml-[15px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[16px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10351"
+            >
+              <span class="tracking-[0%]">Synthesize</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-[464px] h-[394px] overflow-hidden rounded-[24px] bg-[rgba(0,0,0,1)] absolute top-[225px] left-[976px]"
+      data-hover-lift
+      id="1:10352"
+    >
+      <img src="./assets/bg-prd.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10353" />
+      <div
+        class="w-[464px] h-[394px] rounded-[24px] border-[rgba(255,255,255,0.08)] border-solid border bg-[linear-gradient(180deg,_rgba(255,255,255,0.03)_0%,rgba(255,255,255,0.01)_100%)] absolute top-0 left-0 flex flex-col justify-start items-center"
+        id="1:10354"
+      >
+        <div class="w-[406px] h-[34px] mt-[29px] flex flex-col justify-center items-center" id="1:10355">
+          <div
+            class="w-[406px] font-[Inter] text-[30px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[33px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10356"
+          >
+            <span class="tracking-[0%]">PRD&nbsp;→&nbsp;DESIGN</span>
+          </div>
+        </div>
+        <div class="w-[406px] h-[15px] mt-[8px] flex justify-start items-center" id="1:10357">
+          <div
+            class="font-[Inter] text-[13px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[15px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10358"
+          >
+            <span class="tracking-[0%]">AI&nbsp;Design&nbsp;Workflow</span>
+          </div>
+        </div>
+        <div class="w-[406px] h-[72px] mt-[18px] flex justify-center items-center" id="1:10359">
+          <div
+            class="w-[406px] opacity-70 font-[PingFang_SC] text-[16px] text-[rgba(255,255,255,1)] leading-[24px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10360"
+          >
+            <span class="tracking-[0%]"
+              >把原本需要大量人工切换的步骤，重新组织成一个可追踪的智能设计工作流：从需求解析到交互验证，逐步形成连续闭环。&nbsp;</span
+            >
+          </div>
+        </div>
+        <div class="w-[406px] h-[152px] mt-[37px] flex flex-col justify-start items-center" id="1:10361">
+          <div
+            class="w-[406px] h-[44px] rounded-[14px] border-[rgba(255,255,255,0.06)] border-solid border bg-[rgba(255,255,255,0.03)] flex justify-start items-start"
+            id="1:10362"
+          >
+            <div
+              class="mt-[13px] ml-[15px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[16px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10363"
+            >
+              <span class="tracking-[0%]">PRD&nbsp;→&nbsp;需求解析</span>
+            </div>
+          </div>
+          <div
+            class="w-[406px] h-[44px] rounded-[14px] border-[rgba(255,255,255,0.06)] border-solid border bg-[rgba(255,255,255,0.03)] mt-[10px] flex justify-start items-start"
+            id="1:10364"
+          >
+            <div
+              class="mt-[13px] ml-[15px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[16px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10365"
+            >
+              <span class="tracking-[0%]">信息结构&nbsp;→&nbsp;方案生成</span>
+            </div>
+          </div>
+          <div
+            class="w-[406px] h-[44px] rounded-[14px] border-[rgba(255,255,255,0.06)] border-solid border bg-[rgba(255,255,255,0.03)] mt-[10px] flex justify-start items-start"
+            id="1:10366"
+          >
+            <div
+              class="mt-[13px] ml-[15px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[16px] tracking-[normal] font-normal flex-shrink-0"
+              id="1:10367"
+            >
+              <span class="tracking-[0%]">交互验证&nbsp;→&nbsp;设计表达</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="w-[455px] h-[46px] absolute top-[660px] left-0 flex flex-col justify-start items-center" id="1:10368">
+      <div
+        class="font-[Inter] text-[18px] whitespace-nowrap text-center text-[rgba(255,255,255,1)] leading-[20px] tracking-[normal] font-extrabold flex-shrink-0"
+        id="1:10371"
+      >
+        <span class="tracking-[0%]">USE&nbsp;AI</span>
+      </div>
+      <div class="w-[379px] h-[17px] mt-[9px] flex justify-end items-start" id="1:10369">
+        <div
+          class="mt-px mr-[153px] opacity-70 font-[Inter] text-[12px] whitespace-nowrap text-center text-[rgba(255,255,255,1)] leading-[14px] tracking-[normal] font-medium flex-shrink-0"
+          id="1:10370"
+        >
+          <span class="tracking-[0%]">提高个人效率</span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-[455px] h-[46px] absolute top-[660px] left-[488px] flex flex-col justify-start items-center"
+      id="1:10372"
+    >
+      <div
+        class="font-[Inter] text-[18px] whitespace-nowrap text-center text-[rgba(255,255,255,1)] leading-[20px] tracking-[normal] font-extrabold flex-shrink-0"
+        id="1:10375"
+      >
+        <span class="tracking-[0%]">DESIGN&nbsp;WORKFLOW</span>
+      </div>
+      <div class="w-[379px] h-[17px] mt-[9px] flex justify-end items-start" id="1:10373">
+        <div
+          class="mt-px mr-[153px] opacity-70 font-[Inter] text-[12px] whitespace-nowrap text-center text-[rgba(255,255,255,1)] leading-[14px] tracking-[normal] font-medium flex-shrink-0"
+          id="1:10374"
+        >
+          <span class="tracking-[0%]">重构工作方式</span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-[455px] h-[46px] absolute top-[660px] left-[976px] flex flex-col justify-start items-center"
+      id="1:10376"
+    >
+      <div
+        class="font-[Inter] text-[18px] whitespace-nowrap text-center text-[rgba(255,255,255,1)] leading-[20px] tracking-[normal] font-extrabold flex-shrink-0"
+        id="1:10379"
+      >
+        <span class="tracking-[0%]">BUILD&nbsp;REUSABLE&nbsp;TOOLS</span>
+      </div>
+      <div class="w-[379px] h-[17px] mt-[9px] flex justify-start items-start" id="1:10377">
+        <div
+          class="mt-px ml-[147px] opacity-70 font-[Inter] text-[12px] whitespace-nowrap text-center text-[rgba(255,255,255,1)] leading-[14px] tracking-[normal] font-medium flex-shrink-0"
+          id="1:10378"
+        >
+          <span class="tracking-[0%]">沉淀可复用系统</span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-[1440px] h-[184px] overflow-hidden bg-[rgba(255,255,255,0)] absolute top-0 left-0 flex flex-col justify-start items-start"
+      id="1:10380"
+    >
+      <div
+        class="ml-[639px] font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[19px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10381"
+      >
+        <span class="tracking-[1.44px]">Case&nbsp;04&nbsp;·&nbsp;AI&nbsp;Native</span>
+      </div>
+      <div
+        class="mt-[20px] ml-[504px] font-[Inter] text-[60px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[60px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10382"
+      >
+        <span class="tracking-[-0.50px]">AI&nbsp;重塑工作模式</span>
+      </div>
+      <div
+        class="mt-[30px] ml-[462px] opacity-60 font-[PingFang_SC] text-[16px] text-center text-[rgba(255,255,255,1)] leading-[20px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:10383"
+      >
+        <div class="">
+          <span class="tracking-[0%]">从个人效率，到&nbsp;Workflow，再到可复用工具。我希望&nbsp; </span>
+        </div>
+        <div>
+          <span class="tracking-[0%]"
+            >AI&nbsp;不只停留在“会用”，而是逐步进入研究、需求发现、设计和构建过程。&nbsp;</span
+          >
+        </div>
+      </div>
+    </div>
+    <div
+      class="absolute top-[824px] left-0 font-[Inter] text-[28.81px] text-[rgba(69,224,122,1)] leading-[33px] tracking-[normal] font-bold"
+      id="1:10384"
+    >
+      <div class=""><span class="text-[28.81px] tracking-[-0.58px]">BUILD&nbsp; </span></div>
+      <div><span class="text-[28.81px] tracking-[-0.58px]">REUSABLE&nbsp;TOOLS</span></div>
+    </div>
+  </div>
+  <div class="w-[1440px] h-[676px] absolute top-[11247px] left-0" id="1:10385" data-reveal>
+    <div
+      class="w-[1440px] h-[172px] absolute top-[490px] left-[0.50px] flex flex-col justify-start items-center"
+      id="1:10386"
+    >
+      <div
+        class="mt-[22px] font-[Inter] text-[30px] whitespace-nowrap text-[rgba(247,248,245,1)] leading-[30px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10387"
+      >
+        <span class="tracking-[0%]">找到真正的问题&nbsp;→&nbsp;选择切入点&nbsp;→&nbsp;做成机制&nbsp;→&nbsp;</span>
+      </div>
+      <div
+        class="mt-[17px] w-[581px] font-[Inter] text-[30px] whitespace-nowrap text-center text-[rgba(69,224,122,1)] leading-[30px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10388"
+      >
+        <span class="tracking-[0%]">数据验证价值</span>
+      </div>
+      <div class="w-[720px] mt-[18px] flex flex-col justify-start items-center" id="1:10389">
+        <div
+          class="mr-px opacity-60 whitespace-nowrap font-[Inter] text-[15px] text-center text-[rgba(255,255,255,1)] leading-[24px] tracking-[normal] font-normal flex-shrink-0"
+          id="1:10390"
+        >
+          <div class="">
+            <span class="tracking-[0%]"
+              >这套产品方法并没有因为&nbsp;AI&nbsp;出现而失效。
+            </span>
+          </div>
+          <div>
+            <span class="tracking-[0%]"
+              >相反，它决定了&nbsp;AI&nbsp;应该被放在哪里、承担什么，以及什么时候真正产生价值。&nbsp;</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="w-[1440px] h-[186px] absolute top-0 left-0 flex flex-col justify-start items-start" id="1:10391">
+      <div
+        class="ml-[643.50px] font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[19px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10392"
+      >
+        <span class="tracking-[1.44px]">Product&nbsp;Foundation</span>
+      </div>
+      <div
+        class="mt-[20px] ml-[355.50px] font-[Inter] text-[60px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[70px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10393"
+      >
+        <span class="tracking-[-0.50px]">AI&nbsp;是新的，产品判断不是。</span>
+      </div>
+      <div
+        class="mt-[30px] ml-[339.50px] opacity-60 font-[PingFang_SC] text-[18px] text-center text-[rgba(255,255,255,1)] leading-[24px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:10394"
+      >
+        <div class="">
+          <span class="tracking-[0%]"
+            >&nbsp;在&nbsp;AI&nbsp;之前，我已经长期处理复杂创作者产品：获客、入驻、经营、创作、发布、数据和变现。&nbsp;
+          </span>
+        </div>
+        <div>
+          <span class="tracking-[0%]">&nbsp;这套经历让我更清楚什么时候应该用&nbsp;AI，什么时候不应该。&nbsp;</span>
+        </div>
+      </div>
+    </div>
+    <div class="pf-scroll absolute top-[262px] left-0 w-[1440px] h-[220px] overflow-x-auto overflow-y-hidden" id="pf-viewport">
+      <div class="flex flex-row items-center gap-[8px] h-full w-max px-[600px]" id="pf-track">
+    <div
+      class="pf-card order-[4] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(255,255,255,1)]"
+      id="1:10395"
+    >
+      <img src="./assets/创作.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10396" />
+      <div
+        class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
+        id="1:10397"
+      >
+        <div class="w-[119px] h-[12px] mt-[23px] ml-[23px] flex justify-start items-center" id="1:10398">
+          <div
+            class="font-[Inter] text-[11px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[12px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10399"
+          >
+            <span class="tracking-[0%]">CREATE</span>
+          </div>
+        </div>
+        <div class="w-[119px] h-[32px] mt-[5px] ml-[23px] flex justify-start items-start" id="1:10400">
+          <div
+            class="mt-[2px] font-[Inter] text-[24px] whitespace-nowrap text-[rgba(247,248,245,1)] leading-[27px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10401"
+          >
+            <span class="tracking-[0%]">创作</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[32px] ml-[23px] flex justify-start items-end" id="1:10402">
+          <div
+            class="w-[158px] font-[PingFang_SC] text-[12px] text-[rgba(255,255,255,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10403"
+          >
+            <span class="tracking-[0%]">降低创作门槛，把&nbsp;AI&nbsp;能力真正放进创作过程。</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[24px] mt-[5px] ml-[23px] flex justify-start items-end" id="1:10404">
+          <div
+            class="ml-[3px] font-[Inter] text-[13px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[15px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10405"
+          >
+            <span class="tracking-[0%]">AI&nbsp;新范式</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="pf-card order-[3] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(255,255,255,1)]"
+      id="1:10406"
+    >
+      <img src="./assets/经营.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10407" />
+      <div
+        class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
+        id="1:10408"
+      >
+        <div class="w-[119px] h-[12px] mt-[23px] ml-[23px] flex justify-start items-center" id="1:10409">
+          <div
+            class="font-[Inter] text-[11px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[12px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10410"
+          >
+            <span class="tracking-[0%]">ENGAGE</span>
+          </div>
+        </div>
+        <div class="w-[119px] h-[32px] mt-[5px] ml-[23px] flex justify-start items-start" id="1:10411">
+          <div
+            class="mt-[2px] font-[Inter] text-[24px] whitespace-nowrap text-[rgba(247,248,245,1)] leading-[27px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10412"
+          >
+            <span class="tracking-[0%]">经营</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[32px] ml-[23px] flex justify-start items-end" id="1:10413">
+          <div
+            class="w-[158px] font-[Inter] text-[12px] text-[rgba(255,255,255,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10414"
+          >
+            <span class="tracking-[0%]">从单次使用变成持续经营节奏。</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[24px] mt-[5px] ml-[23px] flex justify-start items-end" id="1:10415">
+          <div
+            class="ml-[3px] font-[Inter] text-[13px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[15px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10416"
+          >
+            <span class="tracking-[0%]">留存&nbsp;+21pp</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="pf-card order-[7] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(255,255,255,1)]"
+      id="1:10417"
+    >
+      <img src="./assets/变现.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10418" />
+      <div
+        class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
+        id="1:10419"
+      >
+        <div class="w-[119px] h-[12px] mt-[23px] ml-[23px] flex justify-start items-center" id="1:10420">
+          <div
+            class="font-[Inter] text-[11px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[12px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10421"
+          >
+            <span class="tracking-[0%]">MONETIZE</span>
+          </div>
+        </div>
+        <div class="w-[119px] h-[32px] mt-[5px] ml-[23px] flex justify-start items-start" id="1:10422">
+          <div
+            class="mt-[2px] font-[Inter] text-[24px] whitespace-nowrap text-[rgba(247,248,245,1)] leading-[27px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10423"
+          >
+            <span class="tracking-[0%]">变现</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[32px] ml-[23px] flex justify-start items-end" id="1:10424">
+          <div
+            class="w-[158px] font-[Inter] text-[12px] text-[rgba(255,255,255,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10425"
+          >
+            <span class="tracking-[0%]">把内容生产继续连接到商业机会与收益。</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[24px] mt-[5px] ml-[23px] flex justify-start items-end" id="1:10426">
+          <div
+            class="ml-[3px] font-[Inter] text-[13px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[15px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10427"
+          >
+            <span class="tracking-[0%]">GMV增长</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="pf-card order-[2] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(255,255,255,1)]"
+      id="1:10428"
+    >
+      <img src="./assets/入驻.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10429" />
+      <div
+        class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
+        id="1:10430"
+      >
+        <div class="w-[119px] h-[12px] mt-[23px] ml-[23px] flex justify-start items-center" id="1:10431">
+          <div
+            class="font-[Inter] text-[11px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[12px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10432"
+          >
+            <span class="tracking-[0%]">ONBOARD</span>
+          </div>
+        </div>
+        <div class="w-[119px] h-[32px] mt-[5px] ml-[23px] flex justify-start items-start" id="1:10433">
+          <div
+            class="mt-[2px] font-[Inter] text-[24px] whitespace-nowrap text-[rgba(247,248,245,1)] leading-[27px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10434"
+          >
+            <span class="tracking-[0%]">入驻</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[32px] ml-[23px] flex justify-start items-end" id="1:10435">
+          <div
+            class="w-[158px] font-[Inter] text-[12px] text-[rgba(255,255,255,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10436"
+          >
+            <span class="tracking-[0%]">通过数据拆解流程阻力，优化资格、认证和首次使用。</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[24px] mt-[5px] ml-[23px] flex justify-start items-end" id="1:10437">
+          <div
+            class="ml-[3px] font-[Inter] text-[13px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[15px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10438"
+          >
+            <span class="tracking-[0%]">过审率&nbsp;+9pp</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="pf-card order-[1] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(255,255,255,1)]"
+      id="1:10439"
+    >
+      <img src="./assets/吸引.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10440" />
+      <div
+        class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
+        id="1:10441"
+      >
+        <div class="w-[119px] h-[12px] mt-[23px] ml-[23px] flex justify-start items-center" id="1:10442">
+          <div
+            class="font-[Inter] text-[11px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[12px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10443"
+          >
+            <span class="tracking-[0%]">AWARENESS</span>
+          </div>
+        </div>
+        <div class="w-[119px] h-[32px] mt-[5px] ml-[23px] flex justify-start items-start" id="1:10444">
+          <div
+            class="mt-[2px] font-[Inter] text-[24px] whitespace-nowrap text-[rgba(247,248,245,1)] leading-[27px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10445"
+          >
+            <span class="tracking-[0%]">吸引</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[32px] ml-[23px] flex justify-start items-end" id="1:10446">
+          <div
+            class="w-[158px] font-[Inter] text-[12px] text-[rgba(255,255,255,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10447"
+          >
+            <span class="tracking-[0%]">建立第一认知，拓展用户真正会遇到的创作入口。</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[24px] mt-[5px] ml-[23px] flex justify-start items-end" id="1:10448">
+          <div
+            class="ml-[3px] font-[Inter] text-[13px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[15px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10449"
+          >
+            <span class="tracking-[0%]">6&nbsp;个核心入口</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="pf-card order-[5] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(0,0,0,1)]" id="1:10450">
+      <img src="./assets/发布.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10451" />
+      <div
+        class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
+        id="1:10452"
+      >
+        <div class="w-[119px] h-[12px] mt-[23px] ml-[23px] flex justify-start items-center" id="1:10453">
+          <div
+            class="font-[Inter] text-[11px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[12px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10454"
+          >
+            <span class="tracking-[0%]">DISTRIBUTE</span>
+          </div>
+        </div>
+        <div class="w-[119px] h-[32px] mt-[5px] ml-[23px] flex justify-start items-start" id="1:10455">
+          <div
+            class="mt-[2px] font-[Inter] text-[24px] whitespace-nowrap text-[rgba(247,248,245,1)] leading-[27px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10456"
+          >
+            <span class="tracking-[0%]">发布</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[32px] ml-[23px] flex justify-start items-end" id="1:10457">
+          <div
+            class="w-[158px] font-[Inter] text-[12px] text-[rgba(255,255,255,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10458"
+          >
+            <span class="tracking-[0%]">减少发布阻力，让“发出去”这一步更顺畅。</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[24px] mt-[5px] ml-[23px] flex justify-start items-end" id="1:10459">
+          <div
+            class="ml-[3px] font-[Inter] text-[13px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[15px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10460"
+          >
+            <span class="tracking-[0%]">发布转化&nbsp;+4.8pp</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="pf-card order-[6] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(255,255,255,1)]"
+      id="1:10461"
+    >
+      <img src="./assets/数据.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10462" />
+      <div
+        class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
+        id="1:10463"
+      >
+        <div class="w-[119px] h-[12px] mt-[23px] ml-[23px] flex justify-start items-center" id="1:10464">
+          <div
+            class="font-[Inter] text-[11px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[12px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10465"
+          >
+            <span class="tracking-[0%]">INSIGHT</span>
+          </div>
+        </div>
+        <div class="w-[119px] h-[32px] mt-[5px] ml-[23px] flex justify-start items-start" id="1:10466">
+          <div
+            class="mt-[2px] font-[Inter] text-[24px] whitespace-nowrap text-[rgba(247,248,245,1)] leading-[27px] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10467"
+          >
+            <span class="tracking-[0%]">数据</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[32px] ml-[23px] flex justify-start items-end" id="1:10468">
+          <div
+            class="w-[158px] font-[Inter] text-[12px] text-[rgba(255,255,255,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10469"
+          >
+            <span class="tracking-[0%]">让复杂数据更容易被理解，并能指导下一步行动。</span>
+          </div>
+        </div>
+        <div class="w-[148px] h-[24px] mt-[5px] ml-[23px] flex justify-start items-end" id="1:10470">
+          <div
+            class="ml-[3px] font-[Inter] text-[13px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[15px] tracking-[normal] font-normal flex-shrink-0"
+            id="1:10471"
+          >
+            <span class="tracking-[0%]">数据覆盖&nbsp;+56%</span>
+          </div>
+        </div>
+      </div>
+    </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="w-[1440px] h-[985px] overflow-hidden rounded-[60px] bg-[rgba(255,255,255,1)] absolute top-[12223px] left-0 flex flex-col justify-start items-center"
+    id="1:10472"
+    data-reveal
+  >
+    <div
+      class="w-[1440px] h-[150px] overflow-hidden bg-[rgba(255,255,255,0)] mt-[70px] flex flex-col justify-start items-start"
+      id="1:10473"
+    >
+      <div
+        class="ml-[643px] font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[19px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10474"
+      >
+        <span class="tracking-[1.44px]">What&nbsp;I&nbsp;Left&nbsp;Behind</span>
+      </div>
+      <div
+        class="mt-[20px] ml-[393px] font-[Inter] text-[60px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[60px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10475"
+      >
+        <span class="tracking-[-0.50px]">好的项目不应只留下页面</span>
+      </div>
+      <div
+        class="mt-[16px] ml-[480px] opacity-60 font-[Inter] text-[16px] whitespace-nowrap text-center text-[rgba(0,0,0,1)] leading-[30px] tracking-[normal] font-light flex-shrink-0"
+        id="1:10476"
+      >
+        <span class="tracking-[0%]">还应该留下：方法、标准、框架，以及下一次可以继续复用的东西。</span>
+      </div>
+    </div>
+    <div class="w-[1440px] h-[790px] overflow-hidden bg-[rgba(255,255,255,0)] relative" id="1:10477">
+      <div
+        class="w-[1350px] h-[360px] rounded-[24px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(255,255,255,0.02)] absolute top-[350px] left-[45px]"
+        id="1:10478"
+      >
+        <div
+          class="absolute top-[29px] left-[29px] font-[Inter] text-[28px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[normal] tracking-[normal] font-bold"
+          id="1:10479"
+        >
+          <span class="tracking-[-1.12px]">From&nbsp;Project&nbsp;to&nbsp;Pattern.</span>
+        </div>
+        <div
+          class="w-[421px] h-[85px] rounded-[16px] border-[rgba(0,0,0,0.06)] border-solid border bg-[rgba(0,0,0,0.03)] absolute top-[125px] left-[29px] flex flex-col justify-start items-start"
+          id="1:10480"
+        >
+          <div
+            class="mt-[17px] ml-[17px] font-[Inter] text-[15px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[normal] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10481"
+          >
+            <span class="tracking-[0%]">AI&nbsp;Assistant&nbsp;Model</span>
+          </div>
+          <div
+            class="mt-[10px] ml-[17px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[24px] tracking-[normal] font-light flex-shrink-0"
+            id="1:10482"
+          >
+            <span class="tracking-[0%]">AI&nbsp;助手模型</span>
+          </div>
+        </div>
+        <div
+          class="w-[422px] h-[85px] rounded-[16px] border-[rgba(0,0,0,0.06)] border-solid border bg-[rgba(0,0,0,0.03)] absolute top-[125px] left-[464px] flex flex-col justify-start items-start"
+          id="1:10483"
+        >
+          <div
+            class="mt-[17px] ml-[17px] font-[Inter] text-[15px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[normal] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10484"
+          >
+            <span class="tracking-[0%]">Generative&nbsp;AI&nbsp;Interaction&nbsp;Model</span>
+          </div>
+          <div
+            class="mt-[10px] ml-[17px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[24px] tracking-[normal] font-light flex-shrink-0"
+            id="1:10485"
+          >
+            <span class="tracking-[0%]">生成式&nbsp;AI&nbsp;交互模型</span>
+          </div>
+        </div>
+        <div
+          class="w-[421px] h-[85px] rounded-[16px] border-[rgba(0,0,0,0.06)] border-solid border bg-[rgba(0,0,0,0.03)] absolute top-[125px] left-[900px] flex flex-col justify-start items-start"
+          id="1:10486"
+        >
+          <div
+            class="mt-[17px] ml-[17px] font-[Inter] text-[15px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[normal] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10487"
+          >
+            <span class="tracking-[0%]">AI&nbsp;Editor&nbsp;Framework</span>
+          </div>
+          <div
+            class="mt-[10px] ml-[17px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[24px] tracking-[normal] font-light flex-shrink-0"
+            id="1:10488"
+          >
+            <span class="tracking-[0%]">AI&nbsp;编辑器框架</span>
+          </div>
+        </div>
+        <div
+          class="w-[419px] h-[85px] rounded-[16px] border-[rgba(0,0,0,0.06)] border-solid border bg-[rgba(0,0,0,0.03)] absolute top-[246px] left-[29px] flex flex-col justify-start items-start"
+          id="1:10489"
+        >
+          <div
+            class="mt-[17px] ml-[17px] font-[Inter] text-[15px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[normal] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10490"
+          >
+            <span class="tracking-[0%]">Creation&nbsp;Framework</span>
+          </div>
+          <div
+            class="mt-[10px] ml-[17px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[24px] tracking-[normal] font-light flex-shrink-0"
+            id="1:10491"
+          >
+            <span class="tracking-[0%]">创作场景基础框架</span>
+          </div>
+        </div>
+        <div
+          class="w-[422px] h-[85px] rounded-[16px] border-[rgba(0,0,0,0.06)] border-solid border bg-[rgba(0,0,0,0.03)] absolute top-[246px] left-[464px] flex flex-col justify-start items-start"
+          id="1:10492"
+        >
+          <div
+            class="mt-[17px] ml-[17px] font-[Inter] text-[15px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[normal] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10493"
+          >
+            <span class="tracking-[0%]">Publishing&nbsp;Progress&nbsp;Component</span>
+          </div>
+          <div
+            class="mt-[10px] ml-[17px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[24px] tracking-[normal] font-light flex-shrink-0"
+            id="1:10494"
+          >
+            <span class="tracking-[0%]">发布进度组件</span>
+          </div>
+        </div>
+        <div
+          class="w-[419px] h-[85px] rounded-[16px] border-[rgba(0,0,0,0.06)] border-solid border bg-[rgba(0,0,0,0.03)] absolute top-[246px] left-[902px] flex flex-col justify-start items-start"
+          id="1:10495"
+        >
+          <div
+            class="mt-[17px] ml-[17px] font-[Inter] text-[15px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[normal] tracking-[normal] font-bold flex-shrink-0"
+            id="1:10496"
+          >
+            <span class="tracking-[0%]">Reusable&nbsp;Workflow&nbsp;Assets</span>
+          </div>
+          <div
+            class="mt-[10px] ml-[17px] font-[Inter] text-[14px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[24px] tracking-[normal] font-light flex-shrink-0"
+            id="1:10497"
+          >
+            <span class="tracking-[0%]">可持续复用的工作流资产</span>
+          </div>
+        </div>
+      </div>
+      <div
+        class="w-[665px] h-[230px] overflow-hidden bg-[rgba(255,255,255,0)] absolute top-[100px] left-[45px] flex justify-center items-center"
+        id="1:10498"
+      >
+        <div
+          class="w-[665px] h-[230px] rounded-[24px] border-[rgba(255,255,255,0.08)] border-solid border bg-[linear-gradient(0deg,_rgba(255,255,255,0.03)_50%,rgba(255,255,255,0.01)_148.76%)] relative"
+          id="1:10499"
+        >
+          <div
+            class="absolute top-[29px] left-[29px] font-[Inter] text-[72px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[65px] tracking-[normal] font-extrabold"
+            id="1:10500"
+          >
+            <span class="tracking-[-3.60px]">2</span>
+          </div>
+          <div
+            class="absolute top-[108px] left-[29px] font-[Inter] text-[18px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[25px] tracking-[normal] font-bold"
+            id="1:10501"
+          >
+            <span class="tracking-[0%]">International&nbsp;Design&nbsp;Awards</span>
+          </div>
+          <div
+            class="absolute top-[147px] left-[29px] w-[294px] font-[PingFang_SC] text-[15px] text-[rgba(0,0,0,1)] leading-[27px] tracking-[normal] font-light"
+            id="1:10502"
+          >
+            <span class="tracking-[0%]">让&nbsp;AI&nbsp;与复杂产品能力被外部认可，但比奖项更重要的是方法沉淀。</span>
+          </div>
+          <img
+            src="./assets/image_82.svg"
+            class="w-[121.03px] h-[176px] absolute top-[27px] left-[516px]"
+            id="1:10503"
+          /><img
+            src="./assets/image_83.svg"
+            class="w-[124px] h-[176px] absolute top-[27px] left-[374px]"
+            id="1:10504"
+          />
+        </div>
+      </div>
+      <div
+        class="w-[665px] h-[230px] overflow-hidden bg-[rgba(255,255,255,0)] absolute top-[100px] left-[730px] flex justify-center items-center"
+        id="1:10505"
+      >
+        <div
+          class="w-[665px] h-[230px] rounded-[24px] border-[rgba(255,255,255,0.08)] border-solid border bg-[linear-gradient(0deg,_rgba(255,255,255,0.03)_50%,rgba(255,255,255,0.01)_148.76%)] relative"
+          id="1:10506"
+        >
+          <div
+            class="absolute top-[29px] left-[29px] font-[Inter] text-[72px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[65px] tracking-[normal] font-extrabold"
+            id="1:10507"
+          >
+            <span class="tracking-[-3.60px]">20+</span>
+          </div>
+          <div
+            class="absolute top-[108px] left-[29px] font-[Inter] text-[18px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[25px] tracking-[normal] font-bold"
+            id="1:10508"
+          >
+            <span class="tracking-[0%]">Patents</span>
+          </div>
+          <div
+            class="absolute top-[147px] left-[29px] w-[294px] font-[PingFang_SC] text-[15px] text-[rgba(0,0,0,1)] leading-[27px] tracking-[normal] font-light"
+            id="1:10509"
+          >
+            <span class="tracking-[0%]">从项目实践中不断抽象与沉淀，将经验固化为可复用资产。</span>
+          </div>
+          <img
+            src="./assets/image_84.svg"
+            class="w-[125px] h-[176px] absolute top-[25px] left-[350px]"
+            id="1:10510"
+          /><img
+            src="./assets/image_85.svg"
+            class="w-[125px] h-[176px] absolute top-[25px] left-[401px]"
+            id="1:10511"
+          /><img
+            src="./assets/image_86.svg"
+            class="w-[125px] h-[176px] absolute top-[25px] left-[452px]"
+            id="1:10512"
+          /><img
+            src="./assets/image_87.svg"
+            class="w-[124px] h-[176px] absolute top-[25px] left-[503px]"
+            id="1:10513"
+          />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="w-[1440px] h-[642px] absolute top-[13508px] left-[0.50px]" id="1:10514" data-reveal>
+    <div
+      class="absolute top-0 left-0 font-[Inter] text-[12px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[14px] tracking-[normal] font-extrabold"
+      id="1:10515"
+    >
+      <span class="tracking-[0%]">What&nbsp;I&nbsp;Believe</span>
+    </div>
+    <div
+      class="absolute top-[38px] left-px font-[Inter] text-[60px] text-[rgba(255,255,255,1)] leading-[70px] tracking-[normal] font-bold"
+      id="1:10516"
+    >
+      <div class=""><span class="tracking-[0%]">不是只设计 </span></div>
+      <div><span class="tracking-[0%]">AI&nbsp;长什么样。</span></div>
+    </div>
+    <div
+      class="absolute top-[208px] left-px opacity-60 font-[Inter] text-[18px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[20px] tracking-[normal] font-normal"
+      id="1:10517"
+    >
+      <span class="tracking-[0%]">更是定义：AI&nbsp;应该怎样进入人的任务。</span>
+    </div>
+    <div
+      class="absolute top-[419px] left-px font-[Inter] text-[28.81px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[33px] tracking-[normal] font-bold"
+      id="1:10518"
+    >
+      <span class="text-[28.81px] tracking-[-0.58px]">DESIGN&nbsp;AI</span>
+    </div>
+    <div
+      class="absolute top-[452px] left-px font-[Inter] text-[28.81px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[33px] tracking-[normal] font-bold"
+      id="1:10519"
+    >
+      <span class="text-[28.81px] tracking-[-0.58px]">AROUND&nbsp;REAL&nbsp;HUMAN&nbsp;TASKS.</span>
+    </div>
+    <div
+      class="w-[587px] h-[336px] overflow-hidden bg-[rgba(255,255,255,0)] absolute top-[268px] left-[720px] flex flex-col justify-start items-start"
+      id="1:10520"
+    >
+      <div
+        class="font-[Inter] text-[17px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[19px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:10531"
+      >
+        <span class="tracking-[0%]"
+          >好的&nbsp;AI&nbsp;产品，不是不断提醒用户“这里使用了&nbsp;AI”，而是让复杂能力在正确的时</span
+        >
+      </div>
+      <div
+        class="mt-[14px] font-[Inter] text-[17px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[19px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:10532"
+      >
+        <span class="tracking-[0%]">机出现。</span>
+      </div>
+      <div
+        class="mt-[47px] font-[Inter] text-[17px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[19px] tracking-[normal] font-normal flex-shrink-0"
+        id="1:10533"
+      >
+        <span class="tracking-[0%]">让用户始终知道：&nbsp;</span>
+      </div>
+      <div class="w-[570px] h-[31px] mt-[25px] flex justify-start items-start" id="1:10521">
+        <div
+          class="mt-[5px] font-[Inter] text-[17px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[19px] tracking-[normal] font-normal flex-shrink-0"
+          id="1:10522"
+        >
+          <span class="tracking-[0%]">AI&nbsp;在做什么。</span>
+        </div>
+      </div>
+      <div class="w-[570px] h-[31px] mt-[10px] flex justify-start items-start" id="1:10523">
+        <div
+          class="mt-[5px] font-[Inter] text-[17px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[19px] tracking-[normal] font-normal flex-shrink-0"
+          id="1:10524"
+        >
+          <span class="tracking-[0%]">为什么这样做。</span>
+        </div>
+      </div>
+      <div class="w-[570px] h-[31px] mt-[9px] flex justify-start items-start" id="1:10525">
+        <div
+          class="mt-[5px] font-[Inter] text-[17px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[19px] tracking-[normal] font-normal flex-shrink-0"
+          id="1:10526"
+        >
+          <span class="tracking-[0%]">我还能怎么控制它。</span>
+        </div>
+      </div>
+      <div class="w-[570px] h-[31px] mt-[10px] flex justify-start items-start" id="1:10527">
+        <div
+          class="mt-[5px] font-[Inter] text-[17px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[19px] tracking-[normal] font-normal flex-shrink-0"
+          id="1:10528"
+        >
+          <span class="tracking-[0%]">如果结果不对，我该怎么办。</span>
+        </div>
+      </div>
+      <div class="w-[570px] h-[31px] mt-[9px] flex justify-start items-start" id="1:10529">
+        <div
+          class="mt-[5px] font-[Inter] text-[17px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[19px] tracking-[normal] font-normal flex-shrink-0"
+          id="1:10530"
+        >
+          <span class="tracking-[0%]">下一步应该做什么。</span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="w-px bg-[linear-gradient(180deg,_rgba(255,255,255,0)_0%,rgba(255,255,255,0.6)_100%)] min-h-[200px] absolute top-[397px] left-[693.5px]"
+      id="1:10534"
+    ></div>
+  </div>
+  <div class="w-[1440px] h-[697px] overflow-hidden bg-[rgba(255,255,255,1)] absolute top-[14218px] left-0" id="1:10535" data-reveal>
+    <div
+      class="absolute top-[100px] left-[695px] font-[Inter] text-[12px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[14px] tracking-[normal] font-extrabold"
+      id="1:10536"
+    >
+      <span class="tracking-[0%]">After&nbsp;All</span>
+    </div>
+    <div
+      class="absolute top-[270px] left-[233px] w-[974px] opacity-60 font-[Inter] text-[17px] text-center text-[rgba(0,0,0,1)] leading-[24px] tracking-[normal] font-normal"
+      id="1:10537"
+    >
+      <div class="">
+        <span class="tracking-[0%]"
+          >我喜欢复杂系统，也喜欢把复杂的事情讲简单。AI&nbsp;改变了我正在使用的工具，也扩大了我能够参与设计的边界。
+        </span>
+      </div>
+      <div>
+        <span class="tracking-[0%]"
+          >&nbsp;但有一件事没有改变：技术不是最终被展示的主角。真正重要的是，它有没有让人的任务变得更简单、更自然、更有可能完成。&nbsp;</span
+        >
+      </div>
+    </div>
+    <div
+      class="absolute top-[447px] left-[171px] font-[Inter] text-[28px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[31px] tracking-[normal] font-extrabold"
+      id="1:10538"
+    >
+      <span class="tracking-[0%]">LuMingYue</span>
+    </div>
+    <div
+      class="absolute top-[490px] left-[171px] font-[Inter] text-[16px] text-[rgba(0,0,0,1)] leading-[17px] tracking-[normal] font-normal"
+      id="1:10539"
+    >
+      <div class=""><span class="tracking-[0%]">&nbsp;AI&nbsp;Product&nbsp;Experience&nbsp;Designer </span></div>
+      <div><span class="tracking-[0%]">&nbsp;Baidu&nbsp;·&nbsp;2020.10&nbsp;→&nbsp;Now&nbsp;</span></div>
+    </div>
+    <div
+      class="w-[111px] h-[36px] rounded-[999px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(255,255,255,0.03)] absolute top-[561px] left-[171px] flex justify-start items-center"
+      id="1:10540"
+    >
+      <div
+        class="ml-[15px] font-[Inter] text-[12px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[14px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10541"
+      >
+        <span class="tracking-[0%]">AI&nbsp;Interaction</span>
+      </div>
+    </div>
+    <div
+      class="w-[125px] h-[36px] rounded-[999px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(255,255,255,0.03)] absolute top-[561px] left-[294px] flex justify-start items-center"
+      id="1:10542"
+    >
+      <div
+        class="ml-[15px] font-[Inter] text-[12px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[14px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10543"
+      >
+        <span class="tracking-[0%]">Product&nbsp;System</span>
+      </div>
+    </div>
+    <div
+      class="w-[118px] h-[36px] rounded-[999px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(255,255,255,0.03)] absolute top-[561px] left-[431px] flex justify-start items-center"
+      id="1:10544"
+    >
+      <div
+        class="ml-[15px] font-[Inter] text-[12px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[14px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10545"
+      >
+        <span class="tracking-[0%]">Generative&nbsp;UX</span>
+      </div>
+    </div>
+    <div
+      class="w-[103px] h-[36px] rounded-[999px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(255,255,255,0.03)] absolute top-[561px] left-[561px] flex justify-center items-center"
+      id="1:10546"
+    >
+      <div
+        class="font-[Inter] text-[12px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[14px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10547"
+      >
+        <span class="tracking-[0%]">Vibe&nbsp;Coding</span>
+      </div>
+    </div>
+    <div class="absolute top-[185px] left-[271px] flex justify-start items-center w-[898px] h-[60px]" id="1:10548">
+      <div
+        class="font-[Inter] text-[60px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[60px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10550"
+      >
+        <span class="tracking-[0%]">something&nbsp;meaningful</span>
+      </div>
+      <div
+        class="ml-[15px] font-[Inter] text-[60px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[60px] tracking-[normal] font-bold flex-shrink-0"
+        id="1:10549"
+      >
+        <span class="tracking-[0%]">with&nbsp;AI.</span>
+      </div>
+    </div>
+    <div
+      class="absolute top-[123px] left-[571px] font-[Inter] text-[60px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[60px] tracking-[normal] font-bold"
+      id="1:10551"
+    >
+      <span class="tracking-[0%]">Let’s&nbsp;build</span>
+    </div>
+    <div
+      class="w-[24px] h-[24px] overflow-hidden bg-[rgba(0,0,0,0)] absolute top-[573px] left-[823px] flex flex-col justify-start items-start"
+      id="1:10552"
+    >
+      <img src="./assets/image_88.svg" class="w-[20.94px] h-[16.28px] mt-[3.82px] ml-[1.50px]" id="1:10553" />
+    </div>
+    <div
+      class="absolute top-[573px] left-[870px] font-[Inter] text-[20px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[20px] tracking-[normal] font-extrabold"
+      customTag-126.com
+      id="1:10554"
+    >
+      <span class="tracking-[-1.12px]">lumingyue66@126.com</span>
+    </div>
+    <div
+      class="w-[24px] h-[24px] overflow-hidden absolute top-[438px] left-[823px] flex justify-end items-start"
+      id="1:10555"
+    >
+      <img src="./assets/image_89.svg" class="w-[20.05px] h-[21px] mt-[1.50px] mr-[1.47px]" id="1:10556" />
+    </div>
+    <div
+      class="absolute top-[438px] left-[870px] font-[Inter] text-[20px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[20px] tracking-[normal] font-extrabold"
+      id="1:10557"
+    >
+      <span class="tracking-[-1.12px]">18333610425</span>
+    </div>
+    <div
+      class="absolute top-[510px] left-[870px] font-[Inter] text-[20px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[20px] tracking-[normal] font-extrabold"
+      id="1:10558"
+    >
+      <span class="tracking-[-1.12px]">18333610425</span>
+    </div>
+    <div
+      class="w-[24px] h-[24px] overflow-hidden absolute top-[505px] left-[823px] flex flex-col justify-end items-start"
+      id="1:10559"
+    >
+      <img src="./assets/image_90.svg" class="w-[23.57px] h-[19px] mb-[2px]" id="1:10560" />
+    </div>
+    <img src="./assets/image_91.svg" class="w-[128px] h-[132px] absolute top-[430px] left-[1140px]" id="1:10561" />
+    <div
+      class="absolute top-[569px] left-[1162px] font-[PingFang_SC] text-[12px] text-center text-[rgba(0,0,0,1)] leading-[14px] tracking-[normal] font-normal"
+      id="1:10562"
+    >
+      <div class=""><span class="tracking-[0%]">打开微信扫一扫 </span></div>
+      <div><span class="tracking-[0%]">加我好友</span></div>
+    </div>
+    <div
+      class="absolute top-[436px] left-[1010px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-center text-[rgba(0,0,0,1)] leading-[24px] tracking-[normal] font-normal"
+      id="1:10563"
+    >
+      <span class="tracking-[0%]">复制</span>
+    </div>
+    <div
+      class="absolute top-[508px] left-[1010px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-center text-[rgba(0,0,0,1)] leading-[24px] tracking-[normal] font-normal"
+      id="1:10564"
+    >
+      <span class="tracking-[0%]">复制</span>
+    </div>
+    <div
+      class="absolute top-[573px] left-[1098px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-center text-[rgba(0,0,0,1)] leading-[24px] tracking-[normal] font-normal"
+      id="1:10565"
+    >
+      <span class="tracking-[0%]">复制</span>
+    </div>
+  </div>
+</main>
+<script>
+  /* Product Foundation coverflow：横向滑动，居中卡片无透视，两侧卡片向中心旋转 */
+  (function () {
+    var vp = document.getElementById('pf-viewport');
+    if (!vp) return;
+    var cards = Array.prototype.slice.call(vp.querySelectorAll('.pf-card'));
+    if (!cards.length) return;
+    function update() {
+      var r = vp.getBoundingClientRect();
+      var center = r.left + r.width / 2;
+      cards.forEach(function (c) {
+        var cr = c.getBoundingClientRect();
+        var cc = cr.left + cr.width / 2;
+        var d = (cc - center) / (r.width / 2);           // 归一化：0=正中
+        var ad = Math.min(Math.abs(d), 1.4);
+        var rot = -Math.max(-1, Math.min(1, d)) * 55;     // 居中 0°，两侧朝中心大幅旋转
+        var scale = 1 + ad * 0.3;                          // 中间最小，越往两边逐步放大
+        c.style.transform = 'perspective(650px) rotateY(' + rot.toFixed(2) + 'deg) scale(' + scale.toFixed(3) + ')';
+        c.style.opacity = (1 - Math.min(ad, 1) * 0.3).toFixed(3);
+        c.style.zIndex = String(100 - Math.round(ad * 50));
+      });
+    }
+    var ticking = false;
+    vp.addEventListener('scroll', function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(function () { update(); ticking = false; }); }
+    }, { passive: true });
+    window.addEventListener('resize', update);
+    // 默认让正中的「创作」卡片居中展示（7 张卡中第 4 张，即内容正中）
+    function centerDefault() {
+      vp.scrollLeft = (vp.scrollWidth - vp.clientWidth) / 2;
+      update();
+    }
+    if (document.readyState === 'complete') centerDefault();
+    else window.addEventListener('load', centerDefault);
+    centerDefault();
+  })();
+</script>
+<script>
+  /* ===== 微动效脚本（新增，纯附加）===== */
+  (function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var reveals = document.querySelectorAll('[data-reveal]');
+    var counts = document.querySelectorAll('[data-countup]');
+
+    // count-up：解析文本前导整数，从 0 递增到目标，保留后缀（如 "+"）
+    function runCount(el) {
+      if (el.dataset.counted) return;
+      el.dataset.counted = '1';
+      var raw = el.textContent.trim();
+      var m = raw.match(/^(\d+)(.*)$/);
+      if (!m) return;
+      var target = parseInt(m[1], 10), suffix = m[2] || '';
+      var dur = 1100, start = null;
+      function step(ts) {
+        if (start === null) start = ts;
+        var p = Math.min((ts - start) / dur, 1);
+        var eased = 1 - Math.pow(1 - p, 3);
+        el.textContent = Math.round(target * eased) + suffix;
+        if (p < 1) requestAnimationFrame(step);
+        else el.textContent = target + suffix;
+      }
+      requestAnimationFrame(step);
+    }
+
+    if (reduce || !('IntersectionObserver' in window)) {
+      reveals.forEach(function (el) { el.classList.add('is-revealed'); });
+    } else {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) {
+            e.target.classList.add('is-revealed');
+            e.target.querySelectorAll && e.target.querySelectorAll('[data-countup]').forEach(runCount);
+          } else {
+            e.target.classList.remove('is-revealed');
+            e.target.querySelectorAll && e.target.querySelectorAll('[data-countup]').forEach(function (c) { c.dataset.counted = ''; });
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' });
+      reveals.forEach(function (el) { io.observe(el); });
+
+      // 独立观察 count-up（若其所属区块未标 data-reveal 也能触发）；离开视口时重置以便再次进入重播
+      var ioC = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (e.isIntersecting) runCount(e.target);
+          else e.target.dataset.counted = '';
+        });
+      }, { threshold: 0.6 });
+      counts.forEach(function (el) { ioC.observe(el); });
+    }
+
+    // 背景巨型水印视差（不改 opacity，仅纵向轻微位移，幅度 <= 40px）
+    var mark = document.getElementById('1:9649');
+    if (mark && !reduce) {
+      var base = mark.style.transform || '';
+      var ticking = false;
+      window.addEventListener('scroll', function () {
+        if (ticking) return;
+        ticking = true;
+        requestAnimationFrame(function () {
+          var offset = Math.max(-40, Math.min(40, window.scrollY * 0.03));
+          mark.style.transform = base + ' translateY(' + offset.toFixed(1) + 'px)';
+          ticking = false;
+        });
+      }, { passive: true });
+    }
+  })();
+</script>
+<script>
+  /* ===== 粉丝趋势曲线「逐渐画出」触发（新增）===== */
+  (function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var charts = document.querySelectorAll('.js-fans-chart');
+    if (!charts.length) return;
+    if (reduce || !('IntersectionObserver' in window)) {
+      charts.forEach(function (el) { el.classList.add('chart-anim'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        e.target.classList.toggle('chart-anim', e.isIntersecting);
+      });
+    }, { threshold: 0.5 });
+    charts.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+<script>
+  /* ===== 案例文案打字机 + 胶囊/按钮联动入场（新增）===== */
+  (function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var group = document.querySelector('[data-tw-group]');
+    if (!group) return;
+    var spans = [].slice.call(group.querySelectorAll('[data-tw]'));
+    var pops = [].slice.call(group.querySelectorAll('[data-tw-pop]'));
+    function showPops(stagger) {
+      pops.forEach(function (p, idx) {
+        if (stagger) setTimeout(function () { p.classList.add('tw-in'); }, idx * 130);
+        else p.classList.add('tw-in');
+      });
+    }
+    if (reduce || !('IntersectionObserver' in window) || !spans.length) {
+      showPops(false);
+      return;
+    }
+    // 立即清空文案（此时区块在视口外，无闪烁），进入视口后逐字打出
+    var store = spans.map(function (s) { return { el: s, text: s.textContent }; });
+    store.forEach(function (it) { it.el.textContent = ''; });
+    var gen = 0;
+    function reset() {
+      gen++;
+      store.forEach(function (it) { it.el.textContent = ''; it.el.classList.remove('tw-caret'); });
+      pops.forEach(function (p) { p.classList.remove('tw-in'); });
+    }
+    function run() {
+      reset();
+      var myGen = gen, i = 0, ci = 0;
+      (function step() {
+        if (myGen !== gen) return;
+        if (i >= store.length) {
+          pops.forEach(function (p, idx) { setTimeout(function () { if (myGen === gen) p.classList.add('tw-in'); }, idx * 130); });
+          return;
+        }
+        var it = store[i];
+        if (ci === 0) it.el.classList.add('tw-caret');
+        if (ci < it.text.length) {
+          it.el.textContent = it.text.slice(0, ++ci);
+          setTimeout(step, 20);
+        } else {
+          it.el.classList.remove('tw-caret');
+          i++; ci = 0;
+          setTimeout(step, 130);
+        }
+      })();
+    }
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) run(); else reset(); });
+    }, { threshold: 0.2 });
+    io.observe(group);
+  })();
+</script>
+<script>
+  /* ===== Case 02 浮动元素：自下而上弹出 + 展开（新增）===== */
+  (function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var group = document.querySelector('[data-pop-group]');
+    if (!group) return;
+    var pops = [].slice.call(group.querySelectorAll('[data-pop]'));
+    if (!pops.length) return;
+    if (reduce || !('IntersectionObserver' in window)) {
+      pops.forEach(function (el) { el.style.opacity = '1'; });
+      return;
+    }
+    var gen = 0;
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) {
+          gen++;
+          var myGen = gen;
+          pops.forEach(function (el, idx) {
+            setTimeout(function () { if (myGen === gen) el.classList.add('pop-go'); }, idx * 160);
+          });
+        } else {
+          gen++;
+          pops.forEach(function (el) { el.classList.remove('pop-go'); });
+        }
+      });
+    }, { threshold: 0.25 });
+    io.observe(group);
+  })();
+</script>
+<script>
+  /* ===== Case 03：大图先入场，三个小模块随滚动逐个展现（新增）===== */
+  (function () {
+    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var sec = document.querySelector('[data-c3]');
+    if (!sec) return;
+    var img = sec.querySelector('[data-c3-img]');
+    var mods = [].slice.call(sec.querySelectorAll('[data-c3-mod]'));
+    if (reduce || !('requestAnimationFrame' in window)) {
+      if (img) img.classList.add('c3-in');
+      mods.forEach(function (m) { m.classList.add('c3-in'); });
+      return;
+    }
+    var ticking = false;
+    function update() {
+      var r = sec.getBoundingClientRect();
+      var vh = window.innerHeight || document.documentElement.clientHeight;
+      var p = (vh - r.top) / (vh + r.height); // 区块通过视口的进度 0..1
+      if (img) img.classList.toggle('c3-in', p > 0.12);
+      mods.forEach(function (m) {
+        var order = parseInt(m.getAttribute('data-c3-mod'), 10) || 1;
+        m.classList.toggle('c3-in', p > 0.28 + (order - 1) * 0.14);
+      });
+    }
+    function onScroll() {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(function () { update(); ticking = false; });
+    }
+    function onScroll() {
+      if (ticking || done) return;
+      ticking = true;
+      requestAnimationFrame(function () { update(); ticking = false; });
+    }
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    update();
+  })();
+</script>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<svg width="250" height="132" viewBox="0 0 250 132" fill="none" xmlns="http://www.w3.org/2000/svg">
+<foreignObject x="-26.2127" y="-26.2127" width="302.32" height="183.489"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(13.11px);clip-path:url(#bgblur_0_4457_509_clip_path);height:100%;width:100%"></div></foreignObject><rect data-figma-bg-blur-radius="26.2127" width="249.895" height="131.064" rx="10.4851" fill="#E5EAF2"/>
+<rect x="34.95" y="13.98" width="35.8241" height="6.99006" rx="0.873757" fill="white"/>
+<rect x="34.95" y="23.5913" width="12.2326" height="4.36879" rx="0.873757" fill="white"/>
+<rect x="12.2328" y="12.2329" width="17.4751" height="17.4751" rx="8.73757" fill="white"/>
+<rect x="12.2328" y="39.3188" width="61.163" height="79.5119" rx="10.7035" fill="white"/>
+<rect x="76.8907" y="39.3188" width="61.163" height="79.5119" rx="10.7035" fill="white"/>
+<rect x="141.549" y="39.3188" width="61.163" height="79.5119" rx="10.7035" fill="white"/>
+<mask id="mask0_4457_509" style="mask-type:alpha" maskUnits="userSpaceOnUse" x="206" y="0" width="34" height="132">
+<foreignObject x="-26.2127" y="-26.2127" width="302.32" height="183.489"><div xmlns="http://www.w3.org/1999/xhtml" style="backdrop-filter:blur(13.11px);clip-path:url(#bgblur_1_4457_509_clip_path);height:100%;width:100%"></div></foreignObject><rect data-figma-bg-blur-radius="26.2127" x="206.207" y="0.000488281" width="33.2028" height="131.064" rx="10.4851" fill="#E5EAF2"/>
+</mask>
+<g mask="url(#mask0_4457_509)">
+<rect x="206.207" y="39.3193" width="61.163" height="79.5119" rx="10.7035" fill="white"/>
+</g>
+<defs>
+<clipPath id="bgblur_0_4457_509_clip_path" transform="translate(26.2127 26.2127)"><rect width="249.895" height="131.064" rx="10.4851"/>
+</clipPath><clipPath id="bgblur_1_4457_509_clip_path" transform="translate(26.2127 26.2127)"><rect x="206.207" y="0.000488281" width="33.2028" height="131.064" rx="10.4851"/>
+</clipPath></defs>
+</svg>
