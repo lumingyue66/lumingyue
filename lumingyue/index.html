@@ -4,13 +4,8 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LuMingYue · AI Product Experience Designer</title>
-  <script src="./assets/tailwind-3.4.16.js"></script>
-  <script>
-    tailwind.config = {
-      mode: 'jit', // 启用即时编译（Tailwind v3 默认开启）
-      important: true, // 确保样式优先级
-    }
-  </script>
+  <link rel="stylesheet" href="index.html.css">
+  
   <style>
     /* 画布在视口内水平居中，保持 1440px 原始设计宽度 1:1 还原 */
     html { background: rgba(0, 0, 0, 1); }
@@ -57,7 +52,7 @@
     /* 打字机效果的光标 + 下方胶囊/按钮联动入场 */
     [data-tw].tw-caret { border-right: 2px solid rgba(69,224,122,0.9); animation: twBlink .7s step-end infinite; }
     @keyframes twBlink { 0%,100% { border-color: rgba(69,224,122,0.9); } 50% { border-color: transparent; } }
-    [data-tw-pop] { opacity: 0; transform: translateY(10px) scale(.96); transition: opacity .45s ease, transform .45s cubic-bezier(.22,.61,.36,1); }
+    [data-tw-pop] { opacity: 0; transform: translateY(10px) scale(.96); transition: opacity .18s ease, transform .18s ease; }
     [data-tw-pop].tw-in { opacity: 1; transform: none; }
     /* 红框浮动元素：自下而上弹出 + 展开 */
     [data-pop] { opacity: 0; will-change: transform, opacity; }
@@ -86,6 +81,8 @@
       [data-c3-img], [data-c3-mod] { opacity: 1 !important; transform: none !important; transition: none !important; }
     }
   </style>
+<link rel="stylesheet" href="../responsive/mobile.css">
+<script>document.documentElement.style.setProperty("--canvas-fit", String(Math.min(1, document.documentElement.clientWidth / 1440)));</script>
 </head>
 <body>
 
@@ -343,7 +340,7 @@
         id="1:9707"
       ></div>
       <div class="w-[38px] h-[14px] flex flex-col flex-nowrap justify-start items-start relative" id="1:9708">
-        <img src="./assets/image_1.svg" class="w-[14px] h-[38px] absolute top-[6px] left-[11.71px]" id="1:9709" />
+        <img decoding="async" src="./assets/image_1.svg" class="w-[14px] h-[38px] absolute top-[6px] left-[11.71px]" id="1:9709"  loading="eager" />
       </div>
     </div>
     <div
@@ -1280,7 +1277,7 @@
   <div
     class="w-[1440px] h-[1158px] overflow-hidden bg-[rgba(255,255,255,0)] absolute top-[5222px] left-0 flex flex-col justify-start items-start"
     id="1:9881"
-    data-reveal
+    
   >
     <div
       class="font-[Fira_Code] text-[12px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[19px] tracking-[normal] font-bold flex-shrink-0"
@@ -1335,40 +1332,40 @@
           class="w-[104px] h-[34px] flex flex-col flex-nowrap justify-start items-start pb-[2px] box-border absolute top-[14px] left-[24px]"
           id="1:9893"
         >
-          <img src="./assets/image_2.svg" class="w-[104px] h-[32px]" id="1:9894" />
+          <img decoding="async" src="./assets/image_2.svg" class="w-[104px] h-[32px]" id="1:9894"  loading="eager" />
         </div>
         <div class="absolute top-[14px] left-[144px] flex justify-start items-start w-[1272px] h-[32px]" id="1:9895">
           <div class="mt-[9px] flex justify-center items-center w-[63px] h-[16px]" id="1:9896">
             <div class="flex justify-start items-start w-[63px] h-[16px]" id="1:9897">
-              <img src="./assets/image_3.svg" class="w-px h-[9px] mix-blend-normal mt-[3.50px]" id="1:9901" />
+              <img decoding="async" src="./assets/image_3.svg" class="w-px h-[9px] mix-blend-normal mt-[3.50px]" id="1:9901"  loading="eager" />
               <div
                 class="mt-px ml-[16px] font-[PingFang_HK] text-[14px] whitespace-nowrap text-[rgba(36,37,41,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
                 id="1:9898"
               >
                 <span class="tracking-[0px]">切换</span>
               </div>
-              <img src="./assets/image_4.svg" class="w-[16px] h-[16px] ml-[2px]" id="1:9899" />
+              <img decoding="async" src="./assets/image_4.svg" class="w-[16px] h-[16px] ml-[2px]" id="1:9899"  loading="eager" />
             </div>
           </div>
           <div class="ml-[1049px] flex justify-start items-center w-[160px] h-[32px]" id="1:9902">
             <div class="relative w-[92px] h-[32px]" id="1:9907">
-              <img src="./assets/image_5.svg" class="w-[92px] h-[32px] absolute top-0 left-0" id="1:9908" />
+              <img decoding="async" src="./assets/image_5.svg" class="w-[92px] h-[32px] absolute top-0 left-0" id="1:9908"  loading="eager" />
               <div
                 class="absolute top-[7px] left-[12px] flex justify-start items-start w-[68px] h-[18.38px]"
                 id="1:9909"
               >
                 <div class="flex justify-center items-center w-[18.38px] h-[18.38px]" id="1:9910">
-                  <img src="./assets/image_6.svg" class="w-[18.38px] h-[18.38px]" id="1:9915" />
+                  <img decoding="async" src="./assets/image_6.svg" class="w-[18.38px] h-[18.38px]" id="1:9915"  loading="eager" />
                 </div>
-                <img src="./assets/image_7.svg" class="w-[44px] h-[14.96px] mt-[1.54px] ml-[5.62px]" id="1:9916" />
+                <img decoding="async" src="./assets/image_7.svg" class="w-[44px] h-[14.96px] mt-[1.54px] ml-[5.62px]" id="1:9916"  loading="lazy" />
               </div>
             </div>
             <div class="ml-[16px] flex justify-start items-start w-[52px] h-[32px]" id="1:9903">
-              <img src="./assets/image_8.svg" class="w-[32px] h-[32px]" id="1:9904" /><img
+              <img decoding="async" src="./assets/image_8.svg" class="w-[32px] h-[32px]" id="1:9904"  loading="lazy" /><img decoding="async"
                 src="./assets/image_9.svg"
                 class="w-[16px] h-[16px] mt-[9px] ml-[4px]"
                 id="1:9905"
-              />
+               loading="lazy" />
             </div>
           </div>
         </div>
@@ -1378,11 +1375,11 @@
         id="1:9917"
       >
         <div class="relative w-[360px] h-[800px]" id="1:9918">
-          <img src="./assets/image_10.svg" class="w-[360px] h-[800px] absolute top-0 left-0" id="1:9919" />
+          <img decoding="async" src="./assets/image_10.svg" class="w-[360px] h-[800px] absolute top-0 left-0" id="1:9919"  loading="lazy" />
           <div class="absolute top-[664px] left-[16px] w-[343px] h-[32px]" id="1:9920">
             <div class="absolute top-0 left-0 flex justify-center items-center w-[100px] h-[32px]" id="1:9922">
               <div class="relative w-[100px] h-[32px]" id="1:9923">
-                <img src="./assets/image_11.svg" class="w-[100px] h-[32px] absolute top-0 left-0" id="1:9924" />
+                <img decoding="async" src="./assets/image_11.svg" class="w-[100px] h-[32px] absolute top-0 left-0" id="1:9924"  loading="lazy" />
                 <div
                   class="absolute top-[8px] left-[36px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[16px] tracking-[normal] font-normal"
                   id="1:9925"
@@ -1393,13 +1390,13 @@
                   class="w-[16px] h-[16px] overflow-hidden absolute top-[8px] left-[16px] flex justify-center items-center"
                   id="1:9926"
                 >
-                  <img src="./assets/image_12.svg" class="w-[16px] h-[16px]" id="1:9927" />
+                  <img decoding="async" src="./assets/image_12.svg" class="w-[16px] h-[16px]" id="1:9927"  loading="lazy" />
                 </div>
               </div>
             </div>
             <div class="absolute top-0 left-[108px] flex justify-center items-center w-[100px] h-[32px]" id="1:9930">
               <div class="relative w-[100px] h-[32px]" id="1:9931">
-                <img src="./assets/image_13.svg" class="w-[100px] h-[32px] absolute top-0 left-0" id="1:9932" />
+                <img decoding="async" src="./assets/image_13.svg" class="w-[100px] h-[32px] absolute top-0 left-0" id="1:9932"  loading="lazy" />
                 <div
                   class="absolute top-[8px] left-[36px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(56,85,213,1)] leading-[16px] tracking-[normal] font-normal"
                   id="1:9933"
@@ -1410,13 +1407,13 @@
                   class="w-[16px] h-[16px] overflow-hidden absolute top-[8px] left-[16px] flex justify-center items-center"
                   id="1:9934"
                 >
-                  <img src="./assets/image_14.svg" class="w-[16px] h-[16px]" id="1:9935" />
+                  <img decoding="async" src="./assets/image_14.svg" class="w-[16px] h-[16px]" id="1:9935"  loading="lazy" />
                 </div>
               </div>
             </div>
             <div class="absolute top-0 left-[216px] flex justify-center items-center w-[68px] h-[32px]" id="1:9938">
               <div class="relative w-[68px] h-[32px]" id="1:9939">
-                <img src="./assets/image_15.svg" class="w-[68px] h-[32px] absolute top-0 left-0" id="1:9940" />
+                <img decoding="async" src="./assets/image_15.svg" class="w-[68px] h-[32px] absolute top-0 left-0" id="1:9940"  loading="lazy" />
                 <div
                   class="absolute top-[8px] left-[16px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[16px] tracking-[normal] font-normal"
                   id="1:9941"
@@ -1431,7 +1428,7 @@
             >
               <div class="flex justify-center items-center w-[68px] h-[32px]" id="1:9944">
                 <div class="relative w-[68px] h-[32px]" id="1:9945">
-                  <img src="./assets/image_16.svg" class="w-[68px] h-[32px] absolute top-0 left-0" id="1:9946" />
+                  <img decoding="async" src="./assets/image_16.svg" class="w-[68px] h-[32px] absolute top-0 left-0" id="1:9946"  loading="lazy" />
                   <div
                     class="absolute top-[8px] left-[16px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[16px] tracking-[normal] font-normal"
                     id="1:9947"
@@ -1449,11 +1446,11 @@
           <div class="absolute top-[64px] left-[16px] w-[328px] h-[720px]" id="1:9949">
             <!-- [START: Group 1312315454] 请优先使用【Group 1312315454】组件，完整替换截止到[END: Group 1312315454]的全部HTML，不要保留这部分的任何HTML结构与样式。-->
             <div class="w-[355px] h-[80px] absolute top-[640px] left-0" id="1:9950">
-              <img
+              <img decoding="async"
                 src="./assets/image_17.svg"
                 class="w-[360px] h-[99px] absolute -top-[3px] -left-[16px]"
                 id="I1:9950;333:272493"
-              />
+               loading="lazy" />
               <div
                 class="absolute top-[14px] left-[12px] font-[PingFang_SC] text-[14px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[14px] tracking-[normal] font-normal"
                 id="I1:9950;545:7003"
@@ -1462,18 +1459,18 @@
               </div>
               <div class="absolute top-[40px] left-[12px] w-[331px] h-[28px]" id="I1:9950;545:6680">
                 <div class="w-[20px] min-h-[20px] absolute top-[4px] left-[305px]" id="I1:9950;545:6681"></div>
-                <img
+                <img decoding="async"
                   src="./assets/image_18.svg"
                   class="w-[56px] h-[56px] absolute top-[-7px] left-[254px]"
                   id="I1:9950;624:3429"
-                />
+                 loading="lazy" />
                 <div class="absolute top-[3px] left-0 w-[22px] h-[22px]" id="I1:9950;1201:28116">
                   <div class="w-[22px] min-h-[22px] absolute top-0 left-0" id="I1:9950;1201:28117"></div>
-                  <img
+                  <img decoding="async"
                     src="./assets/image_19.svg"
                     class="w-[16.49px] h-[16.48px] absolute top-[3px] left-[3px]"
                     id="I1:9950;1201:28118"
-                  />
+                   loading="lazy" />
                 </div>
               </div>
             </div>
@@ -1486,18 +1483,18 @@
               >
                 <span class="tracking-[0%]">专属助理，有什么可以帮助你的吗？</span>
               </div>
-              <img
+              <img decoding="async"
                 src="./assets/image_20.svg"
                 class="w-[226.31px] h-[26.07px] absolute top-[3px] left-[41.69px]"
                 id="I1:9951;1329:30921"
-              /><img
+               loading="lazy" /><img decoding="async"
                 src="./assets/image_21.svg"
                 class="w-[32px] h-[32px] absolute top-0 left-0"
                 id="I1:9951;1329:30922"
-              />
+               loading="lazy" />
             </div>
             <!-- [END: Group 1312315482] -->
-            <img src="./assets/hotspot_card.png" class="absolute top-[102px] left-1/2 -translate-x-1/2 w-[360px] h-[307px]" id="1:9956" />
+            <img decoding="async" src="./assets/hotspot_card.webp" class="absolute top-[102px] left-1/2 -translate-x-1/2 w-[360px] h-[307px]" id="1:9956"  loading="lazy" />
           </div>
         </div>
       </div>
@@ -1506,7 +1503,7 @@
           <div class="absolute top-0 left-0 flex justify-center items-center w-[328px] h-[380px]" id="1:10008">
             <div class="relative w-[328px] h-[380px]" id="1:10010">
               <div class="absolute top-[48px] left-0 w-[328px] h-[332px]" id="1:10021">
-                <img src="./assets/image_28.svg" class="w-[328px] h-[332px] absolute top-0 left-0" id="1:10022" />
+                <img decoding="async" src="./assets/image_28.svg" class="w-[328px] h-[332px] absolute top-0 left-0" id="1:10022"  loading="lazy" />
                 <div
                   class="absolute top-[224px] left-[16px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[12px] tracking-[normal] font-normal"
                   id="1:10023"
@@ -1611,15 +1608,15 @@
                 <span class="tracking-[0%]">12-31</span>
               </div>
               <div class="absolute top-[6px] left-0 w-[296px] h-[135px] js-fans-chart" id="1:10041">
-                <img src="./assets/image_29.svg" class="w-[296px] absolute top-[32px] left-0" id="1:10042" /><img
+                <img decoding="async" src="./assets/image_29.svg" class="w-[296px] absolute top-[32px] left-0" id="1:10042"  loading="lazy" /><img decoding="async"
                   src="./assets/image_29.svg"
                   class="w-[296px] absolute top-[79px] left-0"
                   id="1:10043"
-                /><img
+                 loading="lazy" /><img decoding="async"
                   src="./assets/image_30.svg"
                   class="chart-fill-cyan w-[296px] h-[126px] absolute top-[9px] left-0"
                   id="1:10044"
-                /><svg
+                 loading="lazy" /><svg
                   class="w-[295.43px] h-[71.49px] absolute top-[9px] left-[0.54px]"
                   viewBox="0 0 297 63"
                   fill="none"
@@ -1631,11 +1628,11 @@
                   fill="none"
                   xmlns="http://www.w3.org/2000/svg"
                   id="1:10046"
-                ><path class="chart-fill-purple" d="M4.08194 92.5075L0.382811 95.298C0.141737 95.4798 0 95.7643 0 96.0663V126H296V97.9731C296 96.1709 295.702 94.3811 295.119 92.676L273.5 29.5L271.568 24.8896C267.479 15.1334 253.821 14.6877 249.105 24.1567L232.464 57.5667C231.539 59.4247 230.2 61.0456 228.549 62.3045C226.186 64.1072 223.295 65.0837 220.323 65.0837H217.186C213.341 65.0837 209.619 63.7293 206.672 61.2583L197.146 53.2678C190.48 47.6772 180.605 48.2807 174.67 54.6412L155.371 75.3228C153.286 77.5578 150.366 78.8267 147.309 78.8267C144.668 78.8267 142.114 77.8784 140.113 76.1545L129.642 67.1346C123.065 61.4698 113.21 61.9264 107.185 68.1751L102.847 72.6747C101.072 74.5156 98.8908 75.9149 96.4773 76.7603L95.3047 77.171C92.2362 78.2457 88.9019 78.2966 85.802 77.3159C82.0698 76.1352 78.9454 73.5451 77.0933 70.0965L66.4485 50.2755C60.7194 39.6078 45.3927 39.6891 39.7772 50.417C31.1407 66.9162 18.949 81.2922 4.08194 92.5075Z" fill="url(#paint0_linear_1_10046)"/><path pathLength="1" class="chart-draw chart-draw-purple" d="M0.99939 95.5029L4.37318 92.9141C19.054 81.6491 31.094 67.3101 39.6494 50.9018C45.3076 40.0501 60.8069 39.968 66.5796 50.7591L77.1054 70.4351C78.9498 73.8828 82.0672 76.4744 85.7938 77.6579C88.8985 78.644 92.2397 78.5929 95.3128 77.5123L96.4731 77.1043C98.8893 76.2547 101.072 74.8497 102.846 73.0023L107.166 68.5048C113.195 62.2267 123.084 61.7684 129.668 67.4619L140.118 76.4986C142.116 78.2264 144.669 79.1773 147.31 79.1773C150.366 79.1773 153.284 77.9057 155.364 75.6675L174.651 54.9175C180.591 48.5274 190.499 47.9218 197.173 53.541L206.666 61.5348C209.616 64.0185 213.348 65.3805 217.204 65.3805H220.305C223.289 65.3805 226.189 64.3974 228.558 62.5833C230.203 61.3241 231.538 59.7052 232.46 57.8507L249.792 23.0067C253.633 15.2867 264.419 14.6881 269.09 21.9359C271.686 25.9654 273.78 30.2979 275.322 34.8366L296 95.6661" stroke="#3855D5" stroke-linecap="round"/><defs><linearGradient id="paint0_linear_1_10046" x1="150.5" y1="-0.500001" x2="155.143" y2="123.326" gradientUnits="userSpaceOnUse"><stop stop-color="#314CFF"/><stop offset="1" stop-color="#D9D9D9" stop-opacity="0"/></linearGradient></defs></svg><img
+                ><path class="chart-fill-purple" d="M4.08194 92.5075L0.382811 95.298C0.141737 95.4798 0 95.7643 0 96.0663V126H296V97.9731C296 96.1709 295.702 94.3811 295.119 92.676L273.5 29.5L271.568 24.8896C267.479 15.1334 253.821 14.6877 249.105 24.1567L232.464 57.5667C231.539 59.4247 230.2 61.0456 228.549 62.3045C226.186 64.1072 223.295 65.0837 220.323 65.0837H217.186C213.341 65.0837 209.619 63.7293 206.672 61.2583L197.146 53.2678C190.48 47.6772 180.605 48.2807 174.67 54.6412L155.371 75.3228C153.286 77.5578 150.366 78.8267 147.309 78.8267C144.668 78.8267 142.114 77.8784 140.113 76.1545L129.642 67.1346C123.065 61.4698 113.21 61.9264 107.185 68.1751L102.847 72.6747C101.072 74.5156 98.8908 75.9149 96.4773 76.7603L95.3047 77.171C92.2362 78.2457 88.9019 78.2966 85.802 77.3159C82.0698 76.1352 78.9454 73.5451 77.0933 70.0965L66.4485 50.2755C60.7194 39.6078 45.3927 39.6891 39.7772 50.417C31.1407 66.9162 18.949 81.2922 4.08194 92.5075Z" fill="url(#paint0_linear_1_10046)"/><path pathLength="1" class="chart-draw chart-draw-purple" d="M0.99939 95.5029L4.37318 92.9141C19.054 81.6491 31.094 67.3101 39.6494 50.9018C45.3076 40.0501 60.8069 39.968 66.5796 50.7591L77.1054 70.4351C78.9498 73.8828 82.0672 76.4744 85.7938 77.6579C88.8985 78.644 92.2397 78.5929 95.3128 77.5123L96.4731 77.1043C98.8893 76.2547 101.072 74.8497 102.846 73.0023L107.166 68.5048C113.195 62.2267 123.084 61.7684 129.668 67.4619L140.118 76.4986C142.116 78.2264 144.669 79.1773 147.31 79.1773C150.366 79.1773 153.284 77.9057 155.364 75.6675L174.651 54.9175C180.591 48.5274 190.499 47.9218 197.173 53.541L206.666 61.5348C209.616 64.0185 213.348 65.3805 217.204 65.3805H220.305C223.289 65.3805 226.189 64.3974 228.558 62.5833C230.203 61.3241 231.538 59.7052 232.46 57.8507L249.792 23.0067C253.633 15.2867 264.419 14.6881 269.09 21.9359C271.686 25.9654 273.78 30.2979 275.322 34.8366L296 95.6661" stroke="#3855D5" stroke-linecap="round"/><defs><linearGradient id="paint0_linear_1_10046" x1="150.5" y1="-0.500001" x2="155.143" y2="123.326" gradientUnits="userSpaceOnUse"><stop stop-color="#314CFF"/><stop offset="1" stop-color="#D9D9D9" stop-opacity="0"/></linearGradient></defs></svg><img decoding="async"
                   src="./assets/image_33.svg"
                   class="w-[296px] absolute top-[126px] left-0"
                   id="1:10049"
-                />
+                 loading="lazy" />
               </div>
               <div
                 class="absolute top-[71px] left-0 font-[PingFang_SC] text-[10px] whitespace-nowrap text-[rgba(153,153,153,1)] leading-[10px] tracking-[normal] font-normal"
@@ -1805,7 +1802,7 @@
               class="w-[291.10px] h-[649.44px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start absolute top-[8.20px] left-[8.20px]"
               id="1:10078"
             >
-              <img src="./assets/image_34.svg" class="w-[291px] h-[650px]" id="1:10079" />
+              <img decoding="async" src="./assets/image_34.svg" class="w-[291px] h-[650px]" id="1:10079"  loading="lazy" />
             </div>
             <div
               class="w-[3.28px] bg-[linear-gradient(180deg,_rgba(46,46,48,1)_0%,rgba(28,28,30,1)_99.09%)] min-h-[26.24px] absolute top-[141.04px] -left-[2.05px]"
@@ -1827,47 +1824,47 @@
         </div>
       </div>
       <div class="w-[445px] h-[429px] overflow-hidden bg-[rgba(0,0,0,0)] absolute top-[98px] left-[89px]" id="1:10084" data-pop>
-        <img
+        <img decoding="async"
           src="./assets/image_35.svg"
           class="w-[433.96px] h-[125.32px] absolute top-[11px] left-[4px]"
           id="1:10085"
-        /><img
+         loading="lazy" /><img decoding="async"
           src="./assets/image_36.svg"
           class="w-[102.66px] h-[75.04px] absolute top-[146.66px] left-[73.48px]"
           id="1:10088"
-        /><img
+         loading="lazy" /><img decoding="async"
           src="./assets/image_37.svg"
           class="w-[147.45px] h-[154.11px] absolute top-[148.66px] left-[92.48px]"
           id="1:10090"
-        /><img
+         loading="lazy" /><img decoding="async"
           src="./assets/image_38.svg"
           class="w-[148.56px] h-[154.94px] absolute top-[230.66px] left-[178.48px]"
           id="1:10100"
-        />
+         loading="lazy" />
         <div
           class="w-[431px] rounded-[14px] bg-[rgba(15,15,15,1)] min-h-[54px] absolute top-[91.66px] left-[6.48px]"
           id="1:10110"
         ></div>
-        <img
+        <img decoding="async"
           src="./assets/image_39.svg"
           class="w-[431.20px] h-[55.60px] absolute top-[90.66px] left-[6.38px]"
           id="1:10111"
-        />
+         loading="lazy" />
       </div>
       <div class="w-[358px] h-[400px] absolute top-[197px] left-[993px]" id="1:10118" data-pop>
-        <img
+        <img decoding="async"
           src="./assets/image_40.svg"
           class="w-[203.30px] h-[203.30px] absolute top-[66.35px] -left-[11.65px]"
           id="1:10119"
-        /><img
+         loading="lazy" /><img decoding="async"
           src="./assets/image_41.svg"
           class="w-[198.52px] h-[198.52px] absolute top-[51.74px] left-[19.74px]"
           id="1:10120"
-        /><img
+         loading="lazy" /><img decoding="async"
           src="./assets/image_42.svg"
           class="w-[343px] h-[343px] absolute top-[31px] left-[-19px]"
           id="1:10121"
-        />
+         loading="lazy" />
         <div class="w-[180px] h-[44px] absolute top-[4px] left-[109px] flex justify-end items-end" id="1:10125">
           <div class="w-[10px] border-[rgba(102,102,102,1)] border-solid border-[5px] min-h-[10px]" id="1:10126"></div>
         </div>
@@ -1891,11 +1888,11 @@
                   class="w-[101.33px] rounded-[33.33px] border bg-[rgba(255,255,255,1)] min-h-[33.33px] absolute top-0 left-0"
                   id="1:10133"
                 ></div>
-                <img
+                <img decoding="async"
                   src="./assets/image_43.svg"
                   class="w-[15.33px] h-[15.33px] absolute top-[9px] left-[13px]"
                   id="1:10134"
-                />
+                 loading="lazy" />
                 <div
                   class="absolute top-[9.67px] left-[32.33px] font-['undefined'] text-[14px] whitespace-nowrap text-[rgba(51,51,51,1)] leading-[14px] tracking-[normal] font-normal"
                   id="1:10139"
@@ -1922,11 +1919,11 @@
                   <span class="font-[PingFang_SC] tracking-[0px]">AI&nbsp;写诗</span>
                 </div>
               </div>
-              <img
+              <img decoding="async"
                 src="./assets/image_44.svg"
                 class="w-[15.33px] h-[15.33px] absolute top-[9px] left-[12px]"
                 id="1:10145"
-              />
+               loading="lazy" />
             </div>
           </div>
         </div>
@@ -1941,18 +1938,18 @@
             <span class="tracking-[0%]">AI&nbsp;创辅</span>
           </div>
         </div>
-        <img
+        <img decoding="async"
           src="./assets/image_45.svg"
           class="w-[191px] h-[165px] absolute top-[256px] left-[91px]"
           id="1:10150"
-        />
+         loading="lazy" />
       </div>
-      <img
+      <img decoding="async"
         src="./assets/image_46.svg"
         class="w-[255px] h-[218px] absolute top-[397px] left-[120px]"
         id="1:10154"
         data-pop
-      />
+       loading="lazy" />
       <div class="w-[111px] h-[34px] absolute top-[776px] left-[694px] flex justify-start items-center" id="1:10158">
         <div
           class="font-[Inter] text-[12px] whitespace-nowrap text-[rgba(247,248,245,1)] leading-[14px] tracking-[normal] font-normal flex-shrink-0"
@@ -1972,12 +1969,12 @@
           </div>
         </div>
       </div>
-      <img
+      <img decoding="async"
         src="./assets/image_47.svg"
         class="w-[151px] h-[153px] absolute top-[86px] left-[938px]"
         id="1:10162"
         data-pop
-      />
+       loading="lazy" />
     </div>
   </div>
   <div
@@ -2106,7 +2103,7 @@
         id="1:10168"
         data-c3-img
       >
-        <img src="./assets/image_48.svg" class="w-[993px] h-[621px]" id="1:10169" />
+        <img decoding="async" src="./assets/image_48.svg" class="w-[993px] h-[621px]" id="1:10169"  loading="lazy" />
       </div>
       <div
         class="w-[287.93px] h-[157.19px] overflow-hidden rounded-[12.45px] border-[1.03px] border-solid border-[rgba(255,255,255,0.06)] [box-shadow:0px_8.23px_32.91px_0px_rgba(0,0,0,0.6),_inset_0px_-1.03px_0px_0px_rgba(0,0,0,0.4),_inset_0px_1.03px_0px_0px_rgba(255,255,255,0.08)] bg-[linear-gradient(128deg,_rgba(42,43,48,0.9)_10.489999999999998%,rgba(28,29,33,0.9)_57.89%)] flex flex-col flex-nowrap justify-center items-center absolute top-[298px] left-[1030px]"
@@ -2114,7 +2111,7 @@
         data-c3-mod="2"
       >
         <div class="w-[185px] h-[108.98px] flex flex-col flex-nowrap justify-start items-center" id="1:10171">
-          <img src="./assets/image_49.svg" class="w-[49.36px] h-[49.36px] overflow-hidden mb-[16.45px]" id="1:10173" />
+          <img decoding="async" src="./assets/image_49.svg" class="w-[49.36px] h-[49.36px] overflow-hidden mb-[16.45px]" id="1:10173"  loading="lazy" />
           <div class="w-[185px] h-[43.17px] flex flex-col flex-nowrap justify-start items-center" id="1:10176">
             <div
               class="mb-[6.17px] font-[PingFang_SC] text-[14.40px] whitespace-nowrap text-[rgba(245,250,255,1)] leading-[20.20px] tracking-[normal] font-medium"
@@ -2139,7 +2136,7 @@
         <div class="flex flex-col justify-start items-start w-[349.92px] h-[185.89px]" id="1:10180">
           <div class="flex justify-start items-center w-[193.18px] h-[29.16px]" id="1:10181">
             <div class="relative w-[98.41px] h-[29.16px]" id="1:10182">
-              <img src="./assets/image_50.svg" class="w-[98.41px] h-[29.16px] absolute top-0 left-0" id="1:10183" />
+              <img decoding="async" src="./assets/image_50.svg" class="w-[98.41px] h-[29.16px] absolute top-0 left-0" id="1:10183"  loading="lazy" />
               <div
                 class="absolute top-[9.11px] left-[10.93px] flex justify-center items-center w-[77px] h-[11px]"
                 id="1:10184"
@@ -2153,7 +2150,7 @@
               </div>
             </div>
             <div class="ml-[7.29px] relative w-[87.48px] h-[29.16px]" id="1:10186">
-              <img src="./assets/image_51.svg" class="w-[87.48px] h-[29.16px] absolute top-0 left-0" id="1:10187" />
+              <img decoding="async" src="./assets/image_51.svg" class="w-[87.48px] h-[29.16px] absolute top-0 left-0" id="1:10187"  loading="lazy" />
               <div
                 class="absolute top-[9.11px] left-[10.93px] flex justify-center items-center w-[66px] h-[11px]"
                 id="1:10188"
@@ -2168,7 +2165,7 @@
             </div>
           </div>
           <div class="mt-[10.94px] relative w-[349.91px] h-[145.80px]" id="1:10190">
-            <img src="./assets/image_52.svg" class="w-[349.91px] h-[145.80px] absolute top-0 left-0" id="1:10191" />
+            <img decoding="async" src="./assets/image_52.svg" class="w-[349.91px] h-[145.80px] absolute top-0 left-0" id="1:10191"  loading="lazy" />
             <div
               class="absolute top-[14.58px] left-[14.58px] flex flex-col justify-start items-start w-[320.76px] h-[116.64px]"
               id="1:10192"
@@ -2186,11 +2183,11 @@
                   <div class="flex justify-start items-center w-[284.31px] h-[29.16px]" id="1:10202">
                     <div class="flex justify-start items-center w-[161.29px] h-[29.16px]" id="1:10203">
                       <div class="relative w-[62.88px] h-[29.16px]" id="1:10204">
-                        <img
+                        <img decoding="async"
                           src="./assets/image_53.svg"
                           class="w-[62.88px] h-[29.16px] absolute top-0 left-0"
                           id="1:10205"
-                        />
+                         loading="lazy" />
                         <div
                           class="absolute top-[9.11px] left-[25.51px] font-[PingFang_SC] text-[10.93px] whitespace-nowrap text-[rgba(245,250,255,1)] leading-[10.93px] tracking-[normal] font-normal"
                           id="1:10206"
@@ -2201,78 +2198,78 @@
                           class="w-[14.58px] h-[14.58px] overflow-hidden absolute top-[7.29px] left-[7.29px] flex justify-center items-center"
                           id="1:10207"
                         >
-                          <img src="./assets/image_54.svg" class="w-[14.58px] h-[14.58px]" id="I1:10207;1080:11592" />
+                          <img decoding="async" src="./assets/image_54.svg" class="w-[14.58px] h-[14.58px]" id="I1:10207;1080:11592"  loading="lazy" />
                         </div>
                       </div>
                       <div class="ml-[3.65px] relative w-[29.16px] h-[29.16px]" id="1:10208">
-                        <img
+                        <img decoding="async"
                           src="./assets/image_55.svg"
                           class="w-[29.16px] h-[29.16px] absolute top-0 left-0"
                           id="1:10209"
-                        />
+                         loading="lazy" />
                         <div
                           class="w-[14.58px] h-[14.58px] overflow-hidden absolute top-[7.29px] left-[7.29px] flex justify-center items-center"
                           id="1:10210"
                         >
-                          <img src="./assets/image_56.svg" class="w-[14.58px] h-[14.58px]" id="I1:10210;426:54497" />
+                          <img decoding="async" src="./assets/image_56.svg" class="w-[14.58px] h-[14.58px]" id="I1:10210;426:54497"  loading="lazy" />
                         </div>
                       </div>
                       <div class="ml-[3.64px] relative w-[29.16px] h-[29.16px]" id="1:10211">
-                        <img
+                        <img decoding="async"
                           src="./assets/image_55.svg"
                           class="w-[29.16px] h-[29.16px] absolute top-0 left-0"
                           id="1:10212"
-                        />
+                         loading="lazy" />
                         <div
                           class="w-[14.58px] h-[14.58px] overflow-hidden absolute top-[7.29px] left-[7.29px] flex justify-center items-center"
                           id="1:10213"
                         >
-                          <img src="./assets/image_57.svg" class="w-[14.58px] h-[14.58px]" id="I1:10213;426:52201" />
+                          <img decoding="async" src="./assets/image_57.svg" class="w-[14.58px] h-[14.58px]" id="I1:10213;426:52201"  loading="lazy" />
                         </div>
                       </div>
                       <div class="ml-[3.65px] relative w-[29.16px] h-[29.16px]" id="1:10214">
-                        <img
+                        <img decoding="async"
                           src="./assets/image_55.svg"
                           class="w-[29.16px] h-[29.16px] absolute top-0 left-0"
                           id="1:10215"
-                        /><img
+                         loading="lazy" /><img decoding="async"
                           src="./assets/image_58.svg"
                           class="w-[14.58px] h-[14.58px] absolute top-[7.29px] left-[7.29px]"
                           id="1:10216"
-                        />
+                         loading="lazy" />
                       </div>
                     </div>
                     <div class="ml-[66.52px] flex justify-center items-center w-[56.50px] h-[29.16px]" id="1:10221">
                       <div class="relative w-[56.50px] h-[29.16px]" id="1:10222">
-                        <img
+                        <img decoding="async"
                           src="./assets/image_59.svg"
                           class="w-[56.50px] h-[29.16px] absolute top-0 left-0"
                           id="1:10223"
-                        />
+                         loading="lazy" />
                         <div class="absolute top-[2.73px] left-[28.25px] w-[25.51px] h-[23.69px]" id="1:10224">
-                          <img
+                          <img decoding="async"
                             src="./assets/image_60.svg"
                             class="w-[25.51px] h-[23.69px] absolute top-0 left-0"
                             id="1:10225"
-                          />
+                           loading="lazy" />
                           <div
                             class="w-[14.58px] h-[14.58px] overflow-hidden absolute top-[4.56px] left-[5.47px] flex justify-center items-center"
                             id="1:10226"
                           >
-                            <img src="./assets/image_61.svg" class="w-[14.58px] h-[14.58px]" id="I1:10226;426:53561" />
+                            <img decoding="async" src="./assets/image_61.svg" class="w-[14.58px] h-[14.58px]" id="I1:10226;426:53561"  loading="lazy" />
                           </div>
                         </div>
                         <div class="absolute top-[2.73px] left-[2.73px] w-[25.51px] h-[23.69px]" id="1:10227">
-                          <img
+                          <img decoding="async"
                             src="./assets/image_24.svg" onerror="this.style.visibility='hidden'"
                             class="w-[25.51px] h-[23.69px] absolute top-0 left-0"
                             id="1:10228"
-                          />
+                           loading="lazy" />
                           <div
                             class="w-[14.58px] h-[14.58px] overflow-hidden absolute top-[4.56px] left-[5.47px] flex justify-center items-center"
                             id="1:10229"
                           >
-                            <img src="./assets/image_62.svg" class="w-[14.58px] h-[14.58px]" id="I1:10229;426:55485" />
+                            <img decoding="async" src="./assets/image_62.svg" class="w-[14.58px] h-[14.58px]" id="I1:10229;426:55485"  loading="lazy" />
                           </div>
                         </div>
                       </div>
@@ -2280,16 +2277,16 @@
                   </div>
                   <div class="ml-[7.29px] flex justify-center items-center w-[29.16px] h-[29.16px]" id="1:10195">
                     <div class="relative w-[29.16px] h-[29.16px]" id="1:10198">
-                      <img
+                      <img decoding="async"
                         src="./assets/image_63.svg"
                         class="w-[29.16px] h-[29.16px] absolute top-0 left-0"
                         id="1:10199"
-                      />
+                       loading="lazy" />
                       <div
                         class="absolute top-[6.38px] left-[6.38px] flex justify-center items-start w-[16.40px] h-[16.40px]"
                         id="1:10200"
                       >
-                        <img src="./assets/image_64.svg" class="w-[16.40px] h-[16.40px]" id="1:10201" />
+                        <img decoding="async" src="./assets/image_64.svg" class="w-[16.40px] h-[16.40px]" id="1:10201"  loading="lazy" />
                       </div>
                     </div>
                   </div>
@@ -2332,23 +2329,23 @@
             >
               <div class="w-[236.50px] h-[124.50px] flex flex-col flex-nowrap justify-start items-start" id="1:10240">
                 <div class="w-[236.50px] h-[124.50px] overflow-hidden relative" id="1:10241">
-                  <img
+                  <img decoding="async"
                     src="./assets/image_65.svg"
                     class="w-[220.28px] absolute top-[50.22px] left-[12.16px]"
                     id="1:10242"
-                  /><img
+                   loading="lazy" /><img decoding="async"
                     src="./assets/image_65.svg"
                     class="w-[220.28px] absolute top-[61.58px] left-[12.16px]"
                     id="1:10243"
-                  /><img
+                   loading="lazy" /><img decoding="async"
                     src="./assets/image_65.svg"
                     class="w-[220.28px] absolute top-[72.93px] left-[12.16px]"
                     id="1:10244"
-                  /><img
+                   loading="lazy" /><img decoding="async"
                     src="./assets/image_66.svg"
                     class="w-[220.28px] absolute top-[77.79px] left-[12.16px]"
                     id="1:10245"
-                  />
+                   loading="lazy" />
                   <div
                     class="absolute top-[48.54px] left-[6.32px] font-[Inter] text-[3.04px] whitespace-nowrap text-right text-[rgba(103,107,112,1)] leading-[normal] tracking-[normal] font-normal"
                     id="1:10246"
@@ -2391,104 +2388,104 @@
                   >
                     <span class="text-[2.70px] tracking-[0%]">第15集</span>
                   </div>
-                  <img
+                  <img decoding="async"
                     src="./assets/image_67.svg"
                     class="w-[220.28px] h-[29.84px] absolute top-[47.95px] left-[12.16px]"
                     id="1:10253"
-                  /><img
+                   loading="lazy" /><img decoding="async"
                     src="./assets/image_68.svg"
                     class="w-[220.28px] h-[24px] absolute top-[47.95px] left-[12.16px]"
                     id="1:10254"
-                  />
+                   loading="lazy" />
                   <div
                     class="absolute top-[67.87px] left-[11.32px] flex justify-center items-center w-[1.69px] h-[1.69px]"
                     id="1:10255"
                   >
-                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10256" />
+                    <img decoding="async" src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10256"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[63.33px] left-[27.05px] flex justify-center items-center w-[1.69px] h-[1.69px]"
                     id="1:10257"
                   >
-                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10258" />
+                    <img decoding="async" src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10258"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[54.05px] left-[41.94px] flex justify-center items-center w-[3.38px] h-[3.38px]"
                     id="1:10259"
                   >
-                    <img src="./assets/image_70.svg" class="w-[3.38px] h-[3.38px]" id="1:10260" />
+                    <img decoding="async" src="./assets/image_70.svg" class="w-[3.38px] h-[3.38px]" id="1:10260"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[46.26px] left-[57.68px] flex justify-center items-center w-[3.38px] h-[3.38px]"
                     id="1:10261"
                   >
-                    <img src="./assets/image_71.svg" class="w-[3.38px] h-[3.38px]" id="1:10262" />
+                    <img decoding="async" src="./assets/image_71.svg" class="w-[3.38px] h-[3.38px]" id="1:10262"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[51.65px] left-[74.26px] flex justify-center items-center w-[1.69px] h-[1.69px]"
                     id="1:10263"
                   >
-                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10264" />
+                    <img decoding="async" src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10264"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[60.08px] left-[89.99px] flex justify-center items-center w-[1.69px] h-[1.69px]"
                     id="1:10265"
                   >
-                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10266" />
+                    <img decoding="async" src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10266"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[64.62px] left-[105.72px] flex justify-center items-center w-[1.69px] h-[1.69px]"
                     id="1:10267"
                   >
-                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10268" />
+                    <img decoding="async" src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10268"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[62.35px] left-[121.45px] flex justify-center items-center w-[1.69px] h-[1.69px]"
                     id="1:10269"
                   >
-                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10270" />
+                    <img decoding="async" src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10270"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[66.25px] left-[137.19px] flex justify-center items-center w-[1.69px] h-[1.69px]"
                     id="1:10271"
                   >
-                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10272" />
+                    <img decoding="async" src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10272"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[69.81px] left-[152.93px] flex justify-center items-center w-[1.69px] h-[1.69px]"
                     id="1:10273"
                   >
-                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10274" />
+                    <img decoding="async" src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10274"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[71.11px] left-[168.66px] flex justify-center items-center w-[1.69px] h-[1.69px]"
                     id="1:10275"
                   >
-                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10276" />
+                    <img decoding="async" src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10276"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[67.22px] left-[184.39px] flex justify-center items-center w-[1.69px] h-[1.69px]"
                     id="1:10277"
                   >
-                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10278" />
+                    <img decoding="async" src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10278"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[70.46px] left-[200.13px] flex justify-center items-center w-[1.69px] h-[1.69px]"
                     id="1:10279"
                   >
-                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10280" />
+                    <img decoding="async" src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10280"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[68.84px] left-[215.86px] flex justify-center items-center w-[1.69px] h-[1.69px]"
                     id="1:10281"
                   >
-                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10282" />
+                    <img decoding="async" src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10282"  loading="lazy" />
                   </div>
                   <div
                     class="absolute top-[71.11px] left-[231.60px] flex justify-center items-center w-[1.69px] h-[1.69px]"
                     id="1:10283"
                   >
-                    <img src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10284" />
+                    <img decoding="async" src="./assets/image_69.svg" class="w-[1.69px] h-[1.69px]" id="1:10284"  loading="lazy" />
                   </div>
                 </div>
               </div>
@@ -2557,7 +2554,7 @@
       data-hover-lift
       id="1:10320"
     >
-      <img src="./assets/bg-bong.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10321" />
+      <img decoding="async" src="./assets/bg-bong.webp" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10321"  loading="lazy" />
       <div
         class="w-[464px] h-[394px] rounded-[24px] border-[rgba(255,255,255,0.08)] border-solid border bg-[linear-gradient(180deg,_rgba(255,255,255,0.03)_0%,rgba(255,255,255,0.01)_100%)] absolute top-0 left-0 flex flex-col justify-start items-center"
         id="1:10322"
@@ -2630,7 +2627,7 @@
       data-hover-lift
       id="1:10336"
     >
-      <img src="./assets/bg-research.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10337" />
+      <img decoding="async" src="./assets/bg-research.webp" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10337"  loading="lazy" />
       <div
         class="w-[464px] h-[394px] rounded-[24px] border-[rgba(255,255,255,0.08)] border-solid border bg-[linear-gradient(180deg,_rgba(255,255,255,0.03)_0%,rgba(255,255,255,0.01)_100%)] absolute top-0 left-0 flex flex-col justify-start items-center"
         id="1:10338"
@@ -2703,7 +2700,7 @@
       data-hover-lift
       id="1:10352"
     >
-      <img src="./assets/bg-prd.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10353" />
+      <img decoding="async" src="./assets/bg-prd.webp" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10353"  loading="lazy" />
       <div
         class="w-[464px] h-[394px] rounded-[24px] border-[rgba(255,255,255,0.08)] border-solid border bg-[linear-gradient(180deg,_rgba(255,255,255,0.03)_0%,rgba(255,255,255,0.01)_100%)] absolute top-0 left-0 flex flex-col justify-start items-center"
         id="1:10354"
@@ -2931,7 +2928,7 @@
       class="pf-card order-[4] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(255,255,255,1)]"
       id="1:10395"
     >
-      <img src="./assets/创作.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10396" />
+      <img decoding="async" src="./assets/创作.webp" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10396"  loading="lazy" />
       <div
         class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
         id="1:10397"
@@ -2974,7 +2971,7 @@
       class="pf-card order-[3] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(255,255,255,1)]"
       id="1:10406"
     >
-      <img src="./assets/经营.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10407" />
+      <img decoding="async" src="./assets/经营.webp" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10407"  loading="lazy" />
       <div
         class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
         id="1:10408"
@@ -3017,7 +3014,7 @@
       class="pf-card order-[7] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(255,255,255,1)]"
       id="1:10417"
     >
-      <img src="./assets/变现.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10418" />
+      <img decoding="async" src="./assets/变现.webp" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10418"  loading="lazy" />
       <div
         class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
         id="1:10419"
@@ -3060,7 +3057,7 @@
       class="pf-card order-[2] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(255,255,255,1)]"
       id="1:10428"
     >
-      <img src="./assets/入驻.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10429" />
+      <img decoding="async" src="./assets/入驻.webp" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10429"  loading="lazy" />
       <div
         class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
         id="1:10430"
@@ -3103,7 +3100,7 @@
       class="pf-card order-[1] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(255,255,255,1)]"
       id="1:10439"
     >
-      <img src="./assets/吸引.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10440" />
+      <img decoding="async" src="./assets/吸引.webp" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10440"  loading="lazy" />
       <div
         class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
         id="1:10441"
@@ -3143,7 +3140,7 @@
       </div>
     </div>
     <div class="pf-card order-[5] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(0,0,0,1)]" id="1:10450">
-      <img src="./assets/发布.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10451" />
+      <img decoding="async" src="./assets/发布.webp" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10451"  loading="lazy" />
       <div
         class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
         id="1:10452"
@@ -3186,7 +3183,7 @@
       class="pf-card order-[6] shrink-0 relative w-[240px] h-[152px] overflow-hidden rounded-[8px] bg-[rgba(255,255,255,1)]"
       id="1:10461"
     >
-      <img src="./assets/数据.png" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10462" />
+      <img decoding="async" src="./assets/数据.webp" class="w-full h-full absolute top-0 left-0 object-cover" id="1:10462"  loading="lazy" />
       <div
         class="w-[240px] h-[152px] rounded-[8px] border-[rgba(255,255,255,0.08)] border-solid border bg-[rgba(0,0,0,0.8)] absolute top-0 left-0 flex flex-col justify-start items-start"
         id="1:10463"
@@ -3396,15 +3393,15 @@
           >
             <span class="tracking-[0%]">让&nbsp;AI&nbsp;与复杂产品能力被外部认可，但比奖项更重要的是方法沉淀。</span>
           </div>
-          <img
+          <img decoding="async"
             src="./assets/image_82.svg"
             class="w-[121.03px] h-[176px] absolute top-[27px] left-[516px]"
             id="1:10503"
-          /><img
+           loading="lazy" /><img decoding="async"
             src="./assets/image_83.svg"
             class="w-[124px] h-[176px] absolute top-[27px] left-[374px]"
             id="1:10504"
-          />
+           loading="lazy" />
         </div>
       </div>
       <div
@@ -3433,23 +3430,23 @@
           >
             <span class="tracking-[0%]">从项目实践中不断抽象与沉淀，将经验固化为可复用资产。</span>
           </div>
-          <img
+          <img decoding="async"
             src="./assets/image_84.svg"
             class="w-[125px] h-[176px] absolute top-[25px] left-[350px]"
             id="1:10510"
-          /><img
+           loading="lazy" /><img decoding="async"
             src="./assets/image_85.svg"
             class="w-[125px] h-[176px] absolute top-[25px] left-[401px]"
             id="1:10511"
-          /><img
+           loading="lazy" /><img decoding="async"
             src="./assets/image_86.svg"
             class="w-[125px] h-[176px] absolute top-[25px] left-[452px]"
             id="1:10512"
-          /><img
+           loading="lazy" /><img decoding="async"
             src="./assets/image_87.svg"
             class="w-[124px] h-[176px] absolute top-[25px] left-[503px]"
             id="1:10513"
-          />
+           loading="lazy" />
         </div>
       </div>
     </div>
@@ -3659,7 +3656,7 @@
       class="w-[24px] h-[24px] overflow-hidden bg-[rgba(0,0,0,0)] absolute top-[573px] left-[823px] flex flex-col justify-start items-start"
       id="1:10552"
     >
-      <img src="./assets/image_88.svg" class="w-[20.94px] h-[16.28px] mt-[3.82px] ml-[1.50px]" id="1:10553" />
+      <img decoding="async" src="./assets/image_88.svg" class="w-[20.94px] h-[16.28px] mt-[3.82px] ml-[1.50px]" id="1:10553"  loading="lazy" />
     </div>
     <div
       class="absolute top-[573px] left-[870px] font-[Inter] text-[20px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[20px] tracking-[normal] font-extrabold"
@@ -3672,7 +3669,7 @@
       class="w-[24px] h-[24px] overflow-hidden absolute top-[438px] left-[823px] flex justify-end items-start"
       id="1:10555"
     >
-      <img src="./assets/image_89.svg" class="w-[20.05px] h-[21px] mt-[1.50px] mr-[1.47px]" id="1:10556" />
+      <img decoding="async" src="./assets/image_89.svg" class="w-[20.05px] h-[21px] mt-[1.50px] mr-[1.47px]" id="1:10556"  loading="lazy" />
     </div>
     <div
       class="absolute top-[438px] left-[870px] font-[Inter] text-[20px] whitespace-nowrap text-[rgba(0,0,0,1)] leading-[20px] tracking-[normal] font-extrabold"
@@ -3690,9 +3687,9 @@
       class="w-[24px] h-[24px] overflow-hidden absolute top-[505px] left-[823px] flex flex-col justify-end items-start"
       id="1:10559"
     >
-      <img src="./assets/image_90.svg" class="w-[23.57px] h-[19px] mb-[2px]" id="1:10560" />
+      <img decoding="async" src="./assets/image_90.svg" class="w-[23.57px] h-[19px] mb-[2px]" id="1:10560"  loading="lazy" />
     </div>
-    <img src="./assets/image_91.svg" class="w-[128px] h-[132px] absolute top-[430px] left-[1140px]" id="1:10561" />
+    <img decoding="async" src="./assets/image_91.svg" class="w-[128px] h-[132px] absolute top-[430px] left-[1140px]" id="1:10561"  loading="lazy" />
     <div
       class="absolute top-[569px] left-[1162px] font-[PingFang_SC] text-[12px] text-center text-[rgba(0,0,0,1)] leading-[14px] tracking-[normal] font-normal"
       id="1:10562"
@@ -3846,57 +3843,13 @@
   })();
 </script>
 <script>
-  /* ===== 案例文案打字机 + 胶囊/按钮联动入场（新增）===== */
+  /* Case 01: preserve complete copy; never clear or replay text on scroll. */
   (function () {
-    var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    var group = document.querySelector('[data-tw-group]');
-    if (!group) return;
-    var spans = [].slice.call(group.querySelectorAll('[data-tw]'));
-    var pops = [].slice.call(group.querySelectorAll('[data-tw-pop]'));
-    function showPops(stagger) {
-      pops.forEach(function (p, idx) {
-        if (stagger) setTimeout(function () { p.classList.add('tw-in'); }, idx * 130);
-        else p.classList.add('tw-in');
+    document.querySelectorAll('[data-tw-group]').forEach(function (group) {
+      group.querySelectorAll('[data-tw-pop]').forEach(function (el) {
+        el.classList.add('tw-in');
       });
-    }
-    if (reduce || !('IntersectionObserver' in window) || !spans.length) {
-      showPops(false);
-      return;
-    }
-    // 立即清空文案（此时区块在视口外，无闪烁），进入视口后逐字打出
-    var store = spans.map(function (s) { return { el: s, text: s.textContent }; });
-    store.forEach(function (it) { it.el.textContent = ''; });
-    var gen = 0;
-    function reset() {
-      gen++;
-      store.forEach(function (it) { it.el.textContent = ''; it.el.classList.remove('tw-caret'); });
-      pops.forEach(function (p) { p.classList.remove('tw-in'); });
-    }
-    function run() {
-      reset();
-      var myGen = gen, i = 0, ci = 0;
-      (function step() {
-        if (myGen !== gen) return;
-        if (i >= store.length) {
-          pops.forEach(function (p, idx) { setTimeout(function () { if (myGen === gen) p.classList.add('tw-in'); }, idx * 130); });
-          return;
-        }
-        var it = store[i];
-        if (ci === 0) it.el.classList.add('tw-caret');
-        if (ci < it.text.length) {
-          it.el.textContent = it.text.slice(0, ++ci);
-          setTimeout(step, 20);
-        } else {
-          it.el.classList.remove('tw-caret');
-          i++; ci = 0;
-          setTimeout(step, 130);
-        }
-      })();
-    }
-    var io = new IntersectionObserver(function (es) {
-      es.forEach(function (e) { if (e.isIntersecting) run(); else reset(); });
-    }, { threshold: 0.2 });
-    io.observe(group);
+    });
   })();
 </script>
 <script>
@@ -3959,7 +3912,7 @@
       requestAnimationFrame(function () { update(); ticking = false; });
     }
     function onScroll() {
-      if (ticking || done) return;
+      if (ticking) return;
       ticking = true;
       requestAnimationFrame(function () { update(); ticking = false; });
     }
@@ -3968,5 +3921,6 @@
     update();
   })();
 </script>
+<script src="../responsive/mobile.js"></script>
 </body>
 </html>
