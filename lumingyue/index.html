@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="portfolio-build" content="20261028-layout-c">
+<meta name="portfolio-build" content="20261028-speed-d">
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LuMingYue · AI Product Experience Designer</title>
@@ -96,7 +96,17 @@
 
 /* One design coordinate system, one scale for each complete artboard. */
 html,body {-webkit-text-size-adjust:none;text-size-adjust:none;}
+img[src*="assets/optimized/"] {object-fit:contain;}
 .fit-viewport,.fit-drawing {display:contents;}
+.fit-drawing > :not(iframe) {contain:layout size;flex-shrink:0;}
+@media(min-width:1440px) {.fit-drawing > :not(iframe) {content-visibility:auto;}}
+@media(max-width:1439px) {
+ .panel[data-panel="works"] .fit-viewport,.panel[data-panel="more"] .fit-viewport {content-visibility:auto;}
+}
+@media(max-width:1439px) {
+ .panel[data-panel="about"] > .fit-viewport {height:calc(100vw * 14915 / 1440);}
+ .panel[data-panel="about"] .fit-drawing {transform:scale(var(--canvas-fit));}
+}
 @media(max-width:1439px) {
  html,body {max-width:100%;overflow-x:hidden;}
  .screen {width:100%!important;min-height:100vh;overflow:hidden!important;padding-top:68px;}
@@ -1867,7 +1877,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
               class="w-[291.10px] h-[649.44px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start absolute top-[8.20px] left-[8.20px]"
               id="1:10078"
             >
-              <img decoding="async" src="./assets/image_34.svg" class="w-[291px] h-[650px]" id="1:10079"  loading="lazy" />
+              <img decoding="async" src="../assets/optimized/01acc7dc4974483b3b4c.webp" class="w-[291px] h-[650px]" id="1:10079"  loading="lazy" />
             </div>
             <div
               class="w-[3.28px] bg-[linear-gradient(180deg,_rgba(46,46,48,1)_0%,rgba(28,28,30,1)_99.09%)] min-h-[26.24px] absolute top-[141.04px] -left-[2.05px]"
@@ -1902,7 +1912,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
           class="w-[147.45px] h-[154.11px] absolute top-[148.66px] left-[92.48px]"
           id="1:10090"
          loading="lazy" /><img decoding="async"
-          src="./assets/image_38.svg"
+          src="../assets/optimized/3e839a29a0c8a4e75716.webp"
           class="w-[148.56px] h-[154.94px] absolute top-[230.66px] left-[178.48px]"
           id="1:10100"
          loading="lazy" />
@@ -2168,7 +2178,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         id="1:10168"
         data-c3-img
       >
-        <img decoding="async" src="./assets/image_48.svg" class="w-[993px] h-[621px]" id="1:10169"  loading="lazy" />
+        <img decoding="async" src="../assets/optimized/1c377aeca1a9d97ad6b1.webp" class="w-[993px] h-[621px]" id="1:10169"  loading="lazy" />
       </div>
       <div
         class="w-[287.93px] h-[157.19px] overflow-hidden rounded-[12.45px] border-[1.03px] border-solid border-[rgba(255,255,255,0.06)] [box-shadow:0px_8.23px_32.91px_0px_rgba(0,0,0,0.6),_inset_0px_-1.03px_0px_0px_rgba(0,0,0,0.4),_inset_0px_1.03px_0px_0px_rgba(255,255,255,0.08)] bg-[linear-gradient(128deg,_rgba(42,43,48,0.9)_10.489999999999998%,rgba(28,29,33,0.9)_57.89%)] flex flex-col flex-nowrap justify-center items-center absolute top-[298px] left-[1030px]"
@@ -3455,11 +3465,11 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
             <span class="tracking-[0%]">让&nbsp;AI&nbsp;与复杂产品能力被外部认可，但比奖项更重要的是方法沉淀。</span>
           </div>
           <img decoding="async"
-            src="./assets/image_82.svg"
+            src="../assets/optimized/fdf67b2a2c351b6749f0.webp"
             class="w-[121.03px] h-[176px] absolute top-[27px] left-[516px]"
             id="1:10503"
            loading="lazy" /><img decoding="async"
-            src="./assets/image_83.svg"
+            src="../assets/optimized/8e441ba3caa4edbe14dc.webp"
             class="w-[124px] h-[176px] absolute top-[27px] left-[374px]"
             id="1:10504"
            loading="lazy" />
@@ -3492,19 +3502,19 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
             <span class="tracking-[0%]">从项目实践中不断抽象与沉淀，将经验固化为可复用资产。</span>
           </div>
           <img decoding="async"
-            src="./assets/image_84.svg"
+            src="../assets/optimized/2c676d19b31777761ad0.webp"
             class="w-[125px] h-[176px] absolute top-[25px] left-[350px]"
             id="1:10510"
            loading="lazy" /><img decoding="async"
-            src="./assets/image_85.svg"
+            src="../assets/optimized/76d9bb9bf351f105dea6.webp"
             class="w-[125px] h-[176px] absolute top-[25px] left-[401px]"
             id="1:10511"
            loading="lazy" /><img decoding="async"
-            src="./assets/image_86.svg"
+            src="../assets/optimized/b39e71ffe73c9f948cd0.webp"
             class="w-[125px] h-[176px] absolute top-[25px] left-[452px]"
             id="1:10512"
            loading="lazy" /><img decoding="async"
-            src="./assets/image_87.svg"
+            src="../assets/optimized/31d3789c7235fa0d7a4d.webp"
             class="w-[124px] h-[176px] absolute top-[25px] left-[503px]"
             id="1:10513"
            loading="lazy" />
@@ -3750,7 +3760,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
     >
       <img decoding="async" src="./assets/image_90.svg" class="w-[23.57px] h-[19px] mb-[2px]" id="1:10560"  loading="lazy" />
     </div>
-    <img decoding="async" src="./assets/image_91.svg" class="w-[128px] h-[132px] absolute top-[430px] left-[1140px]" id="1:10561"  loading="lazy" />
+    <img decoding="async" src="../assets/optimized/7ce429db19e21421d61b.webp" class="w-[128px] h-[132px] absolute top-[430px] left-[1140px]" id="1:10561"  loading="lazy" />
     <div
       class="absolute top-[569px] left-[1162px] font-[PingFang_SC] text-[12px] text-center text-[rgba(0,0,0,1)] leading-[14px] tracking-[normal] font-normal"
       id="1:10562"
@@ -3788,8 +3798,10 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
     function update() {
       var r = vp.getBoundingClientRect();
       var center = r.left + r.width / 2;
-      cards.forEach(function (c) {
-        var cr = c.getBoundingClientRect();
+      // 批量读取卡片位置，避免每设置一张卡片的样式就再次强制布局。
+      var rects = cards.map(function(c) { return c.getBoundingClientRect(); });
+      cards.forEach(function (c, index) {
+        var cr = rects[index];
         var cc = cr.left + cr.width / 2;
         var d = (cc - center) / (r.width / 2);           // 归一化：0=正中
         var ad = Math.min(Math.abs(d), 1.4);
@@ -3993,11 +4005,25 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
   function queue() { if (!pending) { pending = true; requestAnimationFrame(layout); } }
   function unit(board) {
     if (!board || !board.parentNode) return;
+    // iframe 在 DOM 中重新挂载会重新加载文档；复用 HTML 中的外壳。
+    if (board.parentNode.classList.contains('fit-drawing') && board.parentNode.parentNode.classList.contains('fit-viewport')) {
+      units.push({viewport:board.parentNode.parentNode,drawing:board.parentNode,board:board});
+      return;
+    }
     var viewport = document.createElement('div'); viewport.className = 'fit-viewport';
     var drawing = document.createElement('div'); drawing.className = 'fit-drawing';
     board.parentNode.insertBefore(viewport, board);
     viewport.appendChild(drawing); drawing.appendChild(board);
-    units.push({viewport:viewport,drawing:drawing,board:board});
+    // 固定画板尺寸已写在设计类中，无需读取离屏子树来计算高度。
+    var declared = String(board.className).match(/(?:^|\s)h-\[([\d.]+)px\]/);
+    var designHeight = declared ? Math.round(Number(declared[1])) :
+      board.classList.contains('sect-works') ? 665 : board.classList.contains('sect-judgment') ? 3610 : 0;
+    if (designHeight && root.clientWidth < 1440) {
+      var initialRatio = root.clientWidth / 1440;
+      viewport.style.height = Math.ceil(designHeight * initialRatio) + 'px';
+      drawing.style.transform = 'scale(' + initialRatio + ')';
+    }
+    units.push({viewport:viewport,drawing:drawing,board:board,designHeight:designHeight});
   }
   function flow(container) {
     if (!container) return;
@@ -4035,13 +4061,18 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       frame.style.height=fit?(frame.dataset.contentHeight||'14915')+'px':'100vh';
       frame.setAttribute('scrolling',fit?'no':'auto');
     }
-    units.forEach(function(item){
-      if(!fit) {item.viewport.style.height=''; item.drawing.style.transform='';return;}
-      if(!item.board.getClientRects().length) return;
-      // offsetHeight remains in design coordinates; transformed rectangles do not.
-      var h=item.board.offsetHeight;
-      item.viewport.style.height=Math.ceil(h*ratio)+'px';
-      item.drawing.style.transform='scale('+ratio+')';
+    // 先统一读取，再统一写入，避免每个画板触发一次整页强制重排。
+    var measurements = units.map(function(item) {
+      if (!fit) return {item:item,height:'',transform:''};
+      var panel = item.board.closest('.panel');
+      if (panel && !panel.classList.contains('is-on')) return null;
+      return {item:item,height:Math.ceil((item.designHeight || item.board.offsetHeight)*ratio)+'px',transform:'scale('+ratio+')'};
+    });
+    measurements.forEach(function(measurement) {
+      if (!measurement) return;
+      var item = measurement.item;
+      if (item.viewport.style.height !== measurement.height) item.viewport.style.height = measurement.height;
+      if (item.drawing.style.transform !== measurement.transform) item.drawing.style.transform = measurement.transform;
     });
     if(embedded && canvas) {
       var h=Math.ceil(Math.max(canvas.offsetHeight,canvas.scrollHeight));

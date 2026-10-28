@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="portfolio-build" content="20261028-layout-c">
+<meta name="portfolio-build" content="20261028-speed-d">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta charset="utf-8" />
 <title>负责业务 · 方案A 多彩牌扇（Article 卡）</title>
@@ -1148,7 +1148,17 @@ html.motion-boot .mod-awareness { visibility: hidden; }
 
 /* One design coordinate system, one scale for each complete artboard. */
 html,body {-webkit-text-size-adjust:none;text-size-adjust:none;}
+img[src*="assets/optimized/"] {object-fit:contain;}
 .fit-viewport,.fit-drawing {display:contents;}
+.fit-drawing > :not(iframe) {contain:layout size;flex-shrink:0;}
+@media(min-width:1440px) {.fit-drawing > :not(iframe) {content-visibility:auto;}}
+@media(max-width:1439px) {
+ .panel[data-panel="works"] .fit-viewport,.panel[data-panel="more"] .fit-viewport {content-visibility:auto;}
+}
+@media(max-width:1439px) {
+ .panel[data-panel="about"] > .fit-viewport {height:calc(100vw * 14915 / 1440);}
+ .panel[data-panel="about"] .fit-drawing {transform:scale(var(--canvas-fit));}
+}
 @media(max-width:1439px) {
  html,body {max-width:100%;overflow-x:hidden;}
  .screen {width:100%!important;min-height:100vh;overflow:hidden!important;padding-top:68px;}
@@ -1246,7 +1256,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
   </nav>
 
   <div class="panel is-on" data-panel="about">
-<iframe src="lumingyue/index.html" style="display:block;width:100%;height:100vh;border:0;" title="LuMingYue 作品集"></iframe>
+<div class="fit-viewport"><div class="fit-drawing"><iframe src="lumingyue/index.html" style="display:block;width:100%;height:100vh;border:0;" title="LuMingYue 作品集"></iframe></div></div>
   </div>
 
   <div class="panel" data-panel="works">
@@ -1397,7 +1407,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[291px] h-[630px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start absolute top-[8px] left-[8px]"
         id="643:192"
       >
-        <img decoding="async" src="assets/figma-514/image_1.svg" class="w-[291px] h-[630px]" id="643:193"  loading="lazy" /><img decoding="async"
+        <img decoding="async" src="assets/optimized/21452aa94900b42aed06.webp" class="w-[291px] h-[630px]" id="643:193"  loading="lazy" /><img decoding="async"
           src="assets/figma-514/image_2.svg"
           class="w-[291px] h-[630px]"
           id="643:194"
@@ -1925,23 +1935,23 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
           class="w-[500.86px] h-[264.10px] absolute top-[23.43px] left-[127.64px]"
           id="949:280"
          loading="lazy" /><img decoding="async"
-          src="sections/awareness/assets/module-949/image_4.svg"
+          src="assets/optimized/8ac821693df074553f17.webp"
           class="w-[182.57px] h-[252.38px] absolute top-[25.87px] left-[131.05px]"
           id="949:281"
          loading="lazy" /><img decoding="async"
-          src="sections/awareness/assets/module-949/image_5.svg"
+          src="assets/optimized/e00445c660e1e3e052ae.webp"
           class="w-[182.08px] h-[252.38px] absolute top-[25.87px] left-[235.52px]"
           id="949:282"
          loading="lazy" /><img decoding="async"
-          src="sections/awareness/assets/module-949/image_6.svg"
+          src="assets/optimized/f591979f7f2f6281a803.webp"
           class="w-[182.57px] h-[252.38px] absolute top-[25.87px] left-[339.99px]"
           id="949:283"
          loading="lazy" /><img decoding="async"
-          src="sections/awareness/assets/module-949/image_7.svg"
+          src="assets/optimized/af2d9a9f2bbd075d9d29.webp"
           class="w-[182.57px] h-[252.38px] absolute top-[25.87px] left-[443.48px]"
           id="949:284"
          loading="lazy" /><img decoding="async"
-          src="sections/awareness/assets/module-949/image_8.svg"
+          src="assets/optimized/4c251c03bd7b70056d46.webp"
           class="w-[115.69px] h-[250.43px] absolute top-[20.50px] left-[1.47px]"
           id="949:285"
          loading="lazy" /><img decoding="async" src="sections/awareness/assets/module-949/image_9.svg" class="w-[117.65px] h-[25.38px] absolute top-0 left-0" id="949:286"  loading="lazy" /><img decoding="async"
@@ -1972,7 +1982,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
           <span class="text-[14.64px] font-bold tracking-[0%]">动态发布source_from字典</span>
         </div>
         <img decoding="async"
-          src="sections/awareness/assets/module-949/image_12.svg"
+          src="assets/optimized/115988dd2214a15dc93c.webp"
           class="w-[191.85px] h-[250.43px] absolute top-[27.83px] left-[640.93px]"
           id="949:292"
          loading="lazy" />
@@ -2043,11 +2053,11 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       class="w-[379.52px] h-[565.47px] absolute top-[1072.08px] left-[302px] ph ph-l2"
       id="643:411"
      loading="lazy" /><img decoding="async"
-      src="assets/figma-514/image_24.svg"
+      src="assets/optimized/cbd3ebd30ae7d27b0b60.webp"
       class="w-[335.79px] h-[581.03px] absolute top-[1037px] left-[702px] ph ph-r1"
       id="643:418"
      loading="lazy" /><img decoding="async"
-      src="assets/figma-514/image_25.svg"
+      src="assets/optimized/e91732aa7a70cc9417f7.webp"
       class="w-[335.79px] h-[581.03px] absolute top-[1036.56px] left-[423px] ph ph-l1"
       id="643:425"
      loading="lazy" />
@@ -2059,7 +2069,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[291px] h-[630px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start absolute top-[9px] left-[8px]"
         id="643:433"
       >
-        <img decoding="async" src="assets/figma-514/image_26.svg" class="w-[291px] h-[631px]" id="643:434"  loading="lazy" /><img decoding="async"
+        <img decoding="async" src="assets/optimized/8fece8a82ec21dc78f03.webp" class="w-[291px] h-[631px]" id="643:434"  loading="lazy" /><img decoding="async"
           src="assets/figma-514/image_2.svg"
           class="w-[291px] h-[630px]"
           id="643:435"
@@ -2145,11 +2155,11 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       id="643:461"
     >
       <img decoding="async"
-        src="assets/figma-514/image_30.svg"
+        src="assets/optimized/366f4be01e2a5417fb4a.webp"
         class="w-[707.05px] h-[329px] absolute top-[147px] left-[38px]"
         id="643:462"
        loading="lazy" /><img decoding="async"
-        src="assets/figma-514/image_31.svg"
+        src="assets/optimized/56578982c56ab7868537.webp"
         class="w-[231px] h-[231px] absolute top-[206px] left-[489px]"
         id="643:463"
        loading="lazy" /><img decoding="async" src="assets/figma-514/image_32.svg" class="w-[591px] h-[60px] absolute top-[52px] left-[83px]" id="643:466"  loading="lazy" />
@@ -4699,7 +4709,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
           class="w-[291px] h-[630px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start absolute top-[8px] left-[8px]"
           id="643:1035"
         >
-          <img decoding="async" src="assets/figma-514/image_44.svg" class="w-[291px] h-[630px]" id="643:1036"  loading="lazy" /><img decoding="async"
+          <img decoding="async" src="assets/optimized/21452aa94900b42aed06.webp" class="w-[291px] h-[630px]" id="643:1036"  loading="lazy" /><img decoding="async"
             src="assets/figma-514/image_2.svg"
             class="w-[291px] h-[630px]"
             id="643:1037"
@@ -4873,7 +4883,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       >
     </div>
     <img decoding="async"
-      src="assets/figma-514/image_51.svg"
+      src="assets/optimized/cb3dd8c4dfa192f78070.webp"
       class="sankey-base w-[1319px] h-[1061px] absolute top-[300px] left-[60px]"
       id="643:1168"
      loading="lazy" />
@@ -5171,7 +5181,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[361.61px] h-[782.87px] overflow-hidden rounded-[41.78px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start absolute top-[9.94px] left-[9.94px]"
         id="643:1131"
       >
-        <img decoding="async" src="assets/figma-514/image_52.svg" class="w-[361.67px] h-[782.75px]" id="643:1132"  loading="lazy" /><img decoding="async"
+        <img decoding="async" src="assets/optimized/8e35af8c6b3d6f957402.webp" class="w-[361.67px] h-[782.75px]" id="643:1132"  loading="lazy" /><img decoding="async"
           src="assets/figma-514/image_53.svg"
           class="w-[361.67px] h-[782.75px]"
           id="643:1133"
@@ -5202,7 +5212,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[361.61px] h-[782.87px] overflow-hidden rounded-[41.78px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start absolute top-[9.94px] left-[9.94px]"
         id="643:1139"
       >
-        <img decoding="async" src="assets/figma-514/image_54.svg" class="w-[361px] h-[781px]" id="643:1140"  loading="lazy" /><img decoding="async"
+        <img decoding="async" src="assets/optimized/22d1ff3526055cb093bd.webp" class="w-[361px] h-[781px]" id="643:1140"  loading="lazy" /><img decoding="async"
           src="assets/figma-514/image_55.svg"
           class="w-[361.67px] h-[782.75px]"
           id="643:1141"
@@ -5233,8 +5243,8 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[361.61px] h-[782.87px] overflow-hidden rounded-[41.78px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start absolute top-[9.94px] left-[9.94px]"
         id="643:1147"
       >
-        <img decoding="async" src="assets/figma-514/image_56.svg" class="w-[361px] h-[781px]" id="643:1148"  loading="lazy" /><img decoding="async"
-          src="assets/figma-514/image_57.svg"
+        <img decoding="async" src="assets/optimized/2d6fd70e7c0661f2f298.webp" class="w-[361px] h-[781px]" id="643:1148"  loading="lazy" /><img decoding="async"
+          src="assets/figma-514/image_55.svg"
           class="w-[361.67px] h-[782.75px]"
           id="643:1149"
          loading="lazy" />
@@ -5911,12 +5921,12 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
             >
               <div class="flex justify-center items-center w-[42px] h-[62px]" id="643:1457">
                 <div class="relative w-[42px] h-[62px]" id="643:1458">
-                  <img decoding="async" src="assets/figma-514/image_73.svg" class="w-[42px] h-[62px] absolute top-0 left-0" id="643:1459"  loading="lazy" /><img decoding="async"
+                  <img decoding="async" src="assets/figma-514/image_60.svg" class="w-[42px] h-[62px] absolute top-0 left-0" id="643:1459"  loading="lazy" /><img decoding="async"
                     src="assets/figma-514/image_74.svg"
                     class="w-[24px] h-[24px] absolute top-[12px] left-[9px]"
                     id="643:1460"
                    loading="lazy" /><img decoding="async"
-                    src="assets/figma-514/image_75.svg"
+                    src="assets/figma-514/image_62.svg"
                     class="w-[42px] h-[20px] absolute top-[42px] left-0"
                     id="643:1477"
                    loading="lazy" />
@@ -6196,7 +6206,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
               </div>
               <div class="ml-[8px] flex justify-center items-center w-[42px] h-[62px]" id="643:1624">
                 <div class="relative w-[42px] h-[62px]" id="643:1625">
-                  <img decoding="async" src="assets/figma-514/image_87.svg" class="w-[42px] h-[62px] absolute top-0 left-0" id="643:1626"  loading="lazy" /><img decoding="async"
+                  <img decoding="async" src="assets/figma-514/image_85.svg" class="w-[42px] h-[62px] absolute top-0 left-0" id="643:1626"  loading="lazy" /><img decoding="async"
                     src="assets/figma-514/image_88.svg"
                     class="w-[24px] h-[24px] absolute top-[12px] left-[9px]"
                     id="643:1627"
@@ -6211,7 +6221,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
               </div>
               <div class="ml-[8px] relative w-[42px] h-[62px]" id="643:1685">
                 <div class="absolute top-0 left-0 w-[42px] h-[62px]" id="643:1686">
-                  <img decoding="async" src="assets/figma-514/image_89.svg" class="w-[42px] h-[62px] absolute top-0 left-0" id="643:1687"  loading="lazy" /><img decoding="async"
+                  <img decoding="async" src="assets/figma-514/image_85.svg" class="w-[42px] h-[62px] absolute top-0 left-0" id="643:1687"  loading="lazy" /><img decoding="async"
                     src="assets/figma-514/image_90.svg"
                     class="w-[24px] h-[24px] absolute top-[12px] left-[9px]"
                     id="643:1688"
@@ -6226,7 +6236,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
               </div>
               <div class="ml-[8px] relative w-[42px] h-[62px]" id="643:1706">
                 <div class="absolute top-0 left-0 w-[42px] h-[62px]" id="643:1707">
-                  <img decoding="async" src="assets/figma-514/image_91.svg" class="w-[42px] h-[62px] absolute top-0 left-0" id="643:1708"  loading="lazy" /><img decoding="async"
+                  <img decoding="async" src="assets/figma-514/image_85.svg" class="w-[42px] h-[62px] absolute top-0 left-0" id="643:1708"  loading="lazy" /><img decoding="async"
                     src="assets/figma-514/image_92.svg"
                     class="w-[24px] h-[24px] absolute top-[12px] left-[9px]"
                     id="643:1709"
@@ -6241,7 +6251,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
               </div>
               <div class="ml-[8px] flex justify-center items-center w-[42px] h-[62px]" id="643:1727">
                 <div class="relative w-[42px] h-[62px]" id="643:1728">
-                  <img decoding="async" src="assets/figma-514/image_93.svg" class="w-[42px] h-[62px] absolute top-0 left-0" id="643:1729"  loading="lazy" />
+                  <img decoding="async" src="assets/figma-514/image_60.svg" class="w-[42px] h-[62px] absolute top-0 left-0" id="643:1729"  loading="lazy" />
                   <div class="absolute top-[11.45px] left-[7px] w-[28px] h-[28px]" id="643:1730">
                     <div class="w-[28px] min-h-[28px] absolute top-0 left-0" id="643:1731"></div>
                     <div class="absolute top-[1.43px] left-0 w-[28px] h-[24.92px]" id="643:1732">
@@ -6263,7 +6273,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
                        loading="lazy" />
                     </div>
                   </div>
-                  <img decoding="async" src="assets/figma-514/image_97.svg" class="w-[42px] h-[20px] absolute top-[42px] left-0" id="643:1762"  loading="lazy" />
+                  <img decoding="async" src="assets/figma-514/image_62.svg" class="w-[42px] h-[20px] absolute top-[42px] left-0" id="643:1762"  loading="lazy" />
                   <div
                     class="absolute top-[46px] left-[9px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-right text-[rgba(255,255,255,1)] leading-[12px] tracking-[normal] font-medium"
                     id="643:1763"
@@ -6828,7 +6838,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       class="w-[238.90px] h-[273.73px] absolute top-[360.22px] left-[965.12px]"
       id="136:222"
      loading="lazy" /><img decoding="async"
-      src="sections/engage/assets/image_2.svg"
+      src="assets/optimized/a9716974aa774cddaf77.webp"
       class="w-[269.53px] h-[448.07px] absolute top-[180px] left-[865.28px]"
       id="136:224"
      loading="lazy" /><img decoding="async"
@@ -7170,7 +7180,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
                 <span class="text-[18px] tracking-[0px]">用户访谈分析</span>
               </div>
             </div>
-            <img decoding="async" src="sections/engage/assets/image_4.svg" class="w-[419.90px] h-[180.64px]" id="136:297"  loading="lazy" />
+            <img decoding="async" src="assets/optimized/d324bdcbd3b2371cb24d.webp" class="w-[419.90px] h-[180.64px]" id="136:297"  loading="lazy" />
           </div>
           <div
             class="w-[314.60px] h-[257.90px] rounded-[18px] border-[rgba(255,255,255,0.07)] border-solid border-[1.80px] bg-[rgba(13,13,13,1)] flex flex-col flex-nowrap justify-start items-start pt-[21.60px] box-border pr-[21.60px] pb-[21.60px] pl-[21.60px]"
@@ -8421,7 +8431,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
           class="w-[382px] h-[540px] flex flex-col flex-nowrap justify-start items-start pb-[40px] box-border -mb-[0.70px]"
           id="4402:544"
         >
-          <img decoding="async" src="sections/engage/assets/no-inspiration/image_1.svg" class="w-[382px] h-[500px]" id="4402:545"  loading="lazy" />
+          <img decoding="async" src="assets/optimized/9c731407e48ea569430f.webp" class="w-[382px] h-[500px]" id="4402:545"  loading="lazy" />
         </div>
         <div
           class="w-[382px] h-[60.60px] flex flex-col flex-nowrap justify-start items-start pb-[0.60px] box-border"
@@ -8686,7 +8696,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
             class="w-[70px] h-[70px] rounded-[17.50px] bg-[linear-gradient(150deg,_rgba(255,154,92,1)_0.4%,rgba(245,55,46,1)_99.6%)] flex flex-row flex-nowrap justify-center items-center mb-[4px] relative"
             id="4402:611"
           >
-            <img decoding="async" src="sections/engage/assets/no-inspiration/image_14.svg" class="w-[70px] h-[70px] absolute top-0 left-0" id="4402:612"  loading="lazy" /><img decoding="async"
+            <img decoding="async" src="sections/engage/assets/no-inspiration/image_11.svg" class="w-[70px] h-[70px] absolute top-0 left-0" id="4402:612"  loading="lazy" /><img decoding="async"
               src="sections/engage/assets/image_24.svg"
               class="w-[37.69px] h-[37.69px] overflow-hidden relative"
               id="4402:615"
@@ -8717,7 +8727,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
             class="w-[70px] h-[70px] rounded-[17.50px] bg-[linear-gradient(150deg,_rgba(169,123,255,1)_0.4%,rgba(108,61,244,1)_99.6%)] flex flex-row flex-nowrap justify-center items-center mb-[4px] relative"
             id="4402:623"
           >
-            <img decoding="async" src="sections/engage/assets/no-inspiration/image_16.svg" class="w-[70px] h-[70px] absolute top-0 left-0" id="4402:624"  loading="lazy" />
+            <img decoding="async" src="sections/engage/assets/no-inspiration/image_11.svg" class="w-[70px] h-[70px] absolute top-0 left-0" id="4402:624"  loading="lazy" />
             <div class="w-[37.69px] h-[37.69px] overflow-hidden relative" id="4402:627">
               <img decoding="async"
                 src="sections/engage/assets/04-redesign/image_16.svg"
@@ -8770,7 +8780,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
             class="w-[70px] h-[70px] rounded-[17.50px] bg-[linear-gradient(150deg,_rgba(255,107,139,1)_0.4%,rgba(224,38,79,1)_99.6%)] flex flex-row flex-nowrap justify-center items-center mb-[4px] relative"
             id="4402:640"
           >
-            <img decoding="async" src="sections/engage/assets/no-inspiration/image_23.svg" class="w-[70px] h-[70px] absolute top-0 left-0" id="4402:641"  loading="lazy" />
+            <img decoding="async" src="sections/engage/assets/no-inspiration/image_11.svg" class="w-[70px] h-[70px] absolute top-0 left-0" id="4402:641"  loading="lazy" />
             <div class="w-[37.69px] h-[37.69px] overflow-hidden relative" id="4402:644">
               <img decoding="async"
                 src="sections/engage/assets/04-redesign/image_23.svg"
@@ -8812,7 +8822,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
             class="w-[70px] h-[70px] rounded-[17.50px] bg-[linear-gradient(150deg,_rgba(255,211,77,1)_0.4%,rgba(245,158,11,1)_99.6%)] flex flex-row flex-nowrap justify-center items-center mb-[4px] relative"
             id="4402:656"
           >
-            <img decoding="async" src="sections/engage/assets/no-inspiration/image_27.svg" class="w-[70px] h-[70px] absolute top-0 left-0" id="4402:657"  loading="lazy" /><img decoding="async"
+            <img decoding="async" src="sections/engage/assets/no-inspiration/image_11.svg" class="w-[70px] h-[70px] absolute top-0 left-0" id="4402:657"  loading="lazy" /><img decoding="async"
               src="sections/engage/assets/image_37.svg"
               class="w-[37.69px] h-[37.69px] overflow-hidden relative"
               id="4402:660"
@@ -9295,7 +9305,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[292px] h-[629px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start absolute top-[8px] left-[7.75px]"
         id="136:681"
       >
-        <img decoding="async" src="sections/engage/assets/image_40.svg" class="w-[291px] h-[630px]" id="136:682"  loading="lazy" />
+        <img decoding="async" src="assets/optimized/9d5e89c5d1eb7f0a1787.webp" class="w-[291px] h-[630px]" id="136:682"  loading="lazy" />
       </div>
       <div
         class="w-[3.28px] bg-[linear-gradient(180deg,_rgba(46,46,48,1)_0%,rgba(28,28,30,1)_99.09%)] min-h-[26.24px] absolute top-[141.04px] -left-[2.05px]"
@@ -9721,7 +9731,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[292px] h-[629px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start absolute top-[8px] left-[7.75px]"
         id="136:909"
       >
-        <img decoding="async" src="sections/engage/assets/image_46.svg" class="w-[291px] h-[629px]" id="136:910"  loading="lazy" />
+        <img decoding="async" src="assets/optimized/5957694d456d961d89a5.webp" class="w-[291px] h-[629px]" id="136:910"  loading="lazy" />
       </div>
       <div
         class="w-[3.28px] bg-[linear-gradient(180deg,_rgba(46,46,48,1)_0%,rgba(28,28,30,1)_99.09%)] min-h-[26.24px] absolute top-[141.04px] -left-[2.05px]"
@@ -10203,7 +10213,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[291.10px] h-[649.44px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start absolute top-[8.20px] left-[8.20px]"
         id="49:199"
       >
-        <img decoding="async" src="sections/create/assets/hero/image_2.svg" class="w-[291px] h-[650px]" id="49:200"  loading="lazy" />
+        <img decoding="async" src="assets/optimized/01acc7dc4974483b3b4c.webp" class="w-[291px] h-[650px]" id="49:200"  loading="lazy" />
       </div>
       <div
         class="w-[3.28px] bg-[linear-gradient(180deg,_rgba(46,46,48,1)_0%,rgba(28,28,30,1)_99.09%)] min-h-[26.24px] absolute top-[141.04px] -left-[2.05px]"
@@ -12158,7 +12168,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[147.45px] h-[154.11px] absolute top-[104px] left-[501px]"
         id="36:1572"
        loading="lazy" /><img decoding="async"
-        src="sections/create/assets/image_26.svg"
+        src="assets/optimized/3af74d103d663b8f0504.webp"
         class="w-[148.56px] h-[154.94px] absolute top-[186px] left-[587px]"
         id="36:1582"
        loading="lazy" /><img decoding="async"
@@ -12186,7 +12196,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
           <span class="tracking-[0%]">上传图片</span>
         </div>
         <img decoding="async"
-          src="sections/create/assets/image_30.svg"
+          src="lumingyue/assets/image_40.svg"
           class="w-[203.30px] h-[203.30px] absolute top-[45.61px] left-[26px]"
           id="36:1606"
          loading="lazy" /><img decoding="async"
@@ -12417,7 +12427,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
           class="w-[134.52px] h-[134.52px] overflow-hidden rounded-[12px] mb-[0.10px] flex flex-col justify-end items-end"
           id="36:1722"
         >
-          <img decoding="async" src="sections/create/assets/image_47.svg" class="w-[144.41px] h-[145.49px]" id="36:1723"  loading="lazy" />
+          <img decoding="async" src="assets/optimized/1e32cb4926fc99a841f4.webp" class="w-[144.41px] h-[145.49px]" id="36:1723"  loading="lazy" />
         </div>
         <div
           class="w-[50px] h-[28.12px] flex flex-col flex-nowrap justify-start items-start pt-[11.04px] box-border pb-[2.08px] mb-[0.10px]"
@@ -12991,7 +13001,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[291.10px] h-[649.44px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start absolute top-[8.20px] left-[8.20px]"
         id="36:2066"
       >
-        <img decoding="async" src="sections/create/assets/image_56.svg" class="w-[291px] h-[650px]" id="36:2067"  loading="lazy" />
+        <img decoding="async" src="assets/optimized/01acc7dc4974483b3b4c.webp" class="w-[291px] h-[650px]" id="36:2067"  loading="lazy" />
       </div>
       <div
         class="w-[3.28px] bg-[linear-gradient(180deg,_rgba(46,46,48,1)_0%,rgba(28,28,30,1)_99.09%)] min-h-[26.24px] absolute top-[141.04px] -left-[2.05px]"
@@ -13071,14 +13081,14 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         </div>
         <div class="absolute top-[99px] left-[56px] w-[1328px] h-[492.67px]" id="228:12">
           <img decoding="async"
-            src="sections/create/assets/award_stage.svg"
+            src="assets/optimized/02428d85000c000c696c.webp"
             class="w-[610.72px] h-[407.14px] absolute top-0 left-[717.28px]"
             id="228:13"
            loading="lazy" /><img decoding="async"
-            src="sections/create/assets/award_cert_muse.svg"
+            src="assets/optimized/eeaa73fbb76c0622e98c.webp"
             class="w-[283px] h-[412px] absolute top-0 left-[312px]"
             id="228:14"
-           loading="lazy" /><img decoding="async" src="sections/create/assets/award_cert_fr.svg" class="w-[290px] h-[412px] absolute top-0 left-0" id="228:15"  loading="lazy" />
+           loading="lazy" /><img decoding="async" src="assets/optimized/3c37ce9cfd98230b591a.webp" class="w-[290px] h-[412px] absolute top-0 left-0" id="228:15"  loading="lazy" />
           <div
             class="absolute top-[426.67px] left-0 w-[223.46px] font-[SF_Pro] text-[37.65px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[65.88px] tracking-[normal] font-extrabold"
             id="228:16"
@@ -13430,7 +13440,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
     <div class="absolute top-0 left-0 w-[1440px] h-[60px]" data-anim="fade" data-anim-delay="0" id="163:258">
       <div id="163:259"></div>
       <div class="w-[104px] h-[34px] flex flex-col flex-nowrap justify-start items-start pb-[2px] box-border absolute top-[14px] left-[24px]" id="163:260">
-        <img decoding="async" src="sections/distribute/assets/hero/image_1.svg" class="w-[104px] h-[32px]" id="163:261"  loading="lazy" />
+        <img decoding="async" src="lumingyue/assets/image_2.svg" class="w-[104px] h-[32px]" id="163:261"  loading="lazy" />
       </div>
       <div class="absolute top-[14px] left-[144px] flex justify-start items-start w-[1272px] h-[32px]" id="163:262">
         <div class="mt-[9px] flex justify-center items-center w-[63px] h-[16px]" id="163:263">
@@ -13444,10 +13454,10 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         </div>
         <div class="ml-[1049px] flex justify-start items-center w-[160px] h-[32px]" id="163:269">
           <div class="relative w-[92px] h-[32px]" id="163:274">
-            <img decoding="async" src="sections/distribute/assets/hero/image_4.svg" class="w-[92px] h-[32px] absolute top-0 left-0" id="163:275"  loading="lazy" />
+            <img decoding="async" src="lumingyue/assets/image_5.svg" class="w-[92px] h-[32px] absolute top-0 left-0" id="163:275"  loading="lazy" />
             <div class="absolute top-[7px] left-[12px] flex justify-start items-start w-[68px] h-[18.38px]" id="163:276">
               <div class="flex justify-center items-center w-[18.38px] h-[18.38px]" id="163:277">
-                <img decoding="async" src="sections/distribute/assets/hero/image_5.svg" class="w-[18.38px] h-[18.38px]" id="163:282"  loading="lazy" />
+                <img decoding="async" src="lumingyue/assets/image_6.svg" class="w-[18.38px] h-[18.38px]" id="163:282"  loading="lazy" />
               </div>
               <img decoding="async" src="sections/distribute/assets/hero/image_6.svg" class="w-[44px] h-[14.96px] mt-[1.54px] ml-[5.62px]" id="163:283"  loading="lazy" />
             </div>
@@ -13821,12 +13831,12 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
     <div class="absolute top-[451px] left-[582px] font-[Inter] text-[10px] whitespace-nowrap text-center text-[rgba(255,255,255,1)] leading-[18px] tracking-[normal] font-light" id="4457:5966">
       <span class="tracking-[3px]">PC</span>
     </div>
-    <img decoding="async" src="sections/distribute/assets/image_12.svg" class="w-[1155px] h-[654px] absolute top-[22px] left-[20px]" id="4457:5968"  loading="lazy" />
+    <img decoding="async" src="assets/optimized/10bef31dfb73e83e3b64.webp" class="w-[1155px] h-[654px] absolute top-[22px] left-[20px]" id="4457:5968"  loading="lazy" />
     <div class="w-[178px] h-[70px] rounded-[1223.94px] bg-[rgba(255,255,255,1)] flex flex-row flex-nowrap justify-start items-center box-border pr-[13px] pl-[10px] relative top-[2px] left-[967px]" id="4457:5969">
-      <img decoding="async" src="sections/distribute/assets/image_13.svg" class="w-[158.51px] h-[55.13px] overflow-hidden" id="4457:5970"  loading="lazy" />
+      <img decoding="async" src="assets/optimized/5d6dc2470c930d58e8b8.webp" class="w-[158.51px] h-[55.13px] overflow-hidden" id="4457:5970"  loading="lazy" />
       <div class="w-[178px] rounded-[1223.94px] [box-shadow:0px_26.95px_61.26px_-19.60px_rgba(0,0,0,0.75)] bg-[rgba(255,255,255,0)] min-h-[70px] absolute top-0 left-0" id="4457:5977"></div>
     </div>
-    <img decoding="async" src="sections/distribute/assets/image_14.svg" class="w-[271px] h-[584.62px] rounded-[16.08px] bg-[rgba(255,255,255,1)] absolute top-[91px] left-[878px]" id="4457:5978"  loading="lazy" />
+    <img decoding="async" src="assets/optimized/c44ce79ac5a2184ca10f.webp" class="w-[271px] h-[584.62px] rounded-[16.08px] bg-[rgba(255,255,255,1)] absolute top-[91px] left-[878px]" id="4457:5978"  loading="lazy" />
   </div>
 </div>
 <!-- ===== 屏 5 · 02 热点牵引 4457:5981 ===== -->
@@ -13875,7 +13885,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       <div class="w-[213.60px] h-[35px] flex flex-col flex-nowrap justify-start items-start pt-[10px] box-border" id="4457:6003">
         <div class="font-[SF_Pro] text-[14px] whitespace-nowrap text-[rgba(69,224,122,1)] leading-[24.50px] tracking-[normal] font-bold" id="4457:6004"><span class="tracking-[-0.15px]">选择话题</span></div>
       </div>
-      <img decoding="async" src="sections/distribute/assets/image_16.svg" class="w-[9.90px] h-[9.90px] absolute top-[43.05px] left-[250.15px]" id="4457:6005"  loading="lazy" />
+      <img decoding="async" src="sections/distribute/assets/image_15.svg" class="w-[9.90px] h-[9.90px] absolute top-[43.05px] left-[250.15px]" id="4457:6005"  loading="lazy" />
     </div>
     <div class="w-[140px] h-[96px] flex flex-col flex-nowrap justify-start items-start pt-[22px] box-border pr-[20px] pb-[22px] pl-[20px] relative" id="4457:6006">
       <div class="w-[99px] h-[18px] flex flex-col flex-nowrap justify-start items-start" id="4457:6007">
@@ -13884,7 +13894,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       <div class="w-[213.60px] h-[35px] flex flex-col flex-nowrap justify-start items-start pt-[10px] box-border" id="4457:6009">
         <div class="font-[SF_Pro] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[24.50px] tracking-[normal] font-bold" id="4457:6010"><span class="tracking-[-0.15px]">观点表达</span></div>
       </div>
-      <img decoding="async" src="sections/distribute/assets/image_17.svg" class="w-[9.90px] h-[9.90px] absolute top-[43.05px] left-[250.15px]" id="4457:6011"  loading="lazy" />
+      <img decoding="async" src="sections/distribute/assets/image_15.svg" class="w-[9.90px] h-[9.90px] absolute top-[43.05px] left-[250.15px]" id="4457:6011"  loading="lazy" />
     </div>
     <div class="w-[140px] h-[96px] flex flex-col flex-nowrap justify-start items-start pt-[22px] box-border pr-[20px] pb-[22px] pl-[20px] relative" id="4457:6012">
       <div class="w-[99px] h-[18px] flex flex-col flex-nowrap justify-start items-start" id="4457:6013">
@@ -13893,7 +13903,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       <div class="w-[213.60px] h-[35px] flex flex-col flex-nowrap justify-start items-start pt-[10px] box-border" id="4457:6015">
         <div class="font-[SF_Pro] text-[14px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[24.50px] tracking-[normal] font-bold" id="4457:6016"><span class="tracking-[-0.15px]">AI&nbsp;生成内容</span></div>
       </div>
-      <img decoding="async" src="sections/distribute/assets/image_18.svg" class="w-[9.90px] h-[9.90px] absolute top-[43.05px] left-[250.15px]" id="4457:6017"  loading="lazy" />
+      <img decoding="async" src="sections/distribute/assets/image_15.svg" class="w-[9.90px] h-[9.90px] absolute top-[43.05px] left-[250.15px]" id="4457:6017"  loading="lazy" />
     </div>
     <div class="w-[140px] h-[96px] flex flex-col flex-nowrap justify-start items-start pt-[22px] box-border pr-[20px] pb-[22px] pl-[20px]" id="4457:6018">
       <div class="w-[99px] h-[18px] flex flex-col flex-nowrap justify-start items-start" id="4457:6019">
@@ -13961,7 +13971,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         <img decoding="async" src="sections/distribute/assets/image_54.svg" class="w-[100px] h-[32px] absolute top-0 left-0" id="4457:6228"  loading="lazy" />
         <div class="absolute top-[8px] left-[36px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[16px] tracking-[normal] font-normal" id="4457:6229"><span class="tracking-[0%]">新建对话</span></div>
         <div class="w-[16px] h-[16px] overflow-hidden absolute top-[8px] left-[16px] flex justify-center items-center" id="4457:6230">
-          <img decoding="async" src="sections/distribute/assets/image_55.svg" class="w-[16px] h-[16px]" id="4457:6231"  loading="lazy" />
+          <img decoding="async" src="lumingyue/assets/image_12.svg" class="w-[16px] h-[16px]" id="4457:6231"  loading="lazy" />
         </div>
       </div>
     </div>
@@ -13970,7 +13980,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         <img decoding="async" src="sections/distribute/assets/image_56.svg" class="w-[100px] h-[32px] absolute top-0 left-0" id="4457:6236"  loading="lazy" />
         <div class="absolute top-[8px] left-[36px] font-[PingFang_SC] text-[12px] whitespace-nowrap text-[rgba(18,33,92,1)] leading-[16px] tracking-[normal] font-normal" id="4457:6237"><span class="tracking-[0%]">对话灵感</span></div>
         <div class="w-[16px] h-[16px] overflow-hidden absolute top-[8px] left-[16px] flex justify-center items-center" id="4457:6238">
-          <img decoding="async" src="sections/distribute/assets/image_57.svg" class="w-[16px] h-[16px]" id="4457:6239"  loading="lazy" />
+          <img decoding="async" src="lumingyue/assets/image_14.svg" class="w-[16px] h-[16px]" id="4457:6239"  loading="lazy" />
         </div>
       </div>
     </div>
@@ -14247,7 +14257,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
           class="w-[104px] h-[34px] flex flex-col flex-nowrap justify-start items-start pb-[2px] box-border absolute top-[14px] left-[24px]"
           id="163:470"
         >
-          <img decoding="async" src="sections/distribute/assets/paradigm/image_1.svg" class="w-[104px] h-[32px]" id="163:471"  loading="lazy" />
+          <img decoding="async" src="lumingyue/assets/image_2.svg" class="w-[104px] h-[32px]" id="163:471"  loading="lazy" />
         </div>
         <div class="absolute top-[14px] left-[144px] flex justify-start items-start w-[1272px] h-[32px]" id="163:472">
           <div class="mt-[9px] flex justify-center items-center w-[63px] h-[16px]" id="163:473">
@@ -14264,19 +14274,19 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
           </div>
           <div class="ml-[1049px] flex justify-start items-center w-[160px] h-[32px]" id="163:479">
             <div class="relative w-[92px] h-[32px]" id="163:484">
-              <img decoding="async" src="sections/distribute/assets/paradigm/image_4.svg" class="w-[92px] h-[32px] absolute top-0 left-0" id="163:485"  loading="lazy" />
+              <img decoding="async" src="lumingyue/assets/image_5.svg" class="w-[92px] h-[32px] absolute top-0 left-0" id="163:485"  loading="lazy" />
               <div
                 class="absolute top-[7px] left-[12px] flex justify-start items-start w-[68px] h-[18.38px]"
                 id="163:486"
               >
                 <div class="flex justify-center items-center w-[18.38px] h-[18.38px]" id="163:487">
-                  <img decoding="async" src="sections/distribute/assets/paradigm/image_5.svg" class="w-[18.38px] h-[18.38px]" id="163:492"  loading="lazy" />
+                  <img decoding="async" src="lumingyue/assets/image_6.svg" class="w-[18.38px] h-[18.38px]" id="163:492"  loading="lazy" />
                 </div>
                 <img decoding="async" src="lumingyue/assets/image_7.svg" class="w-[44px] h-[14.96px] mt-[1.54px] ml-[5.62px]" id="163:493"  loading="lazy" />
               </div>
             </div>
             <div class="ml-[16px] flex justify-start items-start w-[52px] h-[32px]" id="163:480">
-              <img decoding="async" src="sections/distribute/assets/paradigm/image_7.svg" class="w-[32px] h-[32px]" id="163:481"  loading="lazy" /><img decoding="async"
+              <img decoding="async" src="sections/distribute/assets/hero/image_7.svg" class="w-[32px] h-[32px]" id="163:481"  loading="lazy" /><img decoding="async"
                 src="sections/distribute/assets/paradigm/image_8.svg"
                 class="w-[16px] h-[16px] mt-[9px] ml-[4px]"
                 id="163:482"
@@ -14601,7 +14611,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       </div>
     </div>
     <div class="absolute top-[948px] left-[56px] w-[1328px] h-[492.67px]" id="4457:6822">
-      <img decoding="async" src="sections/distribute/assets/image_115.svg" class="w-[610.72px] h-[407.14px] absolute top-0 left-[717.28px]" data-anim="rise" data-anim-delay="3" id="4457:6823"  loading="lazy" /><img decoding="async" src="sections/distribute/assets/image_116.svg" class="w-[289.99px] h-[407.10px] absolute top-0 left-[1.47px]" data-anim="rise" data-anim-delay="1" id="4457:6824"  loading="lazy" /><img decoding="async" src="sections/distribute/assets/image_117.svg" class="w-[289.91px] h-[407.21px] absolute top-0 left-[334.38px]" data-anim="rise" data-anim-delay="2" id="4457:6825"  loading="lazy" />
+      <img decoding="async" src="assets/optimized/02428d85000c000c696c.webp" class="w-[610.72px] h-[407.14px] absolute top-0 left-[717.28px]" data-anim="rise" data-anim-delay="3" id="4457:6823"  loading="lazy" /><img decoding="async" src="sections/distribute/assets/image_116.svg" class="w-[289.99px] h-[407.10px] absolute top-0 left-[1.47px]" data-anim="rise" data-anim-delay="1" id="4457:6824"  loading="lazy" /><img decoding="async" src="sections/distribute/assets/image_117.svg" class="w-[289.91px] h-[407.21px] absolute top-0 left-[334.38px]" data-anim="rise" data-anim-delay="2" id="4457:6825"  loading="lazy" />
       <div class="absolute top-[426.67px] left-0 w-[223.46px] font-[SF_Pro] text-[37.65px] whitespace-nowrap text-[rgba(255,255,255,1)] leading-[65.88px] tracking-[normal] font-extrabold" id="4457:6826">
         <span class="text-[37.65px] tracking-[-1.54px]">国际设计奖项</span>
       </div>
@@ -14818,7 +14828,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[291.10px] h-[649.44px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start min-h-0 min-w-0 absolute top-[8.20px] left-[8.20px]"
         id="4457:179"
       >
-        <img decoding="async" src="assets/85/image_1.svg" class="w-[291px] h-[2059px]" id="4457:180"  loading="lazy" /><img decoding="async"
+        <img decoding="async" src="assets/optimized/2e8c971b2c4f9edeae28.webp" class="w-[291px] h-[2059px]" id="4457:180"  loading="lazy" /><img decoding="async"
           src="assets/85/image_2.svg"
           class="w-[291px] h-[1877px]"
           id="4457:181"
@@ -15014,7 +15024,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       <span class="text-[22.25px] tracking-[0px]">数据观测+用户洞察</span>
     </div>
     <img decoding="async"
-      src="assets/85/image_12.svg"
+      src="assets/optimized/ac15762f5b72d52ac30b.webp"
       class="w-[749.54px] h-[510.01px] absolute top-[484px] left-[690px]"
       id="4457:924"
      loading="lazy" />
@@ -15052,7 +15062,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         <span class="tracking-[0%]">规则不了解</span>
       </div>
       <img decoding="async"
-        src="assets/85/image_14.svg"
+        src="assets/optimized/d1ee493f43d14e07d15a.webp"
         class="w-[45.53px] h-[45.53px] absolute top-[3.79px] left-[4.55px]"
         id="4457:939"
        loading="lazy" />
@@ -15095,7 +15105,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         <span class="tracking-[0%]">无法变现、没成长</span>
       </div>
       <img decoding="async"
-        src="assets/85/image_17.svg"
+        src="assets/optimized/7896858714c6e4d2e0db.webp"
         class="w-[45.53px] h-[45.53px] absolute top-[3.79px] left-[4.55px]"
         id="4457:954"
        loading="lazy" />
@@ -15667,7 +15677,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       </div>
     </div>
     <div class="absolute top-[585px] left-[40px] w-[433.50px] h-[206px]" id="4457:242">
-      <img decoding="async" src="assets/85/image_21.svg" class="w-[433.50px] h-[206px] absolute top-0 left-0" id="4457:243"  loading="lazy" />
+      <img decoding="async" src="assets/85/image_20.svg" class="w-[433.50px] h-[206px] absolute top-0 left-0" id="4457:243"  loading="lazy" />
       <div
         class="w-[380px] h-[25px] flex flex-col flex-nowrap justify-start items-start absolute top-[100px] left-[28px]"
         id="4457:244"
@@ -15698,7 +15708,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       </div>
     </div>
     <div class="absolute top-[831px] left-[40px] w-[433.50px] h-[206px]" id="4457:249">
-      <img decoding="async" src="assets/85/image_22.svg" class="w-[433.50px] h-[206px] absolute top-0 left-0" id="4457:250"  loading="lazy" />
+      <img decoding="async" src="assets/85/image_20.svg" class="w-[433.50px] h-[206px] absolute top-0 left-0" id="4457:250"  loading="lazy" />
       <div
         class="w-[380px] h-[25px] flex flex-col flex-nowrap justify-start items-start absolute top-[100px] left-[28px]"
         id="4457:251"
@@ -16277,7 +16287,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[291px] h-[630px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start min-h-0 min-w-0 absolute top-[8px] left-[8px]"
         id="4457:422"
       >
-        <img decoding="async" src="assets/85/image_26.svg" class="w-[291px] h-[630px]" id="4457:423"  loading="lazy" /><img decoding="async"
+        <img decoding="async" src="assets/optimized/21452aa94900b42aed06.webp" class="w-[291px] h-[630px]" id="4457:423"  loading="lazy" /><img decoding="async"
           src="assets/85/image_2.svg"
           class="w-[291px] h-[630px]"
           id="4457:424"
@@ -16340,7 +16350,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       id="4457:435"
     >
       <img decoding="async"
-        src="assets/85/image_27.svg"
+        src="assets/optimized/3990b10a49f8205f3b50.webp"
         alt=""
         class="absolute max-w-none"
         style="width:495px;height:270px;left:-98.55px;top:-37.91px;transform:scale(1.0414);transform-origin:0 0"
@@ -16352,7 +16362,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       id="4457:438"
     >
       <img decoding="async"
-        src="assets/85/image_28.svg"
+        src="assets/optimized/69cb0018aa3b29e7e146.webp"
         alt=""
         class="absolute max-w-none"
         style="width:461px;height:270px;left:-95.38px;top:-35.70px;transform:scale(1.0125);transform-origin:0 0"
@@ -17312,7 +17322,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
           class="w-[335.23px] h-[41.10px] flex flex-row flex-nowrap justify-start items-center absolute top-[12.72px] left-[11.74px]"
           id="158:188"
         >
-          <img decoding="async" src="assets/78/image_23.svg" class="w-[55.36px] h-[41.10px] mr-[8.81px]" id="158:189"  loading="lazy" />
+          <img decoding="async" src="assets/optimized/723b7ed61075053b3cf5.webp" class="w-[55.36px] h-[41.10px] mr-[8.81px]" id="158:189"  loading="lazy" />
           <div
             class="mr-[8.81px] w-[222.13px] font-[PingFang_SC] text-[12.72px] text-[rgba(30,31,36,1)] leading-[15.66px] tracking-[normal] font-normal"
             id="158:193"
@@ -17914,7 +17924,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[291px] h-[630px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start min-h-0 min-w-0 absolute top-[8px] left-[8px]"
         id="4457:725"
       >
-        <img decoding="async" src="assets/85/image_78.svg" class="w-[291px] h-[630px]" id="4457:726"  loading="lazy" /><img decoding="async"
+        <img decoding="async" src="assets/optimized/168375ddcd48990d0806.webp" class="w-[291px] h-[630px]" id="4457:726"  loading="lazy" /><img decoding="async"
           src="assets/85/image_2.svg"
           class="w-[291px] h-[630px]"
           id="4457:727"
@@ -17937,8 +17947,8 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         id="4457:731"
       ></div>
     </div>
-    <img decoding="async" src="assets/85/image_79.svg" class="w-[260px] h-[563px] absolute top-[611px] left-[1045px]" id="4457:732"  loading="lazy" /><img decoding="async"
-      src="assets/85/image_80.svg"
+    <img decoding="async" src="assets/optimized/7c4b85a3f69463faa1d3.webp" class="w-[260px] h-[563px] absolute top-[611px] left-[1045px]" id="4457:732"  loading="lazy" /><img decoding="async"
+      src="assets/optimized/f85ae5d584dc2adfaf6f.webp"
       class="w-[260px] h-[563px] absolute top-[15px] left-[1045px]"
       id="4457:733"
      loading="lazy" /><img decoding="async" src="assets/85/image_81.svg" class="w-[18px] h-[29.43px] absolute top-[1009px] left-[711px]" id="4457:734"  loading="lazy" />
@@ -18005,7 +18015,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       <span class="tracking-[0%]">诊断分析，精简理解，将复杂的数据语言转化成简析易懂的优化建议</span>
     </div>
     <img decoding="async"
-      src="assets/85/image_84.svg"
+      src="assets/optimized/58b7ffcf3defa39205f6.webp"
       class="w-[331.99px] h-[566.90px] absolute top-[187.92px] left-[624.41px]"
       id="4457:756"
      loading="lazy" />
@@ -18017,7 +18027,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[291px] h-[630px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start min-h-0 min-w-0 absolute top-[8px] left-[8px]"
         id="4457:763"
       >
-        <img decoding="async" src="assets/85/image_85.svg" class="w-[291px] h-[628px]" id="4457:764"  loading="lazy" /><img decoding="async"
+        <img decoding="async" src="assets/optimized/e2263d5fd9b0d6634d63.webp" class="w-[291px] h-[628px]" id="4457:764"  loading="lazy" /><img decoding="async"
           src="assets/85/image_86.svg"
           class="w-[291px] h-[630px]"
           id="4457:765"
@@ -18087,11 +18097,11 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       <span class="tracking-[0%]">新增观众分析及观众画像，辅助作者精准了解受众群体，优化内容策略。</span>
     </div>
     <img decoding="async"
-      src="assets/85/image_89.svg"
+      src="assets/optimized/92c376954e6dffc455a5.webp"
       class="w-[331.99px] h-[566.90px] absolute top-[257px] left-[616px]"
       id="4457:787"
      loading="lazy" /><img decoding="async"
-      src="assets/85/image_90.svg"
+      src="assets/optimized/1fbd9506c33205b263b8.webp"
       class="w-[331.99px] h-[566.90px] absolute top-[257px] left-[1073px]"
       id="4457:794"
      loading="lazy" />
@@ -18103,7 +18113,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[291px] h-[630px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start min-h-0 min-w-0 absolute top-[8px] left-[8px]"
         id="4457:802"
       >
-        <img decoding="async" src="assets/85/image_91.svg" class="w-[291px] h-[633px]" id="4457:803"  loading="lazy" /><img decoding="async"
+        <img decoding="async" src="assets/optimized/43ad91cf5adf6a7cf684.webp" class="w-[291px] h-[633px]" id="4457:803"  loading="lazy" /><img decoding="async"
           src="assets/85/image_2.svg"
           class="w-[291px] h-[630px]"
           id="4457:804"
@@ -18137,7 +18147,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
         class="w-[291.10px] h-[649.44px] overflow-hidden rounded-[33.62px] bg-[rgba(0,0,0,1)] flex flex-col flex-nowrap justify-start items-start min-h-0 min-w-0 absolute top-[8.20px] left-[8.20px]"
         id="4457:815"
       >
-        <img decoding="async" src="assets/85/image_92.svg" class="w-[291px] h-[2059px]" id="4457:816"  loading="lazy" /><img decoding="async"
+        <img decoding="async" src="assets/optimized/2e8c971b2c4f9edeae28.webp" class="w-[291px] h-[2059px]" id="4457:816"  loading="lazy" /><img decoding="async"
           src="assets/85/image_2.svg"
           class="w-[291px] h-[1877px]"
           id="4457:817"
@@ -18231,7 +18241,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
     </div>
   </div>
   <div class="w-[1440px] h-[1080px] overflow-hidden bg-[rgba(0,0,0,1)] relative" id="4457:836">
-    <img decoding="async" src="assets/85/image_93.svg" class="w-[880px] h-[580px] absolute top-[382px] left-[519px]" id="4457:837"  loading="lazy" /><img decoding="async"
+    <img decoding="async" src="assets/optimized/408b98c2ac877e6610b2.webp" class="w-[880px] h-[580px] absolute top-[382px] left-[519px]" id="4457:837"  loading="lazy" /><img decoding="async"
       src="assets/85/image_94.svg"
       class="w-[961px] h-[580px] absolute top-[242px] left-[41px]"
       id="4457:840"
@@ -18794,7 +18804,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
             </div>
           </div>
         </div>
-        <img decoding="async" loading="lazy" onerror="this.style.display='none'" src="sections/judgment/assets/image_7.svg" class="w-[775px] h-[553px] absolute top-[662px] left-[95px]" id="942:122" /><img decoding="async" loading="lazy" onerror="this.style.display='none'" src="sections/judgment/assets/image_8.svg"
+        <img decoding="async" loading="lazy" onerror="this.style.display='none'" src="assets/optimized/f45d8b56a21e0bd42581.webp" class="w-[775px] h-[553px] absolute top-[662px] left-[95px]" id="942:122" /><img decoding="async" loading="lazy" onerror="this.style.display='none'" src="assets/optimized/3a3de9c6bbca77bb8a97.webp"
           class="w-[775px] h-[553px] absolute top-[1265px] left-[625px]"
           id="942:123"
         />
@@ -18809,7 +18819,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
             <span class="text-[43.70px] tracking-[0%]">2</span>
           </div>
         </div>
-        <img decoding="async" loading="lazy" onerror="this.style.display='none'" src="sections/judgment/assets/image_9.svg" class="w-[335px] h-[487px] absolute top-[125px] left-[1027px]" id="942:126" /><img decoding="async" loading="lazy" onerror="this.style.display='none'" src="sections/judgment/assets/image_10.svg"
+        <img decoding="async" loading="lazy" onerror="this.style.display='none'" src="assets/optimized/33025e9a9e3b831ac0be.webp" class="w-[335px] h-[487px] absolute top-[125px] left-[1027px]" id="942:126" /><img decoding="async" loading="lazy" onerror="this.style.display='none'" src="assets/optimized/6fa582302771e1ca9f8d.webp"
           class="w-[342px] h-[487px] absolute top-[125px] left-[635px]"
           id="942:127"
         />
@@ -18978,21 +18988,21 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
                   id="942:162"
                 ></div>
                 <div class="relative w-[255.34px] h-[156.82px]" id="942:163">
-                  <img decoding="async" loading="lazy" onerror="this.style.display='none'" src="sections/judgment/assets/image_11.svg" class="w-[189.01px] h-[145.65px] absolute top-0 left-0" id="942:164" />
+                  <img decoding="async" loading="lazy" onerror="this.style.display='none'" src="assets/optimized/1e42950103f14aae4763.webp" class="w-[189.01px] h-[145.65px] absolute top-0 left-0" id="942:164" />
                   <div
                     class="w-[16.65px] bg-[rgba(255,255,255,1)] min-h-[4.28px] absolute top-[135.55px] left-[54.22px]"
                     id="942:165"
                   ></div>
                   <div class="absolute top-[39.48px] left-[30.92px] w-[224.42px] h-[117.34px]" id="942:166">
-                    <img decoding="async" loading="lazy" onerror="this.style.display='none'" src="sections/judgment/assets/image_12.svg"
+                    <img decoding="async" loading="lazy" onerror="this.style.display='none'" src="assets/optimized/c5a29ffb16228a44b3e5.webp"
                       class="w-[190.18px] h-[108.65px] absolute top-0 left-0"
                       id="942:167"
-                    /><img decoding="async" loading="lazy" onerror="this.style.display='none'" src="sections/judgment/assets/image_13.svg"
+                    /><img decoding="async" loading="lazy" onerror="this.style.display='none'" src="assets/optimized/af6d7251387333756fd7.webp"
                       class="w-[128.71px] h-[61.31px] absolute top-[56.04px] left-[95.71px]"
                       id="942:171"
                     />
                   </div>
-                  <img decoding="async" loading="lazy" onerror="this.style.display='none'" src="sections/judgment/assets/image_14.svg"
+                  <img decoding="async" loading="lazy" onerror="this.style.display='none'" src="assets/optimized/975f25b6faea73dabf11.webp"
                     class="w-[41.32px] h-[8.64px] absolute top-[27.27px] left-[31.84px]"
                     id="942:172"
                   />
@@ -19079,7 +19089,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
               class="w-[328.66px] h-[180px] overflow-hidden rounded-[12px] flex flex-col flex-nowrap justify-start items-start"
               id="942:189"
             >
-              <img decoding="async" loading="lazy" onerror="this.style.display='none'" src="sections/judgment/assets/image_15.svg"
+              <img decoding="async" loading="lazy" onerror="this.style.display='none'" src="assets/optimized/afc0df4de415c73cbfba.webp"
                 class="w-[328.66px] h-[180px] overflow-hidden bg-[rgba(14,14,14,1)]"
                 id="942:190"
               />
@@ -19312,13 +19322,13 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
           <img class="hb-card" style="width:498.43px; height:498.43px" src="assets/figma-890-76/image_6.svg" alt="海边日落" decoding="async"  loading="lazy" />
         </div>
         <div class="card-slot" style="top:826.67px; left:223.72px; --sx:311.36px; --sy:-25.64px; --layer:2">
-          <img class="hb-card" style="width:498.43px; height:498.43px" src="assets/figma-890-76/image_7.svg" alt="游泳" decoding="async"  loading="lazy" />
+          <img class="hb-card" style="width:498.43px; height:498.43px" src="assets/optimized/05d5430ffcf8d976b93d.webp" alt="游泳" decoding="async"  loading="lazy" />
         </div>
         <div class="card-slot" style="top:822.01px; left:389.89px; --sx:151.00px; --sy:-15.50px; --layer:1">
-          <img class="hb-card" style="width:486.82px; height:486.82px" src="assets/figma-890-76/image_8.svg" alt="爬山" decoding="async"  loading="lazy" />
+          <img class="hb-card" style="width:486.82px; height:486.82px" src="assets/optimized/43440807dfb5a1236c2b.webp" alt="爬山" decoding="async"  loading="lazy" />
         </div>
         <div class="card-slot" style="top:817.77px; left:552.89px; --sx:0px; --sy:0px; --layer:0">
-          <img class="hb-card" style="width:463.20px; height:463.20px" src="assets/figma-890-76/image_9.svg" alt="个人形象" decoding="async"  loading="lazy" />
+          <img class="hb-card" style="width:463.20px; height:463.20px" src="assets/optimized/13a15c95cb865197fd67.webp" alt="个人形象" decoding="async"  loading="lazy" />
         </div>
         <div class="card-slot" style="top:830.83px; left:734.02px; --sx:-195.79px; --sy:-26.82px; --layer:1">
           <img class="hb-card" style="width:492.53px; height:492.53px" src="assets/figma-890-76/image_10.svg" alt="Vibe Coding" decoding="async"  loading="lazy" />
@@ -19327,7 +19337,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
           <img class="hb-card" style="width:500.00px; height:500.00px" src="assets/figma-890-76/image_11.svg" alt="下象棋" decoding="async"  loading="lazy" />
         </div>
         <div class="card-slot" style="top:843.76px; left:1047.36px; --sx:-520.47px; --sy:-50.47px; --layer:3">
-          <img class="hb-card" style="width:514.44px; height:514.44px" src="assets/figma-890-76/image_12.svg" alt="坐过山车" decoding="async"  loading="lazy" />
+          <img class="hb-card" style="width:514.44px; height:514.44px" src="assets/optimized/283089be77083d1d05d5.webp" alt="坐过山车" decoding="async"  loading="lazy" />
         </div>
 
 
@@ -19344,7 +19354,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
           <p class="jump-label"><span class="jump-arrow">↓</span><span class="jump-text">联系我</span></p>
           <img decoding="async" style="width:120px; height:164px" src="assets/figma-890-76/image_19.svg" alt="" aria-hidden="true"  loading="lazy" />
         </div>
-        <img decoding="async" class="qrcode" src="assets/figma-890-76/image_18.svg" alt="微信二维码"  loading="lazy" />
+        <img decoding="async" class="qrcode" src="assets/optimized/7ce429db19e21421d61b.webp" alt="微信二维码"  loading="lazy" />
 
         <ul>
           <li>
@@ -19394,7 +19404,6 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       const on = i === index;
       p.classList.toggle('is-on', on);
       syncFocusable(p, on);
-      if (on) void p.offsetWidth; // 强制重排，重播入场动画
     });
     window.scrollTo(0, 0);
     worksOn = PANELS[index] === 'works';
@@ -19865,11 +19874,25 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
   function queue() { if (!pending) { pending = true; requestAnimationFrame(layout); } }
   function unit(board) {
     if (!board || !board.parentNode) return;
+    // iframe 在 DOM 中重新挂载会重新加载文档；复用 HTML 中的外壳。
+    if (board.parentNode.classList.contains('fit-drawing') && board.parentNode.parentNode.classList.contains('fit-viewport')) {
+      units.push({viewport:board.parentNode.parentNode,drawing:board.parentNode,board:board});
+      return;
+    }
     var viewport = document.createElement('div'); viewport.className = 'fit-viewport';
     var drawing = document.createElement('div'); drawing.className = 'fit-drawing';
     board.parentNode.insertBefore(viewport, board);
     viewport.appendChild(drawing); drawing.appendChild(board);
-    units.push({viewport:viewport,drawing:drawing,board:board});
+    // 固定画板尺寸已写在设计类中，无需读取离屏子树来计算高度。
+    var declared = String(board.className).match(/(?:^|\s)h-\[([\d.]+)px\]/);
+    var designHeight = declared ? Math.round(Number(declared[1])) :
+      board.classList.contains('sect-works') ? 665 : board.classList.contains('sect-judgment') ? 3610 : 0;
+    if (designHeight && root.clientWidth < 1440) {
+      var initialRatio = root.clientWidth / 1440;
+      viewport.style.height = Math.ceil(designHeight * initialRatio) + 'px';
+      drawing.style.transform = 'scale(' + initialRatio + ')';
+    }
+    units.push({viewport:viewport,drawing:drawing,board:board,designHeight:designHeight});
   }
   function flow(container) {
     if (!container) return;
@@ -19907,13 +19930,18 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       frame.style.height=fit?(frame.dataset.contentHeight||'14915')+'px':'100vh';
       frame.setAttribute('scrolling',fit?'no':'auto');
     }
-    units.forEach(function(item){
-      if(!fit) {item.viewport.style.height=''; item.drawing.style.transform='';return;}
-      if(!item.board.getClientRects().length) return;
-      // offsetHeight remains in design coordinates; transformed rectangles do not.
-      var h=item.board.offsetHeight;
-      item.viewport.style.height=Math.ceil(h*ratio)+'px';
-      item.drawing.style.transform='scale('+ratio+')';
+    // 先统一读取，再统一写入，避免每个画板触发一次整页强制重排。
+    var measurements = units.map(function(item) {
+      if (!fit) return {item:item,height:'',transform:''};
+      var panel = item.board.closest('.panel');
+      if (panel && !panel.classList.contains('is-on')) return null;
+      return {item:item,height:Math.ceil((item.designHeight || item.board.offsetHeight)*ratio)+'px',transform:'scale('+ratio+')'};
+    });
+    measurements.forEach(function(measurement) {
+      if (!measurement) return;
+      var item = measurement.item;
+      if (item.viewport.style.height !== measurement.height) item.viewport.style.height = measurement.height;
+      if (item.drawing.style.transform !== measurement.transform) item.drawing.style.transform = measurement.transform;
     });
     if(embedded && canvas) {
       var h=Math.ceil(Math.max(canvas.offsetHeight,canvas.scrollHeight));
