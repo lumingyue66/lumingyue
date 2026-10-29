@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta name="portfolio-build" content="20261028-speed-d">
+<meta name="portfolio-build" content="20261029-remove-drama-cta">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta charset="utf-8" />
 <title>陆明月个人网站</title>
@@ -10069,7 +10069,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
   class="w-[1440px] h-[12793px] overflow-hidden bg-[rgba(0,0,0,1)] flex flex-col justify-start items-center mx-auto"
   id="36:1044"
 >
-  <div class="w-[1440px] h-[983px] overflow-hidden bg-[rgba(0,0,0,1)] relative" id="49:165">
+  <div class="w-[1440px] h-[983px] overflow-hidden bg-[rgba(0,0,0,1)] relative" id="49:165" data-case="ai-editor">
     <div
       class="w-[1440px] h-[560.64px] flex flex-col flex-nowrap justify-start items-center pt-[100px] box-border pb-[72px] absolute top-[256px] left-0"
       id="49:166"
@@ -13435,7 +13435,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
   <div class="w-full flex justify-center bg-[rgba(0,0,0,1)]">
     <div class="w-[1440px] shrink-0 h-[11964px] overflow-hidden bg-[rgba(0,0,0,1)] flex flex-col justify-start items-center" id="4457:5849">
 <!-- ===== 屏 1 · 封面「AI 助手」（改版）163:256 ===== -->
-<div class="w-[1440px] h-[956px] overflow-hidden bg-[rgba(0,0,0,1)] relative" id="163:256">
+<div class="w-[1440px] h-[956px] overflow-hidden bg-[rgba(0,0,0,1)] relative" id="163:256" data-case="ai-assistant">
     <div class="w-[1440px] h-[952px] overflow-hidden rounded-[20px] border-[rgba(255,255,255,0.09)] border-solid border bg-[rgba(255,255,255,0.1)] absolute top-[2px] left-0" id="163:257">
     <div class="absolute top-0 left-0 w-[1440px] h-[60px]" data-anim="fade" data-anim-delay="0" id="163:258">
       <div id="163:259"></div>
@@ -19393,7 +19393,9 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
     });
   }
 
+  let caseNavigation = 0;
   function activate(index) {
+    caseNavigation += 1;
     tabs.forEach((t, i) => {
       const on = i === index;
       t.classList.toggle('is-active', on);
@@ -19509,6 +19511,40 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
 
   activate(0);
   syncSub();
+
+  // 首页案例 VIEW CASE：跨 iframe 切换 tab，再按当前缩放尺寸定位。
+  const homeFrame = document.querySelector('.panel[data-panel="about"] iframe');
+  const caseTargets = new Map([['ai-assistant', 'wk-distribute'], ['ai-editor', 'wk-create']]);
+  function openCase(caseId) {
+    if (!caseTargets.has(caseId)) return;
+    const target = document.querySelector('[data-case="' + caseId + '"]');
+    if (!target) return;
+    activate(1);
+    const navigation = caseNavigation;
+    // 等待 tab 显示和自适应布局完成，避免读取隐藏面板或旧缩放下的坐标。
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (navigation !== caseNavigation || !worksOn) return;
+      const item = subItems.find((it) => it.dataset.anchor === caseTargets.get(caseId));
+      if (item) setSubActive(item);
+      target.setAttribute('tabindex', '-1');
+      target.focus({preventScroll:true});
+      const headerHeight = document.querySelector('.topnav').getBoundingClientRect().height + subnav.offsetHeight;
+      const top = target.getBoundingClientRect().top + window.scrollY - headerHeight;
+      window.scrollTo({top:Math.max(0, top), behavior:'auto'});
+      syncSub();
+    }));
+  }
+  window.addEventListener('message', (event) => {
+    if (!homeFrame || event.source !== homeFrame.contentWindow) return;
+    if (event.origin !== location.origin && !(location.protocol === 'file:' && event.origin === 'null')) return;
+    if (event.data && event.data.type === 'portfolio:navigate') openCase(event.data.caseId);
+  });
+  function openLinkedCase() {
+    if (location.hash.indexOf('#case-') === 0) openCase(location.hash.slice(6));
+  }
+  window.addEventListener('hashchange', openLinkedCase);
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', openLinkedCase, {once:true});
+  else openLinkedCase();
 
   // 百家号卡片「查看作品」→ 跳转「做的还不错」Tab 的 CREATE 板块
   const bjhMore = document.querySelector('.card-bjh .more');
@@ -19915,7 +19951,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
   if (embedded) {
     try {setEmbedded(window.parent.document.documentElement.clientWidth<1440);} catch (_) {}
     window.addEventListener('message',function(e){
-      if(e.source===window.parent && e.origin===location.origin && e.data && e.data.type==='portfolio:scaled') setEmbedded(!!e.data.scaled);
+      if(e.source===window.parent && (e.origin===location.origin || (location.protocol==='file:' && e.origin==='null')) && e.data && e.data.type==='portfolio:scaled') setEmbedded(!!e.data.scaled);
     });
   }
   function layout() {
@@ -19924,7 +19960,7 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
     root.classList.toggle('is-fit',fit);
     root.style.setProperty('--canvas-fit',String(ratio));
     if(frame) {
-      if(frame.dataset.scaled!==String(fit) || lastWidth!==width) frame.contentWindow.postMessage({type:'portfolio:scaled',scaled:fit},location.origin==='null'?'*':location.origin);
+      if(frame.dataset.scaled!==String(fit) || lastWidth!==width) frame.contentWindow.postMessage({type:'portfolio:scaled',scaled:fit},location.protocol==='file:'||location.origin==='null'?'*':location.origin);
       frame.dataset.scaled=String(fit);
       frame.style.width=fit?'1440px':'100%';
       frame.style.height=fit?(frame.dataset.contentHeight||'14915')+'px':'100vh';
@@ -19947,14 +19983,14 @@ html.portfolio-embedded [data-reveal],html.portfolio-embedded [data-pop],html.po
       var h=Math.ceil(Math.max(canvas.offsetHeight,canvas.scrollHeight));
       if(root.dataset.sentHeight!==String(h)) {
         root.dataset.sentHeight=String(h);
-        window.parent.postMessage({type:'portfolio:height',height:h},location.origin==='null'?'*':location.origin);
+        window.parent.postMessage({type:'portfolio:height',height:h},location.protocol==='file:'||location.origin==='null'?'*':location.origin);
       }
     }
     lastWidth=width;
   }
   if(frame) {
     window.addEventListener('message',function(e){
-      if(e.source!==frame.contentWindow || e.origin!==location.origin || !e.data || e.data.type!=='portfolio:height') return;
+      if(e.source!==frame.contentWindow || (e.origin!==location.origin && !(location.protocol==='file:' && e.origin==='null')) || !e.data || e.data.type!=='portfolio:height') return;
       var h=Number(e.data.height);
       if(Number.isFinite(h)&&h>=100&&h<=100000&&frame.dataset.contentHeight!==String(h)){frame.dataset.contentHeight=String(h);queue();}
     });
